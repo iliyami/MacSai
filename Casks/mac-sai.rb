@@ -4,8 +4,7 @@ cask "mac-sai" do
   # "SHA256:" at the end; the release workflow fills this in automatically.
   sha256 "0000000000000000000000000000000000000000000000000000000000000000"
 
-  url "https://github.com/iliyami/MacSai/releases/download/v#{version}/MacSai-#{version}.dmg",
-      verified: "github.com/iliyami/MacSai/"
+  url "https://github.com/iliyami/MacSai/releases/download/v#{version}/MacSai-#{version}.dmg"
   name "Mac Sai"
   desc "Open-source Mac cleaner, optimizer, and malware scanner"
   homepage "https://github.com/iliyami/MacSai"
