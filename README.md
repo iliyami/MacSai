@@ -6,7 +6,7 @@
 
 <p align="center">
   <strong>The open-source Mac cleaner, optimizer, and malware scanner.</strong><br>
-  A feature-complete, free alternative to CleanMyMac, built with Swift 6 and SwiftUI.
+  A free, Apple-notarized alternative to CleanMyMac, built with Swift 6 and SwiftUI.
 </p>
 
 <p align="center">
@@ -15,17 +15,18 @@
 
 <p align="center">
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
-  <img src="https://img.shields.io/badge/platform-macOS%2014%2B-blue?style=flat-square" alt="macOS 14+" />
+  <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="Latest release" /></a>
+  <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
   <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-486%20passing-brightgreen?style=flat-square" alt="Tests" />
-  <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" />
-  <img src="https://img.shields.io/badge/security-audited-purple?style=flat-square" alt="Security" />
+  <img src="https://img.shields.io/badge/tests-862%20passing-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="Notarized" />
+  <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="PRs Welcome" />
 </p>
 
 <p align="center">
-  <img src="assets/demo.png" width="700" alt="Mac Sai Screenshot" />
+  <img src="assets/demo.png" width="720" alt="Mac Sai Screenshot" />
 </p>
 
 <p align="center">
@@ -37,18 +38,149 @@ brew install --cask mac-sai
 ```
 
 <p align="center">
-  Or grab the <a href="https://github.com/iliyami/MacSai/releases/latest">latest DMG</a> from Releases.
+  Or grab the <a href="https://github.com/iliyami/MacSai/releases/latest">latest DMG</a>. It is notarized by Apple, so it just opens, no right-click, no warnings, no Terminal.
 </p>
 
 ---
 
-## What is Mac Sai?
+## Why Mac Sai?
 
-Mac Sai is a **free, open-source** macOS app that cleans junk files, removes malware, optimizes performance, uninstalls apps completely, and visualizes disk usage — all from a single, beautiful interface. It replicates every major feature of CleanMyMac while being fully transparent and community-driven.
+A full-featured Mac cleaner should not cost a yearly subscription or ask you to trust a black box with deep access to your files. Mac Sai gives you the whole toolkit, in the open.
 
-**No subscriptions. No telemetry. No ads. Just a clean Mac.**
+- **Free, forever.** No subscription, no in-app purchases, no "upgrade to Pro", no nag screens. BSD-3 licensed.
+- **Zero telemetry.** No analytics, no crash reporter, no trackers, no server to phone home to. And you do not have to take our word for it, [verify it yourself](#verify-no-telemetry-yourself) in two commands.
+- **Every major CleanMyMac tool, in one app.** 17 modules across cleanup, protection, performance, applications, and disk insight, plus a menu-bar widget.
+- **Safe by design.** Trash-first deletion, a protected-paths blocklist, symlink and TOCTOU guards, and a `SafetyGuard` that validates every path. It is built to never lose your data.
+- **Apple-notarized and fully open source.** Your Mac verifies the signature every launch, and every line is here to read.
 
-**Available in English, Simplified Chinese (简体中文), and Russian (Русский).** Switch anytime in **Settings → Interface Language**; by default it follows your system language.
+---
+
+## Features at a glance
+
+<table>
+<tr>
+<td width="33%" valign="top">
+
+### 🧹 Cleanup
+- **Smart Scan** (one click)
+- **System Junk** (16+ categories)
+- **Mail Attachments**
+- **Trash Bins**
+
+</td>
+<td width="33%" valign="top">
+
+### 🛡️ Protection
+- **Malware Removal**
+- **Privacy** (browsers)
+- **Saved Wi-Fi**
+- **Permissions Overview**
+
+</td>
+<td width="33%" valign="top">
+
+### ⚡ Performance
+- **Optimization** (login items)
+- **Maintenance** (system tasks)
+
+</td>
+</tr>
+<tr>
+<td width="33%" valign="top">
+
+### 📦 Applications
+- **Uninstaller** (+ Reset to Defaults)
+- **Extensions** (panes, plug-ins)
+- **Updater**
+
+</td>
+<td width="33%" valign="top">
+
+### 🗂️ Files
+- **Space Lens** (disk treemap)
+- **Large & Old Files**
+- **Duplicates** (+ Consolidate)
+- **Shredder**
+
+</td>
+<td width="33%" valign="top">
+
+### 📊 Menu Bar
+- Live CPU / memory / disk / battery
+- Network, uptime, swap
+- Actionable recommendations
+
+</td>
+</tr>
+</table>
+
+---
+
+## Features in detail
+
+### 🧹 Cleanup
+| Module | What it does |
+|--------|------------|
+| **Smart Scan** | One click runs cleanup, protection, and performance modules together with live progress, then shows exactly what it freed per module |
+| **System Junk** | 16+ scan categories: user and system caches, logs, language files, broken preferences, broken login items, document versions, iOS backups, Xcode junk, package-manager / IDE / AI-tool caches, deleted-user leftovers, and **Universal Binary thinning** (finds fat Mach-O binaries carrying both arm64 and x86_64 and rewrites them to your native arch via `lipo`, honoring Cancel) |
+| **Mail Attachments** | Finds cached attachments from Apple Mail, Outlook, and Spark |
+| **Trash Bins** | Empties the Trash across every location, including external drives |
+
+### 🛡️ Protection
+| Module | What it does |
+|--------|------------|
+| **Malware Removal** | Signature-based scanning at 3 depths (Quick / Balanced / Deep): launch agents and daemons, browser extensions, and known adware/malware patterns (curated list, not an antivirus, and it says so) |
+| **Privacy** | Cleans Safari, Chrome, and Firefox history, cookies, and cache, with time filters. Safari **bookmarks are never touched** |
+| **Saved Wi-Fi** | Lists your preferred wireless networks and forgets the ones you pick |
+| **Permissions Overview** | A read-only, by-app view of which privacy (TCC) grants each app holds, the angle System Settings does not give you. Every action deep-links to System Settings, which owns the toggles |
+
+### ⚡ Performance
+| Module | What it does |
+|--------|------------|
+| **Optimization** | Manage login items and launch agents with per-item enable/disable |
+| **Maintenance** | System tasks: free RAM, run maintenance scripts, verify the startup disk, rebuild Launch Services, reindex Spotlight, flush DNS, thin Time Machine snapshots. Tasks are tagged by severity, "Run Safe Tasks" is sequential, and the admin password is asked **once** |
+
+### 📦 Applications
+| Module | What it does |
+|--------|------------|
+| **Uninstaller** | A pattern-matching engine that finds every associated file across 17+ Library subdirectories (including apps nested in vendor subfolders). Complete removal, **Reset to Defaults** (wipe an app's caches and preferences while keeping the app), and unused-app detection |
+| **Extensions** | Review third-party preference panes, Internet Plug-Ins, and Safari extensions. User-installed panes and plug-ins can go to the Trash |
+| **Updater** | Checks installed apps for updates via their own Sparkle appcast feeds (reads version info only, sends nothing about you) |
+
+### 🗂️ Files
+| Module | What it does |
+|--------|------------|
+| **Space Lens** | Squarified-treemap visualization of disk usage with drill-down navigation |
+| **Large & Old Files** | Finds files over 50 MB, sorted by size and last access date |
+| **Duplicates** | Progressive detection (size grouping, partial SHA-256, full hash, inode verification), plus a **Consolidate** mode that reclaims space with APFS copy-on-write clones without deleting a single copy |
+| **Shredder** | Secure file erasure with standard, permanent, and secure-overwrite modes |
+
+### 📊 Menu Bar Widget
+
+<p align="center">
+  <img src="assets/menu_bar.png" width="300" alt="Mac Sai menu bar widget" />
+</p>
+
+A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It is an independent process that launches at login and is toggled from the app's sidebar, so you never have to open the main window just to check in.
+
+- **Live stat rings**: CPU load, memory pressure, disk usage, and battery in a 2x2 ring grid (`host_processor_info`, `vm_statistics64`, APFS capacity, IOKit power source), color-graded green to amber to red
+- **Configurable readout**: show free disk, GPU usage, memory usage, or battery temperature; the choice persists, and unavailable sensors show `--`
+- **Network, uptime, and swap**: real-time up/down throughput, system uptime, swap usage
+- **Recommendations**: actionable, dismissible tips ("User caches grew to 2.52 GB, run System Junk"), one tap to act, suppressed for 30 days once dismissed
+- **Protection status**: last malware-scan time and threat count, color-coded by freshness
+- **Connected devices**: external volumes (with free space) and displays at a glance
+- **Health alerts**: throttled, opt-in notifications when the disk runs critically low or memory pressure stays high
+
+### ⌨️ Keyboard shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| **⌘R** | Start a scan in the current module |
+| **⌘K** | Clean the current selection (when results are showing) |
+| **⌘1 to ⌘9** | Jump to the first nine sidebar modules |
+| **⌘,** | Open Settings |
+
+---
 
 ## How Mac Sai compares
 
@@ -59,235 +191,170 @@ Mac Sai is a **free, open-source** macOS app that cleans junk files, removes mal
 | **Telemetry** | ❌ None | ⚠️ Yes | ❌ None | ❌ None | ❌ None | ❌ None |
 | **Native GUI app** | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ CLI (paid GUI separate) |
 | **Smart Scan (one-click)** | ✅ | ✅ | ❌ | ➖ Partial | ❌ | ➖ Interactive CLI |
-| **System Junk (16 categories)** | ✅ | ✅ | ➖ | ✅ | ➖ Limited | ✅ |
+| **System Junk (16+ categories)** | ✅ | ✅ | ➖ | ✅ | ➖ Limited | ✅ |
 | **Universal Binary thinning** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **Malware scanner** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **Browser privacy cleaner** | ✅ | ✅ | ❌ | ❌ | ➖ | ❌ |
-| **Uninstaller with leftover detection** | ✅ 10-level | ✅ | ✅ Focus | ❌ | ❌ | ✅ |
+| **Uninstaller with leftover detection** | ✅ | ✅ | ✅ Focus | ❌ | ❌ | ✅ |
+| **Duplicate finder (+ consolidation)** | ✅ | ➖ | ❌ | ❌ | ❌ | ❌ |
 | **Disk treemap visualizer** | ✅ | ❌ | ❌ | ❌ | ❌ | ➖ Analyzer |
-| **Duplicate finder** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **Menu bar system monitor** | ✅ | ✅ Menu | ❌ | ❌ | ❌ | ❌ |
 | **Maintenance scripts** | ✅ | ✅ | ❌ | ❌ | ✅ Strong | ➖ |
-| **In-app activity log viewer** | ✅ | ❌ | ❌ | ❌ | ❌ | N/A CLI |
 | **Notarized by Apple** | ✅ | ✅ | ✅ | ✅ | ✅ | N/A |
 | **macOS version** | 14+ | 13+ | 13+ | 13+ | varies | varies |
 
-> CleanMyMac is a great product — they deserve the revenue from users who want a polished, supported experience. Mac Sai is for everyone who'd rather have transparent source code and zero subscription.
+> CleanMyMac is a great product, and the people who want a polished, supported experience should happily pay for it. Mac Sai is for everyone who would rather have transparent source code and zero subscription.
 
-## Features
-
-### Cleanup
-| Module | Description |
-|--------|------------|
-| **Smart Scan** | One-click scan combining cleanup, protection, and performance analysis with live progress across 13 modules |
-| **System Junk** | 16 scan categories — user/system caches, logs, language files, broken preferences, broken login items, document versions, iOS backups, Xcode junk, **Universal Binary thinning** (detects fat Mach-O binaries with both arm64 and x86_64 slices and rewrites them to your native arch via `lipo`), deleted users, and more |
-| **Mail Attachments** | Find cached attachments from Apple Mail, Outlook, and Spark |
-| **Trash Bins** | Empty trash from all locations including external drives |
-
-### Protection
-| Module | Description |
-|--------|------------|
-| **Malware Removal** | Signature-based scanning with 3 depths (Quick / Balanced / Deep), checks launch agents/daemons, browser extensions, and known malware patterns |
-| **Privacy** | Clean Safari, Chrome, and Firefox data — history, cookies, cache. System traces cleanup with time filters |
-
-### Performance
-| Module | Description |
-|--------|------------|
-| **Optimization** | Manage login items and launch agents with enable/disable toggles |
-| **Maintenance** | 10 system tasks — free RAM, run maintenance scripts, repair permissions, rebuild Launch Services, reindex Spotlight, flush DNS, thin Time Machine snapshots. Tasks are tagged with severity (safe / disruptive) and "Run All" requires explicit confirmation; long-running tasks can be cancelled mid-flight |
-
-### Applications
-| Module | Description |
-|--------|------------|
-| **Uninstaller** | 10-level app matching engine that finds every associated file across 17+ Library subdirectories. Complete removal, app reset, unused app detection |
-| **Updater** | Check for available updates across installed apps via Sparkle appcast feeds |
-
-### Files
-| Module | Description |
-|--------|------------|
-| **Space Lens** | Squarified treemap visualization of disk usage with drill-down navigation |
-| **Large & Old Files** | Find files >50 MB sorted by size and last access date |
-| **Duplicates** | Progressive detection — size grouping → partial SHA-256 (4KB) → full hash → inode verification |
-| **Shredder** | Secure file erasure with standard, permanent, and secure overwrite modes |
-
-### Menu Bar Widget
-
-<p align="center">
-  <img src="assets/menu_bar.png" width="300" alt="Mac Sai menu bar widget" />
-</p>
-
-A glassmorphism menu bar widget that puts your Mac's vitals one click away — an independent process that launches at login and is toggled from the app's sidebar. No need to open the main window just to check in.
-
-- **Live stat rings** — CPU load, memory pressure, disk usage, and battery in a 2×2 ring grid (`host_processor_info`, `vm_statistics64`, APFS capacity, IOKit power source), color-graded green → amber → red
-- **Configurable menu-bar readout** — choose free disk space, GPU usage, memory usage, or battery temperature; the selection persists, and unavailable sensors display `--`
-- **Network, uptime & swap** — real-time up/down throughput, system uptime, and swap usage
-- **Recommendations** — actionable, dismissible tips ("User caches grew to 2.52 GB — run System Junk") with one-tap actions, suppressed for 30 days once dismissed
-- **Protection status** — last malware-scan time and threat count, color-coded by freshness
-- **Connected devices** — external volumes (with free space) and external displays at a glance
-- **Health alerts** — background notifications when disk runs critically low or memory pressure stays high (throttled, opt-in)
-- **One click to the app** — jump straight into Mac Sai
-
-### Keyboard shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| **⌘R** | Start a scan in the current module |
-| **⌘K** | Clean the current selection (when results are showing) |
-| **⌘1–⌘9** | Jump to the first nine sidebar modules (Smart Scan → …) |
-| **⌘,** | Open Settings |
-
-## Architecture
-
-```
-Mac Sai
-├── MacClean          — Main SwiftUI app (14 modules, 15 views)
-├── MacCleanKit       — Shared framework (models, constants, protocols)
-├── MacCleanHelper    — XPC privileged helper (LaunchDaemon for root ops)
-└── MacCleanMenu      — Menu bar monitor (independent process)
-```
-
-### Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| Language | Swift 6 with strict concurrency |
-| UI | SwiftUI + AppKit hybrid |
-| Concurrency | Actors, TaskGroup, async/await, @Sendable |
-| Database | GRDB.swift (SQLite) with WAL mode |
-| File Scanning | URLResourceKey prefetching on APFS |
-| Incremental Updates | FSEvents with historical replay |
-| Privileged Ops | SMAppService + NSXPCConnection |
-| System Stats | Mach APIs (host_processor_info, vm_statistics64, proc_pidinfo) |
-
-### Safety Model
-
-Mac Sai is designed to **never cause data loss**:
-
-- **Protected paths blocklist** — `/System`, `/usr`, `/bin`, `/sbin`, Apple system apps are untouchable
-- **macOS firmlink canonicalization** — `/var`↔`/private/var`, `/tmp`↔`/private/tmp`, `/etc`↔`/private/etc` resolved to a single canonical form so symlink-redirect detection doesn't false-positive on legitimate system paths
-- **Pre-scan cleanability filter** — items the current process couldn't trash (root-owned children of system caches, macOS data-vaulted dirs under `~/Library/Caches/com.apple.*`) are dropped at scan time so they never reach the UI as cleanable
-- **Trash-first deletion** — all removals go to Trash by default
-- **Dry-run mode** — preview what would be deleted without touching anything
-- **TOCTOU prevention** — symlinks re-resolved immediately before deletion
-- **Chunked cleanup** — large selections (50k+) prompt a confirmation modal; the engine splits the work into 5k-item chunks honoring `Task.isCancelled` between chunks so cancellation is responsive
-- **Cancellable scans** — Smart Scan and Duplicates show a Cancel button while scanning; `ScanCoordinator.cancel()` returns the UI to idle within about a second without orphan tasks
-- **Duplicate consolidation** (reclaim space without deleting): on APFS, redundant copies are replaced with copy-on-write clones of a kept master, so every path keeps working and identical files stop costing N times their size
-- **Recursive byte accounting** — directory size is walked instead of stat'd, so the "X freed" count on the completion screen reflects reality
-- **Orphan safety policy** — orphan cleanup restricted to caches/logs only
-- **In-app activity log viewer** — every error during clean is logged with full path; the post-clean screen has a "View Log" button that opens an in-app sheet with errors-only filter and copy-to-clipboard so you can paste a bug report verbatim. Logs auto-prune after 30 days
-- **Kernel-enforced XPC privilege gate** — the privileged helper uses `NSXPCListener.setCodeSigningRequirement` (macOS 13+) so the kernel itself rejects connections from any process whose code signature doesn't match the main app's identifier and team
+---
 
 ## Installation
 
-### Homebrew (recommended — one command, no warnings)
+### Homebrew (recommended)
 
-Mac Sai is in the official Homebrew cask repository, so no tap is needed:
+Mac Sai is in the official Homebrew cask, so no tap is needed:
 
 ```bash
 brew install --cask mac-sai
 ```
 
-Mac Sai is notarized by Apple, so it launches from Spotlight or Applications with no warnings, no right-clicks, and no commands.
+It is notarized by Apple, so it launches from Spotlight or Applications with no warnings and no extra steps.
 
-> Installed via the old `iliyami/macsai` tap? You can drop it now that Mac Sai is in the official cask: `brew untap iliyami/macsai` (your installed app and future `brew upgrade` are unaffected).
+<details>
+<summary><strong>Other ways to install</strong> (one-line script, DMG, build from source)</summary>
 
-### One-line installer
+<br>
+
+**One-line installer**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/iliyami/MacSai/main/scripts/install.sh | bash
 ```
 
-This downloads the latest DMG and installs the app to `/Applications`.
+Downloads the latest DMG and installs the app to `/Applications`.
 
-### DMG download
+**DMG download**
 
-Download the latest DMG from [Releases](https://github.com/iliyami/MacSai/releases/latest) and drag Mac Sai to your Applications folder. Mac Sai is notarized by Apple, so it launches normally with no Gatekeeper warning and no extra commands.
+Grab the latest DMG from [Releases](https://github.com/iliyami/MacSai/releases/latest) and drag Mac Sai to your Applications folder.
 
-### Build from source
+**Build from source**
 
 ```bash
 git clone https://github.com/iliyami/MacSai.git
 cd MacSai
 swift build
-swift test                     # run 486 tests
-bash scripts/build-dmg.sh      # build local DMG (unsigned)
+swift test                     # run the full 862-test suite
+bash scripts/build-dmg.sh      # build a local DMG (unsigned)
 ```
+
+Requires the Swift 6 toolchain (Xcode 16+).
+
+**Installed via the old tap?**
+
+Mac Sai is in the official cask now, so you can drop the tap: `brew untap iliyami/macsai` (your installed app and future `brew upgrade` are unaffected).
+
+</details>
 
 ### Granting Full Disk Access
 
-Some modules (Mail Attachments, Privacy, Malware) need Full Disk Access to scan protected areas:
+A few modules (Mail Attachments, Privacy, Malware) need Full Disk Access to scan protected areas:
 
-1. Open **System Settings → Privacy & Security → Full Disk Access**
-2. Click **+** and add **Mac Sai.app** from Applications
+1. Open **System Settings, Privacy & Security, Full Disk Access**
+2. Click **+** and add **Mac Sai.app**
 3. Restart Mac Sai
 
 ### Uninstalling
 
-If you installed with Homebrew, remove the app and all of its support files in one command:
+Homebrew install:
 
 ```bash
 brew uninstall --zap --cask mac-sai
 ```
 
-For a DMG or manual install, run the uninstaller (it also handles a Homebrew install):
+DMG or manual install (also handles a Homebrew install):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/iliyami/MacSai/main/scripts/uninstall.sh | bash
 ```
 
-Both remove Mac Sai plus its preferences, caches, logs, and database under `~/Library`. If a leftover entry remains under **System Settings → General → Login Items**, remove it there; macOS clears it once the app is gone.
+Both remove Mac Sai plus its preferences, caches, logs, and database under `~/Library`.
 
-## Signed & notarized: why you can trust it
+---
 
-Mac Sai is code-signed with an Apple **Developer ID** and **notarized by Apple**. That matters more for a cleaning app than for almost anything else you install, because you are about to give it deep access to your files. You deserve to know that what runs on your Mac is genuinely ours and has not been tampered with.
+## Signed, notarized, and yours to trust
 
-Here is what that gives you, enforced by your own Mac and not just promised by us:
+Mac Sai is code-signed with an Apple **Developer ID** and **notarized by Apple**. That matters more for a cleaning app than for almost anything else you install, because you are about to give it deep access to your files, and you deserve to know that what runs on your Mac is genuinely ours and untampered with. All of this is enforced by your own Mac, not just promised by us:
 
-- **Apple has scanned it.** Every release is submitted to Apple and checked for malware before it ships. Notarization is Apple vouching that this exact build came back clean.
-- **It cannot be tampered with.** The signature is a cryptographic seal over every file in the app. If a single byte changes after we sign it, whether from a corrupted download, a network attacker, or malware trying to ride on our name, macOS refuses to open it.
-- **It is provably from us.** The signature is tied to our Apple Developer identity, so no one else can ship something your Mac will accept as Mac Sai.
-- **It just works.** No Gatekeeper warnings, no right-click-to-open, no Terminal commands. Install it and launch it like any app you trust.
+- **Apple has scanned it.** Every release is submitted to Apple and checked for malware before it ships.
+- **It cannot be tampered with.** The signature is a cryptographic seal over every file; change a single byte and macOS refuses to open it.
+- **It is provably from us.** The signature is tied to our Apple Developer identity, so no one else can ship something your Mac accepts as Mac Sai.
+- **It just works.** No Gatekeeper warnings, no right-click-to-open, no Terminal.
 
-Put together with the fact that the entire source is open for you to read, this is a chain of trust you do not have to take on faith: the code is public, we sign every release, Apple verifies it, and your Mac re-checks that seal every single time you open the app.
+Put together with a fully open source, this is a chain of trust you do not take on faith: the code is public, we sign every release, Apple verifies it, and your Mac re-checks the seal every time you open the app.
 
-Maintainers: see [`docs/RELEASING.md`](docs/RELEASING.md) for how releases are built, signed, and notarized.
+### Verify no telemetry yourself
 
-## Requirements
+Do not take our word for it. Both the source and the running process are checkable.
 
-- macOS 14 (Sonoma) or later
-- For building from source: Swift 6 toolchain (Xcode 16+)
+**1. Search the source for networking APIs**
 
-## Project Structure
+```bash
+rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
+```
+
+You should only ever see two network paths, both optional and both read-only:
+
+- `Sources/MacCleanKit/UpdateChecker.swift`: the optional Mac Sai update check (turn it off in Settings)
+- `Sources/MacClean/Modules/Updater/UpdaterModule.swift`: the user-driven check of *other apps'* Sparkle feeds when you open the Updater
+
+There is no analytics, crash reporter, or tracker SDK anywhere in the codebase.
+
+**2. Watch the live process**
+
+```bash
+lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
+```
+
+Expected: no established connections while you are only cleaning locally. Little Snitch or LuLu make the same check visual.
+
+---
+
+## Architecture
 
 ```
-Sources/
-├── MacClean/
-│   ├── App/                    # App entry point, state, content view
-│   ├── Core/
-│   │   ├── Scanner/            # FileTreeScanner, TargetedScanner, ScanCoordinator
-│   │   ├── Cleaner/            # CleaningEngine, SafetyGuard
-│   │   ├── Cache/              # GRDB database layer
-│   │   └── FSMonitor/          # FSEvents incremental watcher
-│   ├── Modules/                # 13 scan modules
-│   │   ├── SystemJunk/         # 16 junk categories
-│   │   ├── Malware/            # Signature scanner + real-time monitor
-│   │   ├── Uninstaller/        # 10-level app matching engine
-│   │   ├── SpaceLens/          # Squarified treemap algorithm
-│   │   ├── Duplicates/         # Progressive hash pipeline
-│   │   └── ...
-│   ├── Views/                  # SwiftUI views (14 module views + shared components)
-│   ├── ViewModels/             # @Observable view models
-│   ├── Services/               # PermissionManager, XPCClient
-│   └── Utilities/              # SuperEllipse shape, extensions
-├── MacCleanKit/                # Shared models, constants, protocols
-├── MacCleanHelper/             # XPC privileged helper (root operations)
-└── MacCleanMenu/               # Menu bar system monitor
-
-Tests/                          # XCTest suite — 486 tests
-├── MacCleanTests/              # app-target tests
-├── MacCleanKitTests/           # framework tests
-└── MacCleanTestSupport/        # fixtures (withTempHome, withFakeApp, …)
+Mac Sai
+├── MacClean          Main SwiftUI app (17 modules)
+├── MacCleanKit       Shared framework (models, constants, protocols)
+├── MacCleanHelper    XPC privileged helper (LaunchDaemon for root ops)
+└── MacCleanMenu      Menu-bar monitor (independent process)
 ```
+
+### Tech stack
+
+| Layer | Technology |
+|-------|-----------|
+| Language | Swift 6 with strict concurrency |
+| UI | SwiftUI + AppKit hybrid |
+| Concurrency | Actors, TaskGroup, async/await, `@Sendable` |
+| Database | GRDB.swift (SQLite) with WAL mode |
+| File scanning | `URLResourceKey` prefetching on APFS |
+| Incremental updates | FSEvents with historical replay |
+| Privileged ops | SMAppService + NSXPCConnection |
+| System stats | Mach APIs (`host_processor_info`, `vm_statistics64`, `proc_pidinfo`) |
+
+### Safety model
+
+Mac Sai is designed to **never cause data loss**:
+
+- **Protected-paths blocklist**: `/System`, `/usr`, `/bin`, `/sbin`, and Apple system apps are untouchable, with macOS firmlinks canonicalized so symlink-redirect detection does not false-positive on legitimate system paths
+- **Pre-scan cleanability filter**: items the current process could not trash (root-owned children of system caches, data-vaulted `~/Library/Caches/com.apple.*` dirs) are dropped at scan time so they never appear as cleanable
+- **Trash-first deletion**: every removal goes to the Trash by default, and a dry-run mode previews without touching anything
+- **TOCTOU prevention**: symlinks are re-resolved immediately before deletion
+- **Excluded Folders**: pick folders in Settings that scans skip entirely, and `SafetyGuard` additionally refuses to delete anything under them
+- **Chunked, cancellable cleanup**: large selections split into 5k-item chunks honoring cancellation between chunks, and scans return to idle within about a second when you hit Cancel
+- **In-app activity log**: every error during a clean is logged with its full path, viewable and copyable from the post-clean screen, auto-pruned after 30 days
+- **Kernel-enforced XPC gate**: the privileged helper uses `NSXPCListener.setCodeSigningRequirement` so the kernel itself rejects any connection whose code signature does not match the app's identifier and team
+
+---
 
 ## Tests
 
@@ -295,112 +362,33 @@ Tests/                          # XCTest suite — 486 tests
 swift test
 ```
 
-XCTest-based suite covering:
+The XCTest suite has **862 tests** and treats `SafetyGuard` and `CleaningEngine` (the death-and-life files) as must-be-perfect: adversarial coverage of symlinks, path traversal, NULL bytes, SIP, protected apps, file-count caps, TOCTOU, and idempotence, plus integration coverage of dry-run / trash / permanent cleaning, the scan state machine, every System Junk category, the treemap math, the uninstaller matching engine, duplicate detection, appcast parsing, and full end-to-end fixture-to-clean cycles. Fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) keep every test off your real home directory.
 
-- **`SafetyGuard`** — 24 adversarial tests (symlinks, traversal, NULL bytes, SIP, protected apps, file caps, idempotence)
-- **`CleaningEngine`** — 9 integration tests (dry-run, trash, permanent, error handling, operation log)
-- **`PlistJunkFilter`** — 9 tests including Apple-system-domain safety contract
-- **`ScanCoordinator`** state machine — scan/cancel/category-filter/include-heavy
-- **`TargetedScanner`** integration — runs against synthetic temp directory fixtures
-- **All 16 system junk categories** — pure target declarations + the filter logic on the procedural ones (`BrokenPreferences`, `BrokenLoginItems`, `UniversalBinaries`, `DeletedUsers`)
-- **`SquarifiedTreemap`** — empty, single, multi-node, area conservation, aspect-ratio properties
-- **`AppMatching`** — all 10 levels of the uninstaller pattern engine
-- **`DuplicateDetection`** — size groups, partial/full hash groups, inode dedup
-- **`MalwareSignatures`** — name patterns + suspicious launch agent payloads
-- **`MaintenanceTask`** — all 10 tasks have descriptions, icons, executable paths
-- **`FileGroup`** — by-size / by-type / by-age grouping
-- **`AppcastParser`** — Sparkle XML parsing
-- **`VolumeInfo`** — usage math, equality
-- **`AppDatabase`** — GRDB cache CRUD, migrations, invalidation
-- **`FSEventMonitor`** — invalidated-path computation
-- **`AppDiscovery`**, **`AppPathFinder`** — smoke tests
-- **End-to-end** — synthetic fixture → scan → results → clean cycle
-
-Test infrastructure (`Tests/MacCleanTestSupport/`) provides `withTempHome`, `withFakeApp`, `withFakePlist`, and other fixture helpers so tests stay deterministic and never touch the user's real home.
-
-Coverage target: **85%+ overall**, **100% on `SafetyGuard` and `CleaningEngine`** (the death-and-life files). See [`docs/TESTING.md`](docs/TESTING.md) for the full roadmap.
-
-## Security
-
-Mac Sai takes security seriously:
-
-- **No telemetry or analytics.** The only network call is an optional update check (one request to the GitHub Releases API), which you can turn off in Settings
-- **No elevated privileges by default** — XPC helper only activated for maintenance tasks
-- **Code signature verification** — XPC helper validates caller identity
-- **Protected paths** — 27+ Apple system apps and all SIP-protected paths are blocklisted
-- **Open source** — every line of code is auditable
-
-### Verify no telemetry yourself
-
-Don't take our word for it — the source and the running process are both checkable.
-
-**1. Search the source for networking APIs**
-
-```bash
-# Network client APIs used by the app (update check + optional Sparkle appcast fetches
-# for the Updater module). There is no analytics, crash reporter, or tracker SDK.
-rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
-```
-
-You should only see networking in:
-
-- `Sources/MacCleanKit/UpdateChecker.swift` — optional Mac Sai update check (Settings → turn off **Automatic update checks**, or never press **Check for Updates**)
-- `Sources/MacClean/Modules/Updater/UpdaterModule.swift` — user-driven scan of *other apps'* Sparkle feeds when you open the Updater module
-
-`URL(string:)` also appears for local deep links (`macclean://…`), System Settings panes, and constant GitHub URLs in `Constants.swift` — those are not outbound telemetry.
-
-**2. Watch the live process**
-
-```bash
-# While Mac Sai is running (and you are not checking for updates / using Updater):
-lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
-```
-
-Expected: **no established connections** from the main app when you are only cleaning locally. If Automatic update checks are on, you may briefly see one HTTPS request to `api.github.com` after launch — disable that toggle in Settings to silence it.
-
-Third-party tools like Little Snitch or LuLu make the same check visual: allowlist nothing for Mac Sai except the optional GitHub Releases call you choose to enable.
-
-### Security Audit Checklist
-
-- [x] No command injection vectors (all Process args are hardcoded constants)
-- [x] No arbitrary file deletion (SafetyGuard validates every path)
-- [x] TOCTOU race condition prevention (symlink re-resolution before delete)
-- [x] File operation caps (10,000 file limit per operation)
-- [x] XPC caller validation (code signature check)
-- [x] No secrets or credentials in source
-- [x] Trash-first policy (recoverable by default)
-- [x] Operation audit log (every action recorded)
+---
 
 ## Contributing
 
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a PR.
+Contributions are very welcome. Read the [Contributing Guidelines](CONTRIBUTING.md), then:
 
-### Quick Start
+1. Fork the repo and create a feature branch
+2. Make your change (one focused change per PR keeps review easy)
+3. Run `swift test`
+4. Open a Pull Request
 
-1. Fork the repo
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`swift test`)
-5. Commit (`git commit -m 'Add amazing feature'`)
-6. Push (`git push origin feature/amazing-feature`)
-7. Open a Pull Request
+There is also an open [feature vote](https://github.com/iliyami/MacSai/issues/55): 👍 the tools you want built next.
 
 ## License
 
-This project is licensed under the **BSD 3-Clause License** — see the [LICENSE](LICENSE) file for details.
-
-This means you can use, modify, and redistribute this code, but you **must**:
-- Include the original copyright notice
-- Include the license text
-- **Not** use the name "Mac Sai" or contributors' names to endorse derived products without permission
+BSD 3-Clause. See [LICENSE](LICENSE). You may use, modify, and redistribute the code, provided you keep the copyright and license text and do not use the "Mac Sai" name or contributors' names to endorse derived products without permission.
 
 ## Acknowledgments
 
 Inspired by the open-source Mac utility community:
-- [Pearcleaner](https://github.com/alienator88/Pearcleaner) — app uninstaller patterns
-- [Mole](https://github.com/tw93/Mole) — cleanup categories
-- [Tencent Lemon Cleaner](https://github.com/Tencent/lemon-cleaner) — modular architecture
-- Squarified Treemap algorithm by Bruls, Huizing & van Wijk (2000)
+
+- [Pearcleaner](https://github.com/alienator88/Pearcleaner): app uninstaller patterns
+- [Mole](https://github.com/tw93/Mole): cleanup categories
+- [Tencent Lemon Cleaner](https://github.com/Tencent/lemon-cleaner): modular architecture
+- Squarified Treemap algorithm by Bruls, Huizing, and van Wijk (2000)
 
 ## Star History
 
@@ -415,12 +403,6 @@ Inspired by the open-source Mac utility community:
 </p>
 
 <p align="center">
-  <em>If Mac Sai saved you from a subscription, a ⭐ helps others find it.</em>
-</p>
-
----
-
-<p align="center">
   <strong>Mac Sai is free software built by the community, for the community.</strong><br>
-  If you find it useful, please star the repo and share it with others.
+  If it saved you from a subscription, a ⭐ helps others find it.
 </p>
