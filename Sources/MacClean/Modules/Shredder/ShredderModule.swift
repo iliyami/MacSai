@@ -23,6 +23,20 @@ public actor SecureEraser {
         case secure     // Overwrite then remove (best effort on SSD)
     }
 
+    private enum EraseError: LocalizedError {
+        case secureEraseDirectory(String)
+
+        var errorDescription: String? {
+            switch self {
+            case .secureEraseDirectory(let path):
+                L10n.tr(
+                    "安全擦除不能用于文件夹：\(path)",
+                    "Secure erase cannot be used on directories: \(path)",
+                    "Безопасное стирание нельзя применять к папкам: \(path)")
+            }
+        }
+    }
+
     public struct EraseResult: Sendable {
         public let erasedCount: Int
         public let totalSize: UInt64
@@ -34,14 +48,21 @@ public actor SecureEraser {
     public init() {}
 
     public func erase(urls: [URL], mode: EraseMode) async -> EraseResult {
+        // Preserve the batch-size safety cap, but let the per-item validation
+        // below identify and skip individual unsafe paths.
         do {
             try safetyGuard.validateDeletion(paths: urls)
+        } catch let error as SafetyGuard.SafetyError {
+            if case .tooManyFiles = error {
+                return EraseResult(
+                    erasedCount: 0,
+                    totalSize: 0,
+                    errors: [("validation", error.localizedDescription)]
+                )
+            }
         } catch {
-            return EraseResult(
-                erasedCount: 0,
-                totalSize: 0,
-                errors: [("validation", error.localizedDescription)]
-            )
+            // validateDeletion currently only throws SafetyError. If that
+            // changes, per-item validation still keeps the batch fail-safe.
         }
 
         var erasedCount = 0
@@ -89,9 +110,11 @@ public actor SecureEraser {
         // but the SSD controller may redirect the write to a new physical block.
         // For true security, recommend FileVault (full-disk encryption).
         let values = try url.resourceValues(forKeys: [.fileSizeKey, .isDirectoryKey, .isSymbolicLinkKey])
-        // Nothing to overwrite for a directory or an empty file: a legitimate
-        // no-op (the caller still trashes/removes them). These must NOT throw.
-        guard values.isDirectory != true else { return }
+        // Refuse directories: returning here would let the caller recursively
+        // remove their contents without overwriting any of the files.
+        guard values.isDirectory != true else {
+            throw EraseError.secureEraseDirectory(url.path(percentEncoded: false))
+        }
         // Never follow a symlink: opening it for writing would zero the TARGET
         // file's contents, not the link. Refuse rather than corrupt the target.
         guard values.isSymbolicLink != true else {

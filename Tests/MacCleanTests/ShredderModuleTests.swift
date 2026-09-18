@@ -6,7 +6,7 @@ import Foundation
 /// Integration tests for the secure shredder. Real files under
 /// `~/Library/Caches/` so they pass SafetyGuard, the module's job is to touch
 /// the filesystem, so mocking would only test stubs.
-final class ShredderModuleTests: XCTestCase {
+final class ShredderModuleTests: EnglishAppLanguageTestCase {
 
     private static func makeTestDir() throws -> URL {
         let dir = MCConstants.userCaches.appending(path: "MacCleanShredTest-\(UUID().uuidString)")
@@ -67,6 +67,47 @@ final class ShredderModuleTests: XCTestCase {
         let contents = try String(contentsOf: target, encoding: .utf8)
         XCTAssertEqual(contents, "important target contents",
                        "the symlink's target must be left untouched")
+    }
+
+    /// Directories must not be deleted under the "secure" label unless every
+    /// contained file was actually overwritten.
+    func testSecureEraseRefusesDirectoryWithoutDeletingContents() async throws {
+        let dir = try Self.makeTestDir()
+        defer { Self.cleanup(dir) }
+
+        let nestedFile = dir.appending(path: "nested.dat")
+        try Data("nested secret".utf8).write(to: nestedFile)
+
+        let result = await SecureEraser().erase(urls: [dir], mode: .secure)
+
+        XCTAssertEqual(result.erasedCount, 0)
+        XCTAssertEqual(result.errors.count, 1)
+        XCTAssertEqual(result.errors.first?.0, dir.path(percentEncoded: false))
+        XCTAssertTrue(
+            result.errors.first?.1.contains("Secure erase cannot be used on directories") == true,
+            "the user must receive a clear explanation")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dir.path(percentEncoded: false)))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: nestedFile.path(percentEncoded: false)))
+    }
+
+    /// A protected path in one selection must not block other safe paths from
+    /// being erased.
+    func testInvalidPathDoesNotAbortRemainingBatch() async throws {
+        let dir = try Self.makeTestDir()
+        defer { Self.cleanup(dir) }
+
+        let safeFile = dir.appending(path: "safe.dat")
+        try Data("erase me".utf8).write(to: safeFile)
+        let protectedPath = URL(filePath: "/System")
+
+        let result = await SecureEraser().erase(
+            urls: [protectedPath, safeFile],
+            mode: .permanent)
+
+        XCTAssertEqual(result.erasedCount, 1)
+        XCTAssertEqual(result.errors.count, 1)
+        XCTAssertEqual(result.errors.first?.0, protectedPath.path(percentEncoded: false))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: safeFile.path(percentEncoded: false)))
     }
 
     /// A normal writable file is securely erased as before (guardrail against
