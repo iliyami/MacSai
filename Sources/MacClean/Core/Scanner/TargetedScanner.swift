@@ -192,6 +192,8 @@ public actor TargetedScanner {
 
     private static func makeFileItem(from url: URL, keys: [URLResourceKey]) -> FileItem? {
         guard let values = try? url.resourceValues(forKeys: Set(keys)) else { return nil }
+        var metadata = stat()
+        guard lstat(url.path(percentEncoded: false), &metadata) == 0 else { return nil }
 
         return FileItem(
             url: url,
@@ -203,7 +205,9 @@ public actor TargetedScanner {
             isPackage: values.isPackage ?? false,
             contentType: values.contentType,
             creationDate: values.creationDate,
-            modificationDate: values.contentModificationDate
+            modificationDate: values.contentModificationDate,
+            inode: UInt64(metadata.st_ino),
+            deviceID: Int32(metadata.st_dev)
         )
     }
 }

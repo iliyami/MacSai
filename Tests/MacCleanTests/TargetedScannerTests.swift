@@ -133,6 +133,33 @@ final class TargetedScannerTests: XCTestCase {
         }
     }
 
+    func testHardLinksDoNotSurviveDuplicateDeduplication() async throws {
+        try await TestFixtures.withTempDir { dir in
+            let original = dir.appending(path: "original.bin")
+            let hardLink = dir.appending(path: "hard-link.bin")
+            try TestFixtures.writeFile(at: original, size: 2048)
+            try FileManager.default.linkItem(at: original, to: hardLink)
+
+            let items = await TargetedScanner().scan(
+                targets: [ScanTarget(path: dir, recursive: false)]
+            )
+            let files = items.filter { !$0.isDirectory }
+
+            guard files.count == 2 else {
+                return XCTFail("scanner must return both hard-link directory entries")
+            }
+            XCTAssertNotEqual(files[0].inode, 0, "scanner must populate filesystem identity")
+            XCTAssertNotEqual(files[0].deviceID, 0, "scanner must populate device identity")
+            XCTAssertEqual(files[0].inode, files[1].inode, "hard links must share an inode")
+            XCTAssertEqual(files[0].deviceID, files[1].deviceID, "hard links must share a device")
+
+            let groups = DuplicateDetection.fullGroupsAndDedupHardLinks(
+                files.map { (key: "same-content", item: $0) }
+            )
+            XCTAssertTrue(groups.isEmpty, "hard links are one allocation, not reclaimable duplicates")
+        }
+    }
+
     // MARK: - Permission denial is surfaced, not swallowed (#1)
 
     /// `~/.Trash` without Full Disk Access reads as "empty" because the
