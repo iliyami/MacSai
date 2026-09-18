@@ -122,10 +122,10 @@ struct ModuleContainerView: View {
                 doneView(summary: completion)
             } else if let cleaning {
                 cleaningView(progress: cleaning)
-            } else if !results.isEmpty {
-                resultsView
             } else if isScanning {
                 scanningView
+            } else if !results.isEmpty {
+                resultsView
             } else if scanComplete {
                 if permissionDenied {
                     permissionDeniedView

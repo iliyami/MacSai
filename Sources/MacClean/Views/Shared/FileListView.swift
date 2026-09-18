@@ -2,6 +2,14 @@ import SwiftUI
 import AppKit
 import MacCleanKit
 
+func fileListResultsSignature(sort: FileListSort, results: [ScanResult]) -> String {
+    sort.rawValue + "#" + results.map {
+        let generation = $0.items.first?.id.uuidString ?? "empty"
+        return "\($0.category.rawValue):\($0.items.count):\(generation)"
+    }
+        .joined(separator: ",")
+}
+
 /// Scan-results list: a sort control over an AppKit-backed table.
 ///
 /// The table is `NSTableView` (see `FileTableView`) because SwiftUI's `List`
@@ -50,7 +58,8 @@ public struct FileListView: View {
             runningBundleIDs = Set(NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier))
         }
         // Rebuild the flattened rows only when something they depend on actually
-        // changes (sort/result counts, selection, expansion, running apps). A
+        // changes (displayed result generation, selection, expansion, running
+        // apps). A
         // sidebar switch changes none of these, so it does no work here.
         .onChange(of: rowsKey, initial: true) { _, _ in
             rows = FileListRows.flatten(
@@ -70,8 +79,8 @@ public struct FileListView: View {
             }.value
         }
         // Re-sort off the main thread whenever the sort or the result set
-        // changes. Keyed on a cheap signature (category + count) so it doesn't
-        // re-run on unrelated renders like selection toggles.
+        // changes. Keyed on a cheap per-category generation signature so
+        // same-count rescans refresh without re-running on selection toggles.
         .task(id: sortSignature) {
             let snapshot = results
             let order = sort
@@ -82,11 +91,19 @@ public struct FileListView: View {
         }
     }
 
-    /// Cheap key for `.task(id:)`: the sort plus each category's item count.
+    /// Cheap key for `.task(id:)`: the sort plus each category's count and the
+    /// first item's scan-unique identity. A rescan constructs fresh FileItems,
+    /// so same-count result sets still start new sorting and ownership tasks.
     /// Computed per render but only O(number of categories).
     private var sortSignature: String {
-        sort.rawValue + "#" + results.map { "\($0.category.rawValue):\($0.items.count)" }
-            .joined(separator: ",")
+        fileListResultsSignature(sort: sort, results: results)
+    }
+
+    /// Use the asynchronously sorted results here, not the incoming results.
+    /// This guarantees the row rebuild happens after `displayResults` receives
+    /// the new scan generation.
+    private var displayedResultsSignature: String {
+        fileListResultsSignature(sort: sort, results: displayResults)
     }
 
     /// Cheap key that changes whenever the flattened rows would differ, used to
@@ -95,7 +112,7 @@ public struct FileListView: View {
     /// sufficient selection key without hashing the whole set. All components are
     /// O(number of categories), never O(number of items).
     private var rowsKey: String {
-        "\(sortSignature)|sel:\(selectedItems.count)|exp:\(expansion.signature)|run:\(appRunningURLs.count)"
+        "\(displayedResultsSignature)|sel:\(selectedItems.count)|exp:\(expansion.signature)|run:\(appRunningURLs.count)"
     }
 
     /// Compact sort control above the list. Defaults to largest-first; lets the

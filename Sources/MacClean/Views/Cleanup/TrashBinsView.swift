@@ -61,6 +61,8 @@ struct TrashBinsView: View {
         scanComplete = false
         permissionDenied = false
         scanProgress = 0
+        results = []
+        selectedItems = []
         Task {
             let scanStart = Date()
 
