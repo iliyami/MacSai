@@ -20,7 +20,7 @@ struct OptimizationView: View {
                     Text(L10n.tr("优化", "Optimization", "Оптимизация"))
                         .font(.system(size: 22, weight: .bold))
                         .foregroundStyle(.primary)
-                    Text(L10n.tr("管理启动项和后台进程", "Manage startup items and background processes", "Управление автозапуском и фоновыми процессами"))
+                    Text(L10n.tr("查看占用 CPU 和内存的应用并强制退出", "See CPU and memory hogs and force-quit them", "Смотрите приложения с высокой нагрузкой и завершайте их"))
                         .font(.system(size: 12))
                         .foregroundStyle(.primary.opacity(0.6))
                 }
@@ -40,17 +40,20 @@ struct OptimizationView: View {
             .padding(.vertical, 16)
 
             Picker(L10n.tr("分区", "Section", "Раздел"), selection: $selectedTab) {
-                Text(L10n.tr("登录项", "Login Items", "Объекты входа")).tag(0)
-                Text(L10n.tr("启动代理", "Launch Agents", "Агенты запуска")).tag(1)
-                Text(L10n.tr("启动守护进程", "Launch Daemons", "Демоны запуска")).tag(2)
-                Text(L10n.tr("文件打开方式", "File Associations", "Связи файлов")).tag(3)
+                Text(L10n.tr("占用资源", "Resource Hogs", "Нагрузка")).tag(0)
+                Text(L10n.tr("登录项", "Login Items", "Объекты входа")).tag(1)
+                Text(L10n.tr("启动代理", "Launch Agents", "Агенты запуска")).tag(2)
+                Text(L10n.tr("启动守护进程", "Launch Daemons", "Демоны запуска")).tag(3)
+                Text(L10n.tr("文件打开方式", "File Associations", "Связи файлов")).tag(4)
             }
             .pickerStyle(.segmented)
             .padding(.horizontal, 24)
             .padding(.bottom, 10)
 
             Group {
-                if selectedTab == 3 {
+                if selectedTab == 0 {
+                    ResourceHogsView()
+                } else if selectedTab == 4 {
                     FileHandlerView()
                 } else if isLoading {
                     VStack(spacing: 12) {
@@ -66,9 +69,9 @@ struct OptimizationView: View {
                 } else {
                     Group {
                         switch selectedTab {
-                        case 0:  itemList(items: loginItems)
-                        case 1:  itemList(items: launchAgents)
-                        case 2:  itemList(items: launchDaemons)
+                        case 1:  itemList(items: loginItems)
+                        case 2:  itemList(items: launchAgents)
+                        case 3:  itemList(items: launchDaemons)
                         default: itemList(items: loginItems)
                         }
                     }
