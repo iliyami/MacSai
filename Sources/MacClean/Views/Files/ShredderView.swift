@@ -29,15 +29,35 @@ struct ShredderView: View {
 
             if let result {
                 VStack(spacing: 16) {
-                    Image(systemName: "checkmark.circle.fill")
+                    Image(systemName: result.errors.isEmpty
+                          ? "checkmark.circle.fill"
+                          : "exclamationmark.triangle.fill")
                         .font(.system(size: 50))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(result.errors.isEmpty ? Color.primary : Color.orange)
                     Text(L10n.tr("已擦除 \(result.erasedCount) 个文件", "\(result.erasedCount) files erased", "\(result.erasedCount) \(L10n.russianPlural(result.erasedCount, one: "файл удалён", few: "файла удалено", many: "файлов удалено"))"))
                         .font(.headline)
                         .foregroundStyle(.primary)
                     Text(FileSizeFormatter.format(result.totalSize))
                         .font(.system(size: 14))
                         .foregroundStyle(.primary.opacity(0.7))
+
+                    if let firstError = result.errors.first?.1 {
+                        Text(firstError)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.primary.opacity(0.75))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                            .textSelection(.enabled)
+
+                        if result.errors.count > 1 {
+                            Text(L10n.tr(
+                                "以及另外 \(result.errors.count - 1) 个错误",
+                                "And \(result.errors.count - 1) more error\(result.errors.count == 2 ? "" : "s")",
+                                "И ещё \(result.errors.count - 1) \(L10n.russianPlural(result.errors.count - 1, one: "ошибка", few: "ошибки", many: "ошибок"))"))
+                                .font(.system(size: 12))
+                                .foregroundStyle(.primary.opacity(0.6))
+                        }
+                    }
 
                     Button(L10n.tr("完成", "Done", "Готово")) {
                         self.result = nil
