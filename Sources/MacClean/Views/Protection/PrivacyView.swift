@@ -54,6 +54,8 @@ struct PrivacyView: View {
         isScanning = true
         scanComplete = false
         scanProgress = 0
+        results = []
+        selectedItems = []
         Task {
             let scanStart = Date()
 
