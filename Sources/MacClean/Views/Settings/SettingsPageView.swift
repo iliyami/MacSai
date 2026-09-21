@@ -54,6 +54,7 @@ struct SettingsPageView: View {
         .frame(maxWidth: 680)
         .frame(maxWidth: .infinity)
         .onAppear {
+            launchAtLogin = loginLauncher.refreshStatus()
             keptLanguages = LanguagePreferences.userKept
             selectable = LanguagePreferences.selectableLanguages()
             excludedFolders = FolderExclusionPreferences.paths
@@ -177,6 +178,18 @@ struct SettingsPageView: View {
 
     // MARK: - General
 
+    private var launchAtLoginBinding: Binding<Bool> {
+        Binding(
+            get: { launchAtLogin },
+            set: { requestedValue in
+                launchAtLogin = requestedValue
+                Task {
+                    launchAtLogin = await loginLauncher.setEnabled(requestedValue)
+                }
+            }
+        )
+    }
+
     private var generalSection: some View {
         Section(L10n.tr("通用", "General", "Основные")) {
             // Toggle flips instantly; the SMAppService round-trip runs in the
@@ -192,15 +205,12 @@ struct SettingsPageView: View {
                 if loginLauncher.isBusy {
                     ProgressView().controlSize(.small)
                 }
-                Toggle(L10n.tr("登录时启动", "Launch at login", "Запускать при входе"), isOn: $launchAtLogin)
+                Toggle(L10n.tr("登录时启动", "Launch at login", "Запускать при входе"), isOn: launchAtLoginBinding)
                     .toggleStyle(.switch)
                     .labelsHidden()
                     .disabled(loginLauncher.isBusy)
             }
             .animation(.easeInOut(duration: 0.18), value: loginLauncher.isBusy)
-            .onChange(of: launchAtLogin) { _, newValue in
-                Task { await loginLauncher.setEnabled(newValue) }
-            }
             if loginLauncher.status == .requiresApproval {
                 Label(L10n.tr("需要在“系统设置 → 通用 → 登录项”中批准", "Needs approval in System Settings → General → Login Items", "Требуется разрешение в разделе «Системные настройки» → «Основные» → «Объекты входа и расширения»"),
                       systemImage: "exclamationmark.triangle.fill")

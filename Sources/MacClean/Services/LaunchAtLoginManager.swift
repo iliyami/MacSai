@@ -26,6 +26,9 @@ public final class LaunchAtLoginManager {
     public static let shared = LaunchAtLoginManager()
 
     public internal(set) var lastError: LaunchAtLoginError?
+    private let statusProvider: @MainActor () -> SMAppService.Status
+    private let registrationUpdater: @Sendable (Bool) -> String?
+    private let busyDuration: Duration
 
     /// True while a register/unregister XPC round-trip is in flight; the
     /// Settings toggle shows a spinner and disables itself instead of
@@ -40,7 +43,29 @@ public final class LaunchAtLoginManager {
     public var isEnabled: Bool { status == .enabled }
 
     private init() {
-        status = SMAppService.mainApp.status
+        statusProvider = { SMAppService.mainApp.status }
+        registrationUpdater = { enabled in
+            do {
+                if enabled { try SMAppService.mainApp.register() }
+                else { try SMAppService.mainApp.unregister() }
+                return nil
+            } catch {
+                return error.localizedDescription
+            }
+        }
+        busyDuration = Self.minimumBusyDuration
+        status = statusProvider()
+    }
+
+    init(
+        statusProvider: @escaping @MainActor () -> SMAppService.Status,
+        registrationUpdater: @escaping @Sendable (Bool) -> String?,
+        minimumBusyDuration: Duration
+    ) {
+        self.statusProvider = statusProvider
+        self.registrationUpdater = registrationUpdater
+        busyDuration = minimumBusyDuration
+        status = statusProvider()
     }
 
     /// Minimum time `isBusy` stays true. The XPC round-trip often finishes
@@ -49,7 +74,14 @@ public final class LaunchAtLoginManager {
     /// feel deliberate.
     static let minimumBusyDuration: Duration = .milliseconds(450)
 
-    public func setEnabled(_ enabled: Bool) async {
+    @discardableResult
+    public func refreshStatus() -> Bool {
+        status = statusProvider()
+        return isEnabled
+    }
+
+    @discardableResult
+    public func setEnabled(_ enabled: Bool) async -> Bool {
         isBusy = true
         let started = ContinuousClock.now
         defer { isBusy = false }
@@ -57,22 +89,17 @@ public final class LaunchAtLoginManager {
         // "toggle lag"), so they run off the main actor. The detached task
         // touches no @MainActor state (issue #58 rule); the result comes
         // back here, on the main actor.
+        let registrationUpdater = registrationUpdater
         let failure: String? = await Task.detached(priority: .userInitiated) {
-            do {
-                if enabled { try SMAppService.mainApp.register() }
-                else { try SMAppService.mainApp.unregister() }
-                return nil
-            } catch {
-                return error.localizedDescription
-            }
+            registrationUpdater(enabled)
         }.value
         lastError = failure.map { .updateFailed(enabling: enabled, message: $0) }
-        status = SMAppService.mainApp.status
         // Pad sub-minimum operations so the spinner doesn't flash for a
         // single frame (see minimumBusyDuration).
         let elapsed = ContinuousClock.now - started
-        if elapsed < Self.minimumBusyDuration {
-            try? await Task.sleep(for: Self.minimumBusyDuration - elapsed)
+        if elapsed < busyDuration {
+            try? await Task.sleep(for: busyDuration - elapsed)
         }
+        return refreshStatus()
     }
 }
