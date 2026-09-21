@@ -4,11 +4,16 @@ import Foundation
 
 final class DuplicateDetectionTests: XCTestCase {
 
-    private func makeFile(_ name: String, size: UInt64, inode: UInt64 = 0) -> FileItem {
+    private func makeFile(
+        _ name: String,
+        size: UInt64,
+        inode: UInt64 = 0,
+        deviceID: Int32 = 0
+    ) -> FileItem {
         FileItem(
             url: URL(filePath: "/tmp/\(name)"),
             name: name, size: size, allocatedSize: size,
-            isDirectory: false, inode: inode
+            isDirectory: false, inode: inode, deviceID: deviceID
         )
     }
 
@@ -77,6 +82,13 @@ final class DuplicateDetectionTests: XCTestCase {
         let b = makeFile("b", size: 100, inode: 0)
         let result = DuplicateDetection.dedupHardLinks([a, b])
         XCTAssertEqual(result.count, 2, "inode == 0 means 'unknown' and should always be kept")
+    }
+
+    func testDedupHardLinksKeepsMatchingInodesFromDifferentDevices() {
+        let a = makeFile("a", size: 100, inode: 42, deviceID: 1)
+        let b = makeFile("b", size: 100, inode: 42, deviceID: 2)
+        let result = DuplicateDetection.dedupHardLinks([a, b])
+        XCTAssertEqual(result.count, 2, "inode identity is only unique within one device")
     }
 
     // MARK: - extractDeletableDuplicates

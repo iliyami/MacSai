@@ -8,6 +8,11 @@ import Foundation
 /// so they can be unit-tested without disk I/O.
 public enum DuplicateDetection {
 
+    private struct FileIdentity: Hashable {
+        let deviceID: Int32
+        let inode: UInt64
+    }
+
     /// Files larger than this are skipped to avoid hour-long hashes.
     public static let maxHashableFileSize: UInt64 = 500 * 1024 * 1024
 
@@ -45,13 +50,14 @@ public enum DuplicateDetection {
             .filter { $0.count > 1 }
     }
 
-    /// Stage 4 (in isolation): drop files that share an inode with one already
-    /// kept. Files with `inode == 0` are treated as unknown and always kept.
+    /// Stage 4 (in isolation): drop files that share a device and inode with
+    /// one already kept. Files with `inode == 0` are treated as unknown and
+    /// always kept.
     public static func dedupHardLinks(_ group: [FileItem]) -> [FileItem] {
-        var seen: Set<UInt64> = []
+        var seen: Set<FileIdentity> = []
         return group.filter { item in
             if item.inode == 0 { return true }
-            return seen.insert(item.inode).inserted
+            return seen.insert(FileIdentity(deviceID: item.deviceID, inode: item.inode)).inserted
         }
     }
 
