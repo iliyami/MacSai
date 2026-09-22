@@ -141,6 +141,21 @@ struct ResourceHogsView: View {
             showStatus = true
             return
         }
+        // Guard against PID reuse: the row was captured from an earlier
+        // snapshot. Re-resolve the live process and confirm it is still the
+        // same app (and still quittable) before terminating, so a recycled PID
+        // can never take down a different app.
+        guard let live = NSRunningApplication(processIdentifier: row.snapshot.pid),
+              live.bundleIdentifier == row.snapshot.bundleIdentifier,
+              ResourceHogsPolicy.canQuit(bundleIdentifier: live.bundleIdentifier) else {
+            statusMessage = L10n.tr(
+                "该进程已不再运行。",
+                "That process is no longer running.",
+                "Этот процесс больше не запущен."
+            )
+            showStatus = true
+            return
+        }
         monitor.forceQuit(pid: row.snapshot.pid)
         Task { await refresh() }
     }

@@ -192,8 +192,13 @@ public actor TargetedScanner {
 
     private static func makeFileItem(from url: URL, keys: [URLResourceKey]) -> FileItem? {
         guard let values = try? url.resourceValues(forKeys: Set(keys)) else { return nil }
+        // (st_dev, st_ino) let DuplicateDetection collapse hard links. If lstat
+        // fails (transient permission/race), keep the file with inode/deviceID 0
+        // rather than dropping it from the scan: 0 is treated as "unknown, never
+        // a hard-link match", so the file still shows up for the six non-dedup
+        // modules and is simply never collapsed as a duplicate.
         var metadata = stat()
-        guard lstat(url.path(percentEncoded: false), &metadata) == 0 else { return nil }
+        let hasIdentity = lstat(url.path(percentEncoded: false), &metadata) == 0
 
         return FileItem(
             url: url,
@@ -206,8 +211,8 @@ public actor TargetedScanner {
             contentType: values.contentType,
             creationDate: values.creationDate,
             modificationDate: values.contentModificationDate,
-            inode: UInt64(metadata.st_ino),
-            deviceID: Int32(metadata.st_dev)
+            inode: hasIdentity ? UInt64(metadata.st_ino) : 0,
+            deviceID: hasIdentity ? Int32(metadata.st_dev) : 0
         )
     }
 }
