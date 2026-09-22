@@ -70,6 +70,7 @@ struct UninstallerView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .labelsHidden()
                     .frame(width: 240)
                 }
                 .padding(.horizontal, 24)

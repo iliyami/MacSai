@@ -47,6 +47,7 @@ struct OptimizationView: View {
                 Text(L10n.tr("文件打开方式", "File Associations", "Связи файлов")).tag(4)
             }
             .pickerStyle(.segmented)
+            .labelsHidden()
             .padding(.horizontal, 24)
             .padding(.bottom, 10)
 
