@@ -25,6 +25,7 @@ struct ResourceHogsView: View {
                     Text(L10n.tr("内存", "Memory", "Память")).tag(ResourceHogsPolicy.SortKey.memory)
                 }
                 .pickerStyle(.segmented)
+                .labelsHidden()
                 .frame(maxWidth: 220)
 
                 Spacer()

@@ -58,10 +58,20 @@ public struct SuperEllipseButtonStyle: ButtonStyle {
     }
 
     public func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.system(size: size.height > 60 ? 18 : 14, weight: .semibold))
+        // Hug the label with `size` as a *minimum* rather than a fixed frame:
+        // a fixed width truncates longer localized labels (e.g. Russian "Run
+        // Safe Tasks" / "Check for Updates" / "Scan" overflow the English-sized
+        // pills). Short labels still render at the design width; longer ones
+        // grow instead of clipping. The large square scan buttons keep their
+        // shape because their content is narrower than the 160pt minimum.
+        let isPill = size.height <= 60
+        return configuration.label
+            .font(.system(size: isPill ? 14 : 18, weight: .semibold))
             .foregroundStyle(.white)
-            .frame(width: size.width, height: size.height)
+            .lineLimit(1)
+            .fixedSize(horizontal: true, vertical: false)
+            .padding(.horizontal, isPill ? 16 : 0)
+            .frame(minWidth: size.width, minHeight: size.height)
             .background {
                 ZStack {
                     gradient
