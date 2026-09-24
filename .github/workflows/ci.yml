@@ -25,6 +25,9 @@ jobs:
       - name: Build
         run: swift build
 
+      - name: Verify network surface (inspect the built binary)
+        run: bash scripts/check-network-surface.sh
+
       - name: Run Tests (XCTest with code coverage)
         run: swift test --enable-code-coverage
 

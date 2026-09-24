@@ -23,6 +23,10 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             src.contains("lsof") || src.contains("URLSession"),
             "\(fileName) telemetry section must include a copy-pasteable verification command"
         )
+        XCTAssertTrue(
+            src.contains("nm -u"),
+            "\(fileName) must include the binary-inspection step (nm -u) so verification covers the shipped artifact, not just the source"
+        )
     }
 
     func testEnglishReadmeHasVerifyNoTelemetrySection() throws {

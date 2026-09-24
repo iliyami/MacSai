@@ -316,6 +316,24 @@ lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
 
 Expected: no established connections while you are only cleaning locally. Little Snitch or LuLu make the same check visual.
 
+**3. Inspect the binary you actually installed**
+
+The source and the signed binary are different artifacts, so the strongest check runs against the app on your disk, not this repo. After `brew install --cask mac-sai`:
+
+```bash
+APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
+
+# Networking classes the binary imports (only URLSession appears):
+nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
+
+# Every URL compiled into the binary (only the two update endpoints are fetched):
+strings -a "$APP" | grep -iE 'https?://' | sort -u
+```
+
+Expected: the only networking class is `_OBJC_CLASS_$_NSURLSession`, and the only fetch endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest` and `formulae.brew.sh/api/cask/mac-sai.json`. The other `github.com/iliyami/MacSai` links just open in your browser. No trackers, no analytics hosts, nothing else. Re-run it after any update; it always describes the exact build you are running.
+
+Note: on a non-sandboxed Developer ID app like this one, network access is not gated by an entitlement, so this symbol and string inspection, not `codesign --entitlements`, is the real check. The same guard runs in CI on every change ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
+
 ---
 
 ## Architecture

@@ -316,6 +316,24 @@ lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
 
 预期：仅做本地清理时没有已建立的连接。Little Snitch 或 LuLu 可做同样的可视化检查。
 
+**3. 检查你实际安装的二进制文件**
+
+源代码和签名后的二进制文件是两个不同的产物，因此最有力的检查是针对你磁盘上的应用，而不是这个仓库。执行 `brew install --cask mac-sai` 之后：
+
+```bash
+APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
+
+# 二进制文件导入的网络类（只会出现 URLSession）：
+nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
+
+# 编译进二进制文件的所有 URL（只有两个更新端点会被请求）：
+strings -a "$APP" | grep -iE 'https?://' | sort -u
+```
+
+预期：唯一的网络类是 `_OBJC_CLASS_$_NSURLSession`，唯一会被请求的端点是 `api.github.com/repos/iliyami/MacSai/releases/latest` 和 `formulae.brew.sh/api/cask/mac-sai.json`。其余的 `github.com/iliyami/MacSai` 链接只会在浏览器中打开。没有任何跟踪器或分析域名，也没有其他东西。更新后可以再次运行，它始终反映你正在运行的确切构建。
+
+注意：对于本应用这样未启用沙盒的 Developer ID 应用，网络访问不受 entitlement 限制，因此真正的检查是这种符号和字符串检查，而不是 `codesign --entitlements`。同样的守卫会在每次改动时于 CI 中运行（[`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)）。
+
 ---
 
 ## 架构
