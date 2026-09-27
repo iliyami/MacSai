@@ -111,6 +111,77 @@ public actor FileTreeScanner {
         return rootNode
     }
 
+    /// Sizes only the immediate children of `root`, aggregating each directory's
+    /// whole subtree into a single running total instead of allocating a
+    /// `FileNode` per file. Space Lens renders only the top-level children, so
+    /// this is all it needs, and it keeps memory flat on huge folders where the
+    /// per-file tree in `scanWithSizeAggregation` would swap and appear to hang
+    /// (issue #184). `onProgress` reports the number of items scanned so far so
+    /// the UI can show real movement instead of a fixed 50%.
+    public func topLevelSizes(
+        root: URL,
+        onProgress: (@Sendable (Int) -> Void)? = nil
+    ) async -> [FileNode] {
+        let fm = FileManager.default
+        guard let children = try? fm.contentsOfDirectory(
+            at: root,
+            includingPropertiesForKeys: [.isDirectoryKey, .nameKey, .fileAllocatedSizeKey],
+            options: []
+        ) else {
+            return []
+        }
+
+        var nodes: [FileNode] = []
+        var scanned = 0
+
+        for child in children.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            if Task.isCancelled { break }
+
+            let values = try? child.resourceValues(
+                forKeys: [.isDirectoryKey, .nameKey, .fileAllocatedSizeKey])
+            let isDir = values?.isDirectory ?? false
+            let name = values?.name ?? child.lastPathComponent
+            let ext = (name as NSString).pathExtension.lowercased()
+            var total = UInt64(values?.fileAllocatedSize ?? 0)
+
+            if isDir, let enumerator = fm.enumerator(
+                at: child,
+                includingPropertiesForKeys: [.fileAllocatedSizeKey],
+                options: [.skipsPackageDescendants]
+            ) {
+                // Accumulate allocated size only. Reading `fileAllocatedSize` is
+                // metadata, so dataless iCloud files are counted at their local
+                // footprint without triggering a download.
+                while let obj = enumerator.nextObject() {
+                    if Task.isCancelled { break }
+                    scanned += 1
+                    if scanned % 2000 == 0 {
+                        onProgress?(scanned)
+                        await Task.yield()
+                    }
+                    guard let url = obj as? URL,
+                          let v = try? url.resourceValues(forKeys: [.fileAllocatedSizeKey])
+                    else { continue }
+                    total += UInt64(v.fileAllocatedSize ?? 0)
+                }
+            } else {
+                scanned += 1
+            }
+
+            onProgress?(scanned)
+            nodes.append(FileNode(
+                url: child,
+                name: name,
+                size: total,
+                isDirectory: isDir,
+                fileExtension: ext
+            ))
+            await Task.yield()
+        }
+
+        return nodes
+    }
+
     private static func makeFileItem(from url: URL, keys: Set<URLResourceKey>) -> FileItem? {
         guard let values = try? url.resourceValues(forKeys: keys) else { return nil }
 

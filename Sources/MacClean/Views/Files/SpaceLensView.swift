@@ -1,5 +1,14 @@
 import SwiftUI
+import Combine
 import MacCleanKit
+
+/// Live item counter for the Space Lens scan, so the UI can show real movement
+/// instead of a fixed 50%. Kept as a MainActor reference type (Sendable) so the
+/// scanner's `@Sendable` progress callback can update it safely.
+@MainActor
+private final class SpaceLensScanProgress: ObservableObject {
+    @Published var itemsScanned = 0
+}
 
 struct SpaceLensView: View {
     @State private var rootNode: FileNode?
@@ -8,6 +17,7 @@ struct SpaceLensView: View {
     @State private var scanTask: Task<Void, Never>?
     @State private var nav = SpaceLensNavigation(root: MCConstants.home)
     @State private var selectedVolume: URL = URL(filePath: "/")
+    @StateObject private var scanProgress = SpaceLensScanProgress()
 
     private let scanner = FileTreeScanner()
 
@@ -100,15 +110,31 @@ struct SpaceLensView: View {
     private var content: some View {
         if isScanning {
             Spacer()
-            ScanProgressRing(progress: 0.5, phase: L10n.tr("正在扫描磁盘...", "Scanning disk...", "Сканирование диска..."), theme: .files)
-            Button(L10n.tr("取消", "Cancel", "Отмена")) {
-                scanTask?.cancel()
-                nav.cancelPendingNavigation()
-                isScanning = false
+            VStack(spacing: 14) {
+                ProgressView()
+                    .controlSize(.large)
+                    .tint(.primary)
+                Text(L10n.tr("正在扫描磁盘…", "Scanning disk…", "Сканирование диска…"))
+                    .font(.system(size: 14))
+                    .foregroundStyle(.primary.opacity(0.7))
+                if scanProgress.itemsScanned > 0 {
+                    Text(L10n.tr(
+                        "已扫描 \(scanProgress.itemsScanned.formatted()) 个项目",
+                        "\(scanProgress.itemsScanned.formatted()) items scanned",
+                        "Просканировано: \(scanProgress.itemsScanned.formatted())"
+                    ))
+                    .font(.system(size: 12).monospacedDigit())
+                    .foregroundStyle(.secondary)
+                }
+                Button(L10n.tr("取消", "Cancel", "Отмена")) {
+                    scanTask?.cancel()
+                    nav.cancelPendingNavigation()
+                    isScanning = false
+                }
+                .buttonStyle(.bordered)
+                .tint(.primary)
+                .controlSize(.large)
             }
-            .buttonStyle(.bordered)
-            .tint(.primary)
-            .controlSize(.large)
             Spacer()
         } else if !treemapRects.isEmpty {
             GeometryReader { geo in
@@ -216,12 +242,22 @@ struct SpaceLensView: View {
     private func startScan() {
         scanTask?.cancel()
         isScanning = true
+        scanProgress.itemsScanned = 0
+        let root = nav.current
+        let progress = scanProgress
         scanTask = Task {
-            let node = await scanner.scanWithSizeAggregation(root: nav.current)
+            // Size only the immediate children (all the treemap shows), each
+            // aggregated into one running total. Flat memory, so a full home
+            // folder can no longer swap and appear to hang (issue #184).
+            let children = await scanner.topLevelSizes(root: root) { count in
+                Task { @MainActor in progress.itemsScanned = count }
+            }
             guard !Task.isCancelled else { return }
-            rootNode = node
 
-            let treemapNodes = node.children
+            let total = children.reduce(UInt64(0)) { $0 + $1.totalSize }
+            rootNode = FileNode(url: root, name: root.lastPathComponent, size: total, isDirectory: true)
+
+            let treemapNodes = children
                 .sorted { $0.totalSize > $1.totalSize }
                 .prefix(50)
                 .map { child in
