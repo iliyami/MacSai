@@ -150,4 +150,39 @@ final class LocalizationTests: AppLanguageTestCase {
         XCTAssertEqual(FileGroup.ageLabel(days: 400), "Более 1 года")
         XCTAssertEqual(FileListSort.sizeDescending.label, "Сначала крупные")
     }
+
+    func testTraditionalChineseSelectionAndRegionalIdentifiers() {
+        XCTAssertTrue(AppLanguage.allCases.contains(.zhHant))
+        XCTAssertEqual(AppLanguage.zhHant.pickerLabel, "繁體中文")
+        XCTAssertEqual(AppLanguage.zhHant.localeIdentifier, "zh-Hant")
+        // Traditional: Hant script or Taiwan/Hong Kong/Macau regions.
+        for id in ["zh-Hant", "zh-TW", "zh_HK", "zh-Hant-TW", "ZH-Hant", "zh-MO"] {
+            XCTAssertEqual(AppLanguage.preferredLanguage(for: id), .zhHant, id)
+        }
+        // Simplified stays Simplified.
+        for id in ["zh", "zh-Hans", "zh-CN", "zh_CN"] {
+            XCTAssertEqual(AppLanguage.preferredLanguage(for: id), .zhHans, id)
+        }
+    }
+
+    func testTraditionalChineseUsesEveryOverloadWithTaiwanVocabulary() {
+        AppLanguage.current = .zhHant
+        XCTAssertEqual(L10n.tr("智能扫描", "Smart Scan"), "智慧掃描")               // two-arg
+        XCTAssertEqual(L10n.tr("优化", "Optimization", "Оптимизация"), "最佳化")     // three-arg
+        XCTAssertEqual(L10n.tr("重复文件"), "重複檔案")                              // one-arg
+    }
+
+    func testTraditionalChineseFallsBackToSimplifiedWhenUntranslated() {
+        AppLanguage.current = .zhHant
+        // A key with no Traditional entry returns the Simplified source, which is
+        // still readable Chinese, rather than English.
+        XCTAssertEqual(L10n.tr("未翻译的新字符串", "Brand new"), "未翻译的新字符串")
+        XCTAssertEqual(L10n.tr("未翻译的新字符串"), "未翻译的新字符串")
+    }
+
+    func testTraditionalChineseLanguageResourcesCannotBeOfferedForCleanup() {
+        for folder in ["zh-Hant.lproj", "zh_TW.lproj", "Traditional Chinese.lproj"] {
+            XCTAssertTrue(LanguagePreferences.alwaysKept.contains(folder), folder)
+        }
+    }
 }

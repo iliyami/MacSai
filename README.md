@@ -209,7 +209,7 @@ A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It i
 
 ## Interface languages
 
-Choose System, Deutsch, Русский, 简体中文, or English in Settings → Interface Language. German v1 translates static interface strings; interpolated messages retain the English wording and plural rules for now. The main window and menu-bar widget share the language preference.
+Choose System, Deutsch, Русский, 简体中文, 繁體中文, or English in Settings → Interface Language. German and Traditional Chinese translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
 
 ## Installation
 
