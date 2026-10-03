@@ -1,6 +1,6 @@
 import Foundation
 
-/// The compact value shown next to the Mac Sai menu-bar icon.
+/// The compact value shown next to the Mac Sai menu-bar icon, or none at all.
 ///
 /// Raw values are persisted in the shared defaults suite, so they must remain
 /// stable across releases.
@@ -9,6 +9,7 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
     case gpuUsage = "gpuUsage"
     case memoryUsage = "memoryUsage"
     case batteryTemperature = "temperature"
+    case iconOnly = "iconOnly"
 
     public static let defaultsKey = "menuBarMetric"
     public static let fallback: MenuBarMetric = .diskFree
@@ -29,16 +30,19 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
             L10n.tr("内存使用率", "Memory usage")
         case .batteryTemperature:
             L10n.tr("电池温度", "Battery temperature")
+        case .iconOnly:
+            L10n.tr("仅显示图标", "Icon only")
         }
     }
 
     /// Formats the selected value without silently substituting another metric.
+    /// `nil` means the menu bar shows the icon alone.
     public func formattedValue(
         diskFree: UInt64,
         gpuUsage: Double?,
         memoryUsage: Double,
         batteryTemperature: Double?
-    ) -> String {
+    ) -> String? {
         switch self {
         case .diskFree:
             FileSizeFormatter.format(diskFree)
@@ -48,6 +52,8 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
             Self.formattedPercent(prefix: "RAM", value: memoryUsage)
         case .batteryTemperature:
             Self.formattedTemperature(batteryTemperature)
+        case .iconOnly:
+            nil
         }
     }
 

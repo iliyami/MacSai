@@ -76,15 +76,16 @@ struct MacCleanMenuApp: App {
                 Image(nsImage: Self.labelIcon)
                     .renderingMode(.template)
                     .foregroundStyle(.primary)
-                if let stats = model.stats {
-                    Text(MenuBarMetric.resolve(menuBarMetricRaw).formattedValue(
-                        diskFree: stats.diskFree,
-                        gpuUsage: stats.gpuUsage,
-                        memoryUsage: stats.memoryTotal > 0
-                            ? Double(stats.memoryUsed) / Double(stats.memoryTotal)
-                            : 0,
-                        batteryTemperature: stats.batteryTemperature
-                    ))
+                if let stats = model.stats,
+                   let value = MenuBarMetric.resolve(menuBarMetricRaw).formattedValue(
+                       diskFree: stats.diskFree,
+                       gpuUsage: stats.gpuUsage,
+                       memoryUsage: stats.memoryTotal > 0
+                           ? Double(stats.memoryUsed) / Double(stats.memoryTotal)
+                           : 0,
+                       batteryTemperature: stats.batteryTemperature
+                   ) {
+                    Text(value)
                         .font(.system(size: 11, weight: .medium, design: .monospaced))
                 }
             }
