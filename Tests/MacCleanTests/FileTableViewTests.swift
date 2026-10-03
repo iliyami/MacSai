@@ -93,6 +93,22 @@ final class FileTableViewTests: XCTestCase {
         XCTAssertEqual(headerCell?.toolTip, ScanCategory.userCaches.tooltip)
     }
 
+    /// The review screen must say why a category is safe to clean (#180), not
+    /// just what it contains: the header carries a badge with that rationale.
+    func testHeaderCellShowsTheSafetyRationaleBadge() {
+        let coordinator = FileTableView.Coordinator()
+        coordinator.rows = makeRows(2)
+        let table = makeTable(coordinator: coordinator)
+        table.reloadData()
+
+        let headerCell = table.view(atColumn: 0, row: 0, makeIfNecessary: true)
+        let badge = headerCell?.subviews
+            .compactMap { $0 as? NSButton }
+            .first { $0.toolTip?.contains(ScanCategory.userCaches.safetyRationale) == true }
+        XCTAssertNotNil(badge, "header must expose the category's safety rationale")
+        XCTAssertEqual(badge?.accessibilityLabel(), ScanCategory.CleanupSafety.regenerates.label)
+    }
+
     func testRowHeightsAreFixedPerKind() {
         let coordinator = FileTableView.Coordinator()
         coordinator.rows = makeRows(2)
