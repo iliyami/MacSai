@@ -128,6 +128,24 @@ final class CleanFilterTests: XCTestCase {
         XCTAssertEqual(filtered[0].items.map(\.name), ["junk.cache"])
     }
 
+    func testFilteringUncleanableDropsDirectoriesThatContainAnExcludedFolder() throws {
+        // A recursive scan emits the parent directory as its own item; Clean
+        // would trash it whole, excluded subfolder included.
+        let parent = tmpRoot.appending(path: "com.example.app")
+        let excludedRoot = parent.appending(path: "offline")
+        try FileManager.default.createDirectory(at: excludedRoot, withIntermediateDirectories: true)
+        let sibling = parent.appending(path: "junk.cache")
+        FileManager.default.createFile(atPath: sibling.path, contents: Data([1]))
+
+        let parentItem = FileItem(url: parent, name: "com.example.app", size: 0, allocatedSize: 0, isDirectory: true)
+        let siblingItem = FileItem(url: sibling, name: "junk.cache", size: 1, allocatedSize: 1, isDirectory: false)
+        let input = [ScanResult(category: .userCaches, items: [parentItem, siblingItem])]
+
+        let filtered = input.filteringUncleanable(excludedFolders: [excludedRoot.path])
+        XCTAssertEqual(filtered[0].items.map(\.name), ["junk.cache"],
+                       "The parent folder must be dropped; its other contents stay cleanable")
+    }
+
     // MARK: Selected-size estimate (must match what Clean actually frees)
 
     func testSelectedSizeCountsEachURLOnce() {

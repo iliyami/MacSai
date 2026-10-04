@@ -269,6 +269,17 @@ final class SafetyGuardTests: XCTestCase {
         }
     }
 
+    func testDirectoryContainingUserExcludedFolderIsRefused() {
+        let parent = "/Users/tester/Library/Caches/com.example"
+        let excluded = "\(parent)/offline"
+        let dir = URL(filePath: parent, directoryHint: .isDirectory)
+        XCTAssertThrowsError(try sg.validatePath(dir, excludedFolders: [excluded])) {
+            guard case SafetyGuard.SafetyError.userExcluded = $0 else {
+                return XCTFail("Expected userExcluded, got \($0)")
+            }
+        }
+    }
+
     func testPathOutsideExcludedFoldersStillValidates() {
         let url = MCConstants.userCaches.appending(path: "ok.cache")
         XCTAssertNoThrow(
