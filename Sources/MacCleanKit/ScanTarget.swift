@@ -17,6 +17,10 @@ public struct ScanTarget: Sendable, Equatable {
     /// so a content-oriented scan (e.g. the duplicate finder) should stay out
     /// of them. Off by default to preserve existing modules' behavior.
     public let skipHiddenDirectories: Bool
+    /// Subtrees the scanner skips entirely (matched by path, not by name).
+    /// Used when a more specific category owns a folder that sits under this
+    /// target's root.
+    public let excludedPaths: [URL]
 
     public init(
         path: URL,
@@ -27,7 +31,8 @@ public struct ScanTarget: Sendable, Equatable {
         maxAge: TimeInterval? = nil,
         minSize: UInt64? = nil,
         excludePatterns: [String] = [],
-        skipHiddenDirectories: Bool = false
+        skipHiddenDirectories: Bool = false,
+        excludedPaths: [URL] = []
     ) {
         self.path = path
         self.recursive = recursive
@@ -39,6 +44,15 @@ public struct ScanTarget: Sendable, Equatable {
         self.minSize = minSize
         self.excludePatterns = excludePatterns
         self.skipHiddenDirectories = skipHiddenDirectories
+        self.excludedPaths = excludedPaths
+    }
+
+    /// True if `url` is one of `excludedPaths` or lies inside one.
+    public func isExcludedPath(_ url: URL) -> Bool {
+        let path = url.path(percentEncoded: false)
+        return excludedPaths.contains {
+            PathExclusion.isInside(path, root: $0.path(percentEncoded: false))
+        }
     }
 
     /// True if `url`'s last path component is dot-prefixed (hidden on Unix).

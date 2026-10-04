@@ -114,6 +114,12 @@ public actor TargetedScanner {
                     continue
                 }
 
+                // Owned by a more specific category? Prune the whole subtree.
+                if target.isExcludedPath(fileURL) {
+                    enumerator.skipDescendants()
+                    continue
+                }
+
                 // Excluded by name? Prune the whole subtree if it's a directory
                 // (e.g. com.spotify.client/* — deleting Spotify's cache wipes
                 // the user's offline music) and skip the item itself.
@@ -138,6 +144,7 @@ public actor TargetedScanner {
 
             for fileURL in contents {
                 if Task.isCancelled { break }
+                if target.isExcludedPath(fileURL) { continue }
                 if matchesTarget(url: fileURL, target: target),
                    let item = makeFileItem(from: fileURL, keys: keys) {
                     results.append(item)
