@@ -155,33 +155,12 @@ public final class AutoStartManager: @unchecked Sendable {
         return parseOsascriptLoginItems(output)
     }
 
-    /// Parse AppleScript output like:
-    ///   name:com.example.app, path:/Applications/Example.app, hidden:false
+    /// Maps the System Events records (see `LoginItemsOutput`) to rows.
     private func parseOsascriptLoginItems(_ output: String) -> [AutoStartItem] {
         var items: [AutoStartItem] = []
-        for line in output.components(separatedBy: .newlines) {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            guard !trimmed.isEmpty else { continue }
-
-            // Parse key:value pairs separated by commas
-            var name: String?
-            var path: String?
-            var hidden = false
-
-            for pair in trimmed.components(separatedBy: ", ") {
-                let kv = pair.split(separator: ":", maxSplits: 1).map(String.init)
-                guard kv.count == 2 else { continue }
-                let key = kv[0].trimmingCharacters(in: .whitespaces)
-                let val = kv[1].trimmingCharacters(in: .whitespaces)
-                switch key {
-                case "name": name = val
-                case "path": path = val
-                case "hidden": hidden = (val.lowercased() == "true")
-                default: break
-                }
-            }
-
-            guard let bundleId = name, !bundleId.isEmpty else { continue }
+        for record in LoginItemsOutput.parse(output) {
+            let bundleId = record.name
+            let path = record.path
 
             let displayName: String
             let resolvedPath: String?
