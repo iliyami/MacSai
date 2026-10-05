@@ -1,7 +1,6 @@
 import Foundation
 import IOKit
 import IOKit.ps
-import MacCleanKit
 
 public actor SystemStatsCollector {
     public struct SystemStats: Sendable {

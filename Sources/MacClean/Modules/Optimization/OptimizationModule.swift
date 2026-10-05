@@ -460,6 +460,8 @@ public final class ProcessMonitor: @unchecked Sendable {
         public let name: String
         public let cpuUsage: Double
         public let memoryBytes: UInt64
+        public let networkBytesIn: UInt64
+        public let networkBytesOut: UInt64
         public let isResponsive: Bool
     }
 
@@ -473,6 +475,8 @@ public final class ProcessMonitor: @unchecked Sendable {
                 name: name,
                 cpuUsage: 0,
                 memoryBytes: 0,
+                networkBytesIn: 0,
+                networkBytesOut: 0,
                 isResponsive: !app.isTerminated
             )
         }

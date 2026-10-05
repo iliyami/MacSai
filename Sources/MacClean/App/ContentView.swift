@@ -189,6 +189,8 @@ struct ContentView: View {
             AppPermissionsView()
         case .optimization:
             OptimizationView()
+        case .healthDashboard:
+            HealthDashboardView()
         case .maintenance:
             MaintenanceView()
         case .uninstaller:
@@ -203,6 +205,10 @@ struct ContentView: View {
             LargeOldFilesView()
         case .duplicates:
             DuplicatesView()
+        case .similarImages:
+            SimilarImagesView()
+        case .emptyFolders:
+            EmptyFoldersView()
         case .shredder:
             ShredderView()
         case .settings:

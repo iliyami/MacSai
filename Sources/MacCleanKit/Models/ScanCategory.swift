@@ -38,6 +38,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
     case largeFiles = "large_files"
     case oldFiles = "old_files"
     case duplicates = "duplicates"
+    case emptyFolders = "empty_folders"
 
     public var id: String { rawValue }
 
@@ -71,6 +72,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .largeFiles: L10n.tr("大文件", "Large Files", "Большие файлы")
         case .oldFiles: L10n.tr("旧文件", "Old Files", "Старые файлы")
         case .duplicates: L10n.tr("重复文件", "Duplicates", "Дубликаты")
+        case .emptyFolders: L10n.tr("空文件夹", "Empty Folders", "Пустые папки")
         }
     }
 
@@ -105,6 +107,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .largeFiles: L10n.tr("占用空间最多的文件。", "The files taking up the most space.", "Файлы, занимающие больше всего места.")
         case .oldFiles: L10n.tr("长时间未打开的文件。", "Files you haven't opened in a long time.", "Файлы, которые давно не открывались.")
         case .duplicates: L10n.tr("同一文件的相同副本。", "Identical copies of the same file.", "Идентичные копии одного файла.")
+        case .emptyFolders: L10n.tr("没有文件或只有隐藏文件的空文件夹。", "Folders containing no files or only hidden files.", "Папки, не содержащие файлов или только скрытые файлы.")
         }
     }
 
@@ -146,6 +149,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .largeFiles: "arrow.up.right.square"
         case .oldFiles: "clock.arrow.circlepath"
         case .duplicates: "plus.square.on.square"
+        case .emptyFolders: "folder.badge.minus"
         }
     }
 
@@ -153,7 +157,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .unusedDiskImages, .largeFiles, .oldFiles, .duplicates,
              .universalBinaries, .appLeftovers, .deletedUsers,
-             .packageManagerCaches, .ideCaches, .aiToolCaches:
+             .packageManagerCaches, .ideCaches, .aiToolCaches, .emptyFolders:
             // appLeftovers: deletes another app's leftover data; detection is
             // conservative but never auto-checked — the user reviews first.
             // universalBinaries: thinning rewrites the app's binaries in

@@ -1,6 +1,5 @@
 import Foundation
 import AppKit
-import MacCleanKit
 
 /// Builds a short list of actionable suggestions for the popover.
 /// Each tip has a stable id so the user can dismiss it for 30 days

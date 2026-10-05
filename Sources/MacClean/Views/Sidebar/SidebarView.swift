@@ -18,6 +18,7 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
 
     // Performance
     case optimization = "优化"
+    case healthDashboard = "系统健康"
     case maintenance = "维护"
 
     // Applications
@@ -29,6 +30,8 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
     case spaceLens = "空间透视"
     case largeOldFiles = "大文件与旧文件"
     case duplicates = "重复文件"
+    case similarImages = "相似图片"
+    case emptyFolders = "空文件夹"
     case shredder = "文件粉碎"
 
     // Footer (pinned below the list, not rendered in any section)
@@ -49,6 +52,7 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
         case .wifiNetworks: "wifi-networks"
         case .appPermissions: "app-permissions"
         case .optimization: "optimization"
+        case .healthDashboard: "health-dashboard"
         case .maintenance: "maintenance"
         case .uninstaller: "uninstaller"
         case .extensions: "extensions"
@@ -56,6 +60,8 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
         case .spaceLens: "space-lens"
         case .largeOldFiles: "large-old-files"
         case .duplicates: "duplicates"
+        case .similarImages: "similar-images"
+        case .emptyFolders: "empty-folders"
         case .shredder: "shredder"
         case .settings: "settings"
         }
@@ -77,6 +83,7 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
         case .wifiNetworks: "wifi"
         case .appPermissions: "lock.shield"
         case .optimization: "gauge.with.dots.needle.67percent"
+        case .healthDashboard: "heart.text.square"
         case .maintenance: "wrench.and.screwdriver"
         case .uninstaller: "xmark.app"
         case .extensions: "puzzlepiece.extension"
@@ -84,6 +91,8 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
         case .spaceLens: "chart.pie"
         case .largeOldFiles: "doc.richtext"
         case .duplicates: "plus.square.on.square"
+        case .similarImages: "photo.on.rectangle.angled"
+        case .emptyFolders: "folder.badge.minus"
         case .shredder: "scissors"
         case .settings: "gearshape"
         }
@@ -94,9 +103,9 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
         case .smartScan: .smartScan
         case .systemJunk, .mailAttachments, .trashBins: .cleanup
         case .malwareRemoval, .privacy, .wifiNetworks, .appPermissions: .protection
-        case .optimization, .maintenance: .performance
+        case .optimization, .healthDashboard, .maintenance: .performance
         case .uninstaller, .extensions, .updater: .applications
-        case .spaceLens, .largeOldFiles, .duplicates, .shredder: .files
+        case .spaceLens, .largeOldFiles, .duplicates, .similarImages, .emptyFolders, .shredder: .files
         case .settings: .settings
         }
     }
@@ -106,9 +115,9 @@ public enum SidebarItem: String, CaseIterable, Identifiable {
         case .smartScan: .main
         case .systemJunk, .mailAttachments, .trashBins: .cleanup
         case .malwareRemoval, .privacy, .wifiNetworks, .appPermissions: .protection
-        case .optimization, .maintenance: .performance
+        case .optimization, .healthDashboard, .maintenance: .performance
         case .uninstaller, .extensions, .updater: .applications
-        case .spaceLens, .largeOldFiles, .duplicates, .shredder: .files
+        case .spaceLens, .largeOldFiles, .duplicates, .similarImages, .emptyFolders, .shredder: .files
         case .settings: .main
         }
     }

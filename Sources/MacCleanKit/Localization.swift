@@ -677,6 +677,28 @@ public enum L10n {
 
     
     private static let frenchFallbacks: [String: String] = [
+        "相似图片": "Images similaires",
+        "相似图片查找器正在开发中...": "Le chercheur d'images similaires est en cours de développement...",
+        "此功能将使用 Vision 框架来扫描相册中视觉上相似的图片。": "Cette fonctionnalité utilisera le framework Vision pour rechercher des photos visuellement similaires dans votre bibliothèque.",
+
+        "网络监控": "Réseau",
+        "网络监控器正在开发中...": "Le moniteur réseau est en cours de développement...",
+        "需要完全磁盘访问权限和系统扩展才能捕获进程级流量。": "Nécessite l'accès complet au disque et des extensions système pour capturer le trafic par processus.",
+
+        "系统健康": "Tableau de bord de santé",
+        "查看系统整体资源状态": "Afficher l'état global des ressources du système",
+        "内存压力": "Pression mémoire",
+        "磁盘使用率": "Utilisation du disque",
+        "电池电量": "Niveau de la batterie",
+        "电池健康度": "État de la batterie",
+        "循环次数": "Nombre de cycles",
+
+        "空文件夹": "Dossiers vides",
+        "查找并清理没有任何内容的文件夹": "Recherchez et supprimez les dossiers qui ne contiennent rien",
+        "未找到空文件夹": "Aucun dossier vide trouvé",
+        "正在查找空文件夹...": "Recherche de dossiers vides...",
+        "没有文件或只有隐藏文件的空文件夹。": "Dossiers contenant aucun fichier ou uniquement des fichiers cachés.",
+
         "1 - 3 个月": "1 - 3 mois",
         "3 - 6 个月": "3 - 6 mois",
         "30 天内不再显示": "Masquer pendant 30 jours",

@@ -45,6 +45,7 @@ struct OptimizationView: View {
                 Text(L10n.tr("启动代理", "Launch Agents", "Агенты запуска")).tag(2)
                 Text(L10n.tr("启动守护进程", "Launch Daemons", "Демоны запуска")).tag(3)
                 Text(L10n.tr("文件打开方式", "File Associations", "Связи файлов")).tag(4)
+                Text(L10n.tr("网络监控", "Network", "Сеть")).tag(5)
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -56,6 +57,8 @@ struct OptimizationView: View {
                     ResourceHogsView()
                 } else if selectedTab == 4 {
                     FileHandlerView()
+                } else if selectedTab == 5 {
+                    NetworkHogsView()
                 } else if isLoading {
                     VStack(spacing: 12) {
                         Spacer()

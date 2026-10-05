@@ -1,6 +1,5 @@
 import Foundation
 import UserNotifications
-import MacCleanKit
 
 /// Watches the rolling stats stream for crossed thresholds and fires
 /// macOS notifications via `UNUserNotificationCenter`. Throttled
