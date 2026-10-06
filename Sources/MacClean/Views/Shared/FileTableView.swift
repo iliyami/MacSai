@@ -192,16 +192,19 @@ struct FileTableView: NSViewRepresentable {
 // MARK: - Cells
 
 /// Category header: disclosure chevron, tri-state select-all checkbox, icon,
-/// name over a one-line description, "selected/total selected" count, and a
+/// name (plus a safety badge explaining why it's safe to clean) over a
+/// one-line description, "selected/total selected" count, and a
 /// "selectedSize / totalSize" readout (selected portion in the accent colour).
 private final class HeaderCellView: NSTableCellView {
     private let chevron = NSButton()
     private let checkbox = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let icon = NSImageView()
     private let title = NSTextField(labelWithString: "")
+    private let safetyButton = NSButton()
     private let subtitle = NSTextField(labelWithString: "")
     private let count = NSTextField(labelWithString: "")
     private let size = NSTextField(labelWithString: "")
+    private var category: ScanCategory?
     private var onToggleExpand: () -> Void = {}
     private var onToggleAll: () -> Void = {}
 
@@ -224,6 +227,13 @@ private final class HeaderCellView: NSTableCellView {
         title.lineBreakMode = .byTruncatingTail
         title.maximumNumberOfLines = 1
 
+        safetyButton.isBordered = false
+        safetyButton.bezelStyle = .regularSquare
+        safetyButton.imagePosition = .imageOnly
+        safetyButton.target = self
+        safetyButton.action = #selector(safetyClicked)
+        safetyButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+
         subtitle.font = .systemFont(ofSize: 10)
         subtitle.textColor = .tertiaryLabelColor
         subtitle.lineBreakMode = .byTruncatingTail
@@ -239,7 +249,7 @@ private final class HeaderCellView: NSTableCellView {
 
         size.font = .systemFont(ofSize: 11, weight: .medium)
 
-        for view in [chevron, checkbox, icon, title, subtitle, count, size] {
+        for view in [chevron, checkbox, icon, title, safetyButton, subtitle, count, size] {
             view.translatesAutoresizingMaskIntoConstraints = false
             addSubview(view)
         }
@@ -260,7 +270,11 @@ private final class HeaderCellView: NSTableCellView {
             size.centerYAnchor.constraint(equalTo: centerYAnchor),
             count.trailingAnchor.constraint(equalTo: size.leadingAnchor, constant: -12),
             count.centerYAnchor.constraint(equalTo: centerYAnchor),
-            title.trailingAnchor.constraint(lessThanOrEqualTo: count.leadingAnchor, constant: -8),
+            safetyButton.leadingAnchor.constraint(equalTo: title.trailingAnchor, constant: 4),
+            safetyButton.centerYAnchor.constraint(equalTo: title.centerYAnchor),
+            safetyButton.widthAnchor.constraint(equalToConstant: 16),
+            safetyButton.heightAnchor.constraint(equalToConstant: 16),
+            safetyButton.trailingAnchor.constraint(lessThanOrEqualTo: count.leadingAnchor, constant: -8),
             subtitle.trailingAnchor.constraint(lessThanOrEqualTo: count.leadingAnchor, constant: -8),
         ])
     }
@@ -292,6 +306,15 @@ private final class HeaderCellView: NSTableCellView {
         // Both labels truncate to one line, so a narrow window can hide what a
         // category actually contains. Hovering the header row shows both in full.
         toolTip = header.category.tooltip
+        category = header.category
+        let safety = header.category.cleanupSafety
+        safetyButton.image = NSImage(
+            systemSymbolName: safety.systemImage, accessibilityDescription: safety.label
+        )
+        safetyButton.contentTintColor = Self.tint(for: safety)
+        safetyButton.toolTip = "\(safety.label)\n\(header.category.safetyRationale)"
+        safetyButton.setAccessibilityLabel(safety.label)
+        safetyButton.setAccessibilityHelp(header.category.safetyRationale)
         count.stringValue = L10n.tr("已选择 \(header.selectedCount)/\(header.fileCount)", "\(header.selectedCount)/\(header.fileCount) selected", "Выбрано \(header.selectedCount) из \(header.fileCount)")
         size.attributedStringValue = Self.sizeText(
             selected: header.selectedSize, total: header.totalSize
@@ -319,8 +342,58 @@ private final class HeaderCellView: NSTableCellView {
         return result
     }
 
+    private static func tint(for safety: ScanCategory.CleanupSafety) -> NSColor {
+        switch safety {
+        case .regenerates, .safeToRemove: .systemGreen
+        case .reviewFirst: .systemOrange
+        }
+    }
+
     @objc private func chevronClicked() { onToggleExpand() }
     @objc private func checkboxClicked() { onToggleAll() }
+
+    /// The tooltip needs a hover pause; a click shows the same explanation
+    /// right away, next to the badge.
+    @objc private func safetyClicked() {
+        guard let category else { return }
+        let popover = NSPopover()
+        popover.behavior = .transient
+        popover.contentViewController = SafetyRationaleViewController(category: category)
+        popover.show(relativeTo: safetyButton.bounds, of: safetyButton, preferredEdge: .maxY)
+    }
+}
+
+/// Popover content for a category's safety badge: the verdict, then why.
+private final class SafetyRationaleViewController: NSViewController {
+    private let category: ScanCategory
+
+    init(category: ScanCategory) {
+        self.category = category
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { fatalError("not used") }
+
+    override func loadView() {
+        let safety = category.cleanupSafety
+        let heading = NSTextField(labelWithString: safety.label)
+        heading.font = .boldSystemFont(ofSize: 12)
+
+        let body = NSTextField(wrappingLabelWithString: category.safetyRationale)
+        body.font = .systemFont(ofSize: 11)
+        body.textColor = .secondaryLabelColor
+        body.preferredMaxLayoutWidth = 280
+
+        let stack = NSStackView(views: [heading, body])
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 4
+        stack.edgeInsets = NSEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        body.widthAnchor.constraint(equalToConstant: 280).isActive = true
+        view = stack
+    }
 }
 
 /// File row: checkbox, icon, name over parent path, optional "App open" badge,
