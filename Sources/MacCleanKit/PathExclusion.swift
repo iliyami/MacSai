@@ -30,9 +30,12 @@ public enum PathExclusion {
         return p.hasPrefix(prefix)
     }
 
+    /// True if acting on `path` would touch an excluded root: `path` is a root
+    /// or a descendant of one, or `path` is an ancestor of a root (trashing a
+    /// directory takes its whole subtree, excluded folders included).
     public static func isExcluded(path: String, by roots: [String]) -> Bool {
         guard !roots.isEmpty else { return false }
-        return roots.contains { isInside(path, root: $0) }
+        return roots.contains { isInside(path, root: $0) || isInside($0, root: path) }
     }
 
     public static func isExcluded(_ url: URL, by roots: [String]) -> Bool {
