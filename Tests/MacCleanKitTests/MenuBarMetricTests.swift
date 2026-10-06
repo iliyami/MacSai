@@ -7,7 +7,7 @@ final class MenuBarMetricTests: XCTestCase {
     func testCasesAndRawValuesStayStable() {
         XCTAssertEqual(
             MenuBarMetric.allCases.map(\.rawValue),
-            ["diskFree", "gpuUsage", "memoryUsage", "temperature"]
+            ["diskFree", "gpuUsage", "memoryUsage", "temperature", "iconOnly"]
         )
     }
 
@@ -15,6 +15,56 @@ final class MenuBarMetricTests: XCTestCase {
         XCTAssertEqual(MenuBarMetric.resolve(nil), .diskFree)
         XCTAssertEqual(MenuBarMetric.resolve("futureMetric"), .diskFree)
         XCTAssertEqual(MenuBarMetric.resolve("temperature"), .batteryTemperature)
+        XCTAssertEqual(MenuBarMetric.resolve("iconOnly"), .iconOnly)
+    }
+
+    /// #182: a cleaner menu bar with just the app's sparkles icon, no value.
+    func testIconOnlyShowsNoValueWhateverTheStats() {
+        XCTAssertNil(MenuBarMetric.iconOnly.formattedValue(
+            diskFree: 245_000_000_000,
+            gpuUsage: 0.5,
+            memoryUsage: 0.5,
+            batteryTemperature: 30
+        ))
+    }
+
+    func testEveryValueMetricStillProducesText() {
+        for metric in MenuBarMetric.allCases where metric != .iconOnly {
+            XCTAssertNotNil(
+                metric.formattedValue(diskFree: 0, gpuUsage: nil, memoryUsage: 0, batteryTemperature: nil),
+                metric.rawValue
+            )
+        }
+    }
+
+    func testIconOnlyNameIsTranslatedInEveryLanguage() {
+        let sharedDefaults = SharedAppState.defaults
+        let sharedValue = sharedDefaults.object(forKey: AppLanguage.defaultsKey)
+        let standardValue = UserDefaults.standard.object(forKey: AppLanguage.defaultsKey)
+        defer {
+            if let sharedValue {
+                sharedDefaults.set(sharedValue, forKey: AppLanguage.defaultsKey)
+            } else {
+                sharedDefaults.removeObject(forKey: AppLanguage.defaultsKey)
+            }
+            if let standardValue {
+                UserDefaults.standard.set(standardValue, forKey: AppLanguage.defaultsKey)
+            } else {
+                UserDefaults.standard.removeObject(forKey: AppLanguage.defaultsKey)
+            }
+        }
+
+        let expected: [AppLanguage: String] = [
+            .en: "Icon only",
+            .zhHans: "仅显示图标",
+            .zhHant: "僅顯示圖示",
+            .ru: "Только значок",
+            .de: "Nur Symbol",
+        ]
+        for (language, name) in expected {
+            AppLanguage.current = language
+            XCTAssertEqual(MenuBarMetric.iconOnly.localizedName, name, language.rawValue)
+        }
     }
 
     func testLocalizedNames() {
