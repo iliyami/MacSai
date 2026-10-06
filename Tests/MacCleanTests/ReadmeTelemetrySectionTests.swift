@@ -49,4 +49,18 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             headingNeedle: "Проверьте отсутствие телеметрии сами"
         )
     }
+
+    func testGermanReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.de.md",
+            headingNeedle: "Telemetriefreiheit selbst überprüfen"
+        )
+    }
+
+    func testTraditionalChineseReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.zh-Hant.md",
+            headingNeedle: "自行驗證無遙測"
+        )
+    }
 }
