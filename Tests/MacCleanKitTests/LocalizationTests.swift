@@ -185,4 +185,24 @@ final class LocalizationTests: AppLanguageTestCase {
             XCTAssertTrue(LanguagePreferences.alwaysKept.contains(folder), folder)
         }
     }
+    func testFrenchLanguageSelectionAndRegionalIdentifiers() {
+        XCTAssertTrue(AppLanguage.allCases.contains(.fr))
+        XCTAssertEqual(AppLanguage.fr.pickerLabel, "Français")
+        XCTAssertEqual(AppLanguage.fr.localeIdentifier, "fr")
+        for identifier in ["fr", "fr-FR", "fr_CA", "FR-ch"] {
+            XCTAssertEqual(AppLanguage.preferredLanguage(for: identifier), .fr)
+        }
+    }
+
+    func testFrenchUsesEveryTranslationOverload() {
+        AppLanguage.current = .fr
+        XCTAssertEqual(L10n.tr("设置", "Settings"), "Paramètres")
+        XCTAssertEqual(L10n.tr("设置", "Settings", "Настройки"), "Paramètres")
+        XCTAssertEqual(L10n.tr("设置"), "Paramètres")
+    }
+
+    func testUntranslatedStringFallsBackToEnglishInFrench() {
+        AppLanguage.current = .fr
+        XCTAssertEqual(L10n.tr("新功能", "New feature"), "New feature")
+    }
 }

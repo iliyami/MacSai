@@ -198,6 +198,7 @@ public enum MCConstants {
         "ru.lproj", "ru-RU.lproj", "ru_RU.lproj", "Russian.lproj",
         "de.lproj", "de-DE.lproj", "de_DE.lproj", "de-AT.lproj", "de_AT.lproj",
         "de-CH.lproj", "de_CH.lproj", "German.lproj",
+        "fr.lproj", "fr-FR.lproj", "fr_FR.lproj", "French.lproj",
     ]
 
     // MARK: - Log File Path
@@ -225,5 +226,5 @@ public enum MCConstants {
     // plugin was tried (commit history) but doesn't work under multi-arch
     // `swift build --arch arm64 --arch x86_64` because xcbuild doesn't
     // execute plugins.
-    public static let appVersion = "1.21.3"
+    public static let appVersion = "1.22.0"
 }
