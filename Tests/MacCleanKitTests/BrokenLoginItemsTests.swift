@@ -50,6 +50,59 @@ final class BrokenLoginItemsTests: XCTestCase {
         XCTAssertEqual(result.count, 1)
     }
 
+    // MARK: - Bare command names (resolved by launchd via _PATH_STDPATH)
+
+    func testBareCommandFoundOnLaunchdPathIsNotFlagged() {
+        let cat = BrokenLoginItemsCategory()
+        let open = makeItem("com.example.open-notes")
+        let shell = makeItem("com.example.sync")
+        let openPlist = plistData([
+            "Label": "com.example.open-notes",
+            "ProgramArguments": ["open", "-a", "Notes"],
+        ])
+        let shellPlist = plistData([
+            "Label": "com.example.sync",
+            "ProgramArguments": ["sh", "-c", "rsync -a ~/a ~/b"],
+        ])
+        let result = cat.filterBroken(
+            [open, shell],
+            loadData: { $0 == open.url ? openPlist : shellPlist },
+            fileExists: { ["/usr/bin/open", "/bin/sh"].contains($0) },
+            appExistsForBundleID: { _ in false }
+        )
+        XCTAssertTrue(result.isEmpty, "launchd runs bare ProgramArguments[0] from /usr/bin:/bin:/usr/sbin:/sbin")
+    }
+
+    func testBareCommandMissingFromLaunchdPathIsFlagged() {
+        let cat = BrokenLoginItemsCategory()
+        let item = makeItem("com.example.gone")
+        let plist = plistData([
+            "Label": "com.example.gone",
+            "ProgramArguments": ["gone-tool", "--daemon"],
+        ])
+        let result = cat.filterBroken(
+            [item],
+            loadData: { _ in plist },
+            fileExists: { _ in false },
+            appExistsForBundleID: { _ in false }
+        )
+        XCTAssertEqual(result.count, 1)
+    }
+
+    func testRelativeProgramKeyIsFlagged() {
+        // `Program` must be absolute; launchd refuses a relative one.
+        let cat = BrokenLoginItemsCategory()
+        let item = makeItem("com.example.relative")
+        let plist = plistData(["Label": "com.example.relative", "Program": "open"])
+        let result = cat.filterBroken(
+            [item],
+            loadData: { _ in plist },
+            fileExists: { _ in true },
+            appExistsForBundleID: { _ in true }
+        )
+        XCTAssertEqual(result.count, 1)
+    }
+
     // MARK: - Missing .app bundle
 
     func testMissingAppBundleIsFlagged() {
