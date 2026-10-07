@@ -160,6 +160,31 @@ final class AppMatchingTests: XCTestCase {
         XCTAssertTrue(AppMatching.filenameMatches("GoogleSoftwareUpdate.plist", patterns: patterns))
     }
 
+    // MARK: - Regression: short names matching inside unrelated words
+
+    func testShortAppNameDoesNotMatchInsideUnrelatedWords() {
+        // "arc" (from the Arc browser) is a substring of "archive" and
+        // "search" — those Apple files must not be flagged as Arc leftovers.
+        let arc = AppInfo(bundleIdentifier: "company.thebrowser.Browser", name: "Arc",
+                          path: URL(filePath: "/Applications/Arc.app"))
+        let patterns = AppMatching.generatePatterns(for: arc)
+        XCTAssertFalse(AppMatching.filenameMatches("com.apple.archiveutility.plist", patterns: patterns))
+        XCTAssertFalse(AppMatching.filenameMatches("com.apple.Safari.SearchHelper", patterns: patterns))
+        XCTAssertFalse(AppMatching.filenameMatches("Minecraft", patterns: ["craft"]))
+        XCTAssertFalse(AppMatching.filenameMatches("somethings.plist", patterns: ["things"]))
+        // Arc's own files still match.
+        XCTAssertTrue(AppMatching.filenameMatches("Arc", patterns: patterns))
+        XCTAssertTrue(AppMatching.filenameMatches("company.thebrowser.Browser.plist", patterns: patterns))
+        XCTAssertTrue(AppMatching.filenameMatches("Arc Helper", patterns: patterns))
+    }
+
+    func testNameMatchesAtCamelCaseAndDigitBoundaries() {
+        XCTAssertTrue(AppMatching.filenameMatches("SpotifyHelper.plist", patterns: ["spotify"]))
+        XCTAssertTrue(AppMatching.filenameMatches("ZoomUpdater", patterns: ["zoom"]))
+        XCTAssertTrue(AppMatching.filenameMatches("Telegram2", patterns: ["telegram"]))
+        XCTAssertTrue(AppMatching.filenameMatches("us.zoom.xos_Helper", patterns: ["us.zoom.xos"]))
+    }
+
     func testFilenameMatchesCaseInsensitive() {
         let patterns: Set<String> = ["chrome"]
         XCTAssertTrue(AppMatching.filenameMatches("GOOGLE.CHROME.PLIST", patterns: patterns))
