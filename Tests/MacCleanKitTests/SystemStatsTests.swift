@@ -19,6 +19,24 @@ final class CPUStatsTests: XCTestCase {
         XCTAssertEqual(ticks, CPUTicks(user: 60, system: 80, idle: 100, nice: 120))
     }
 
+    func testSummed_readsTicksAboveInt32MaxAsUnsigned() {
+        // Mach tick counters are natural_t (UInt32) delivered through an
+        // integer_t (Int32) array. A core idle for ~248 days of uptime passes
+        // Int32.max; its counter arrives negative and must not trap.
+        let idle = Int32(bitPattern: 0x8000_0010)
+        let raw: [Int32] = [1, 2, idle, 3]
+        let ticks = CPUTicks.summed(rawLoadInfo: raw, cpuCount: 1)
+        XCTAssertEqual(ticks, CPUTicks(user: 1, system: 2, idle: 0x8000_0010, nice: 3))
+    }
+
+    func testUsage_returnsNilWhenACounterWrapped() {
+        // After ~497 days a UInt32 counter wraps to a small value; skip that
+        // one sample instead of reporting a nonsense fraction.
+        let prev = CPUTicks(user: 1000, system: 200, idle: 4_294_967_000, nice: 0)
+        let curr = CPUTicks(user: 1050, system: 225, idle: 300, nice: 0)
+        XCTAssertNil(CPUUsage(previous: prev, current: curr))
+    }
+
     func testUsage_computesFractionsFromDelta() {
         let prev = CPUTicks(user: 1000, system: 200, idle: 800, nice: 0)
         // Over the interval: user gained 50, system 25, idle 425, nice 0.

@@ -126,13 +126,39 @@ public enum AppMatching {
         }
     }
 
-    /// Returns true if `fileName` (lowercased) matches any of the patterns.
+    /// Returns true if any pattern occurs in `fileName` (case-insensitively) as
+    /// a whole word: both ends of the occurrence must sit on a word boundary
+    /// (string edge, separator, lower→upper camel-case step, or letter↔digit
+    /// step). A bare substring check let the Arc browser's "arc" pattern claim
+    /// `com.apple.archiveutility.plist` and Safari's `SearchHelper`.
     public static func filenameMatches(_ fileName: String, patterns: Set<String>) -> Bool {
-        let lower = fileName.lowercased()
-        // Skip empty patterns defensively: a "" token would match every file.
-        // It is currently neutralised by Foundation's `String.contains("")`
-        // returning false, but this must not rely on that, since these patterns
-        // drive file deletion.
-        return patterns.contains(where: { !$0.isEmpty && lower.contains($0) })
+        // Skip empty patterns defensively: a "" token would match every file,
+        // and these patterns drive file deletion.
+        patterns.contains { !$0.isEmpty && containsWord($0, in: fileName) }
+    }
+
+    private static func containsWord(_ pattern: String, in fileName: String) -> Bool {
+        var searchStart = fileName.startIndex
+        while let range = fileName.range(of: pattern, options: .caseInsensitive,
+                                         range: searchStart..<fileName.endIndex) {
+            if isBoundary(in: fileName, at: range.lowerBound)
+                && isBoundary(in: fileName, at: range.upperBound) {
+                return true
+            }
+            searchStart = fileName.index(after: range.lowerBound)
+        }
+        return false
+    }
+
+    private static func isBoundary(in string: String, at index: String.Index) -> Bool {
+        guard index > string.startIndex, index < string.endIndex else { return true }
+        let before = string[string.index(before: index)]
+        let after = string[index]
+        // Only ASCII letters/digits form words, so names in scripts without
+        // spaces or case (e.g. Chinese) keep matching as substrings.
+        func isWordCharacter(_ c: Character) -> Bool { c.isASCII && (c.isLetter || c.isNumber) }
+        guard isWordCharacter(before), isWordCharacter(after) else { return true }
+        if before.isLowercase && after.isUppercase { return true }
+        return before.isNumber != after.isNumber
     }
 }

@@ -46,9 +46,14 @@ public struct BrokenLoginItemsCategory: JunkCategory {
 
             let programPath: String?
             if let prog = plist["Program"] as? String {
+                // launchd requires `Program` to be absolute and won't run the job otherwise.
+                guard prog.hasPrefix("/") else { return true }
                 programPath = prog
             } else if let args = plist["ProgramArguments"] as? [String], let first = args.first {
-                programPath = first
+                guard let resolved = Self.resolveLaunchdCommand(first, fileExists: fileExists) else {
+                    return true
+                }
+                programPath = resolved
             } else {
                 programPath = nil
             }
@@ -71,5 +76,18 @@ public struct BrokenLoginItemsCategory: JunkCategory {
 
             return false
         }
+    }
+
+    /// `_PATH_STDPATH` from `<paths.h>`: the search path launchd uses for a
+    /// bare `ProgramArguments[0]` such as `open` or `sh` (see launchd.plist(5)).
+    static let launchdSearchPath = ["/usr/bin", "/bin", "/usr/sbin", "/sbin"]
+
+    /// Absolute path launchd would execute for `ProgramArguments[0]`, or nil
+    /// when a bare command name isn't found on `launchdSearchPath`.
+    static func resolveLaunchdCommand(_ command: String, fileExists: (String) -> Bool) -> String? {
+        guard !command.hasPrefix("/"), !command.contains("/") else { return command }
+        return launchdSearchPath
+            .map { "\($0)/\(command)" }
+            .first(where: fileExists)
     }
 }

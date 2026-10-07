@@ -43,6 +43,32 @@ final class PathExclusionTests: XCTestCase {
         )
     }
 
+    func testAncestorOfExcludedRootIsExcluded() {
+        // Trashing a directory takes its whole subtree, so a scanned folder
+        // that *contains* an excluded root must be refused too.
+        XCTAssertTrue(
+            PathExclusion.isExcluded(
+                path: "/Users/tester/Library/Caches/com.example.app",
+                by: ["/Users/tester/Library/Caches/com.example.app/offline"]
+            )
+        )
+        XCTAssertTrue(
+            PathExclusion.isExcluded(
+                path: "/Users/tester/Library/Caches/com.example.app/",
+                by: ["/Users/tester/Library/Caches/com.example.app/offline"]
+            )
+        )
+    }
+
+    func testSiblingPrefixOfExcludedRootIsNotExcluded() {
+        XCTAssertFalse(
+            PathExclusion.isExcluded(
+                path: "/Users/tester/Library/Caches/com.example",
+                by: ["/Users/tester/Library/Caches/com.example.app/offline"]
+            )
+        )
+    }
+
     func testEmptyExclusionListNeverMatches() {
         XCTAssertFalse(
             PathExclusion.isExcluded(path: "/Users/tester/Caches", by: [])

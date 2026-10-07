@@ -33,10 +33,12 @@ public struct CPUTicks: Sendable, Equatable {
         for i in 0..<cpuCount {
             let base = statesPerCPU * i
             guard base + niceIndex < rawLoadInfo.count else { break }
-            user   += UInt64(rawLoadInfo[base + userIndex])
-            system += UInt64(rawLoadInfo[base + systemIndex])
-            idle   += UInt64(rawLoadInfo[base + idleIndex])
-            nice   += UInt64(rawLoadInfo[base + niceIndex])
+            // Each counter is a natural_t (UInt32) carried in an integer_t
+            // slot: reinterpret the bits, since `UInt64(negativeInt32)` traps.
+            user   += UInt64(UInt32(bitPattern: rawLoadInfo[base + userIndex]))
+            system += UInt64(UInt32(bitPattern: rawLoadInfo[base + systemIndex]))
+            idle   += UInt64(UInt32(bitPattern: rawLoadInfo[base + idleIndex]))
+            nice   += UInt64(UInt32(bitPattern: rawLoadInfo[base + niceIndex]))
         }
         return CPUTicks(user: user, system: system, idle: idle, nice: nice)
     }
@@ -55,8 +57,11 @@ public struct CPUUsage: Sendable, Equatable {
     }
 
     /// Compute fractions from two snapshots. Returns nil when the interval
-    /// had zero ticks (sampler called too fast).
+    /// had zero ticks (sampler called too fast) or a per-core UInt32 counter
+    /// wrapped, making a sum go backwards.
     public init?(previous: CPUTicks, current: CPUTicks) {
+        guard current.user >= previous.user, current.system >= previous.system,
+              current.idle >= previous.idle, current.nice >= previous.nice else { return nil }
         let userDiff   = current.user   &- previous.user
         let systemDiff = current.system &- previous.system
         let idleDiff   = current.idle   &- previous.idle

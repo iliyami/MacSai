@@ -1,4 +1,5 @@
 import Foundation
+import MacCleanKit
 import SystemConfiguration
 
 public actor NetworkSpeedMonitor {
@@ -37,13 +38,8 @@ public actor NetworkSpeedMonitor {
 
         if let prevTime = previousTimestamp {
             let elapsed = now.timeIntervalSince(prevTime)
-            if elapsed > 0 {
-                inPerSec = Double(totalIn - previousBytesIn) / elapsed
-                outPerSec = Double(totalOut - previousBytesOut) / elapsed
-                // Clamp negative values (counter wrap)
-                inPerSec = max(0, inPerSec)
-                outPerSec = max(0, outPerSec)
-            }
+            inPerSec = NetworkRate.bytesPerSecond(current: totalIn, previous: previousBytesIn, elapsed: elapsed)
+            outPerSec = NetworkRate.bytesPerSecond(current: totalOut, previous: previousBytesOut, elapsed: elapsed)
         }
 
         previousBytesIn = totalIn
