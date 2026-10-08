@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.ru.md">Русский</a>
+  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a>
 </p>
 
 <p align="center">
@@ -209,7 +209,7 @@ A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It i
 
 ## Interface languages
 
-Choose System, Deutsch, Русский, 简体中文, 繁體中文, or English in Settings → Interface Language. German and Traditional Chinese translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
+Choose System, Deutsch, Français, Русский, 简体中文, 繁體中文, or English in Settings → Interface Language. German, French, and Traditional Chinese translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
 
 ## Installation
 

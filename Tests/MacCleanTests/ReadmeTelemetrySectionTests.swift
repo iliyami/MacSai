@@ -63,4 +63,11 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             headingNeedle: "自行驗證無遙測"
         )
     }
+
+    func testFrenchReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.fr.md",
+            headingNeedle: "Vérifiez l'absence de télémétrie vous-même"
+        )
+    }
 }
