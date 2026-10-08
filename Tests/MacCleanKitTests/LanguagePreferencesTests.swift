@@ -104,12 +104,14 @@ final class LanguagePreferencesTests: EnglishAppLanguageTestCase {
         let original = LanguagePreferences.discoveredLproj
         defer { LanguagePreferences.discoveredLproj = original }
 
-        LanguagePreferences.discoveredLproj = ["fr.lproj", "French.lproj", "de.lproj"]
-        let selectable = LanguagePreferences.selectableLanguages()
-        let french = selectable.filter { $0.name == "French" }
-        XCTAssertEqual(french.count, 1, "French must be a single grouped row, not duplicated")
-        XCTAssertEqual(Set(french.first?.lprojs ?? []), ["fr.lproj", "French.lproj"],
-                       "the French toggle must cover BOTH the code and legacy folders")
+        // Japanese is not a supported interface language, so it stays
+        // selectable. (French used to serve here, but it is now an app language
+        // and therefore always-kept.)
+        LanguagePreferences.discoveredLproj = ["ja.lproj", "Japanese.lproj", "de.lproj"]
+        let japanese = LanguagePreferences.selectableLanguages(language: .en).filter { $0.name == "Japanese" }
+        XCTAssertEqual(japanese.count, 1, "Japanese must be a single grouped row, not duplicated")
+        XCTAssertEqual(Set(japanese.first?.lprojs ?? []), ["Japanese.lproj", "ja.lproj"],
+                       "the Japanese toggle must cover BOTH the code and legacy folders")
     }
 
     // MARK: - selectableLanguages: excludes alwaysKept
@@ -119,11 +121,11 @@ final class LanguagePreferencesTests: EnglishAppLanguageTestCase {
         let original = LanguagePreferences.discoveredLproj
         defer { LanguagePreferences.discoveredLproj = original }
 
-        LanguagePreferences.discoveredLproj = ["fr.lproj", "en.lproj", "Base.lproj", "de.lproj"]
+        LanguagePreferences.discoveredLproj = ["ja.lproj", "en.lproj", "Base.lproj", "de.lproj"]
         let selectable = LanguagePreferences.selectableLanguages()
         let lprojs = Set(selectable.flatMap(\.lprojs))
 
-        XCTAssertTrue(lprojs.contains("fr.lproj"), "fr should be selectable")
+        XCTAssertTrue(lprojs.contains("ja.lproj"), "ja should be selectable")
         XCTAssertFalse(lprojs.contains("de.lproj"), "de is always-kept, must not appear")
         XCTAssertFalse(lprojs.contains("en.lproj"), "en is always-kept, must not appear")
         XCTAssertFalse(lprojs.contains("Base.lproj"), "Base is always-kept, must not appear")
@@ -162,11 +164,11 @@ final class LanguagePreferencesTests: EnglishAppLanguageTestCase {
         defer { LanguagePreferences.discoveredLproj = original }
 
         LanguagePreferences.discoveredLproj = [
-            "ru.lproj", "ru-RU.lproj", "ru_RU.lproj", "Russian.lproj", "fr.lproj",
+            "ru.lproj", "ru-RU.lproj", "ru_RU.lproj", "Russian.lproj", "ja.lproj",
         ]
         let lprojs = Set(LanguagePreferences.selectableLanguages().flatMap(\.lprojs))
         XCTAssertFalse(lprojs.contains("ru.lproj"))
         XCTAssertFalse(lprojs.contains("Russian.lproj"))
-        XCTAssertTrue(lprojs.contains("fr.lproj"))
+        XCTAssertTrue(lprojs.contains("ja.lproj"))
     }
 }
