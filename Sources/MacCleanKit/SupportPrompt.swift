@@ -60,8 +60,44 @@ public enum SupportPrompt {
         return true
     }
 
+    /// Called once when a clean finishes. Only a clean that actually removed
+    /// something counts; empty selections and all-failed runs are ignored.
+    /// Lives here (not in a view's `onAppear`) so the decision is made exactly
+    /// once per clean, at a point the views can't skip.
+    public static func registerCompletion(
+        _ summary: CleanSummary,
+        now: Date = Date(),
+        defaults: UserDefaults = .standard
+    ) -> Bool {
+        guard summary.removedCount > 0 else { return false }
+        return registerClean(freedBytes: summary.freedBytes, now: now, defaults: defaults)
+    }
+
     /// "Don't ask again", or the user followed the link: never show it again.
     public static func optOut(defaults: UserDefaults = .standard) {
         defaults.set(true, forKey: optedOutKey)
+    }
+}
+
+/// Remembers the support-card decision for each clean. Done screens can call
+/// `shouldAsk(for:)` straight from `body`: the first call registers the clean,
+/// later calls (re-renders, a rebuilt container) return the same answer and
+/// never count the clean twice.
+@MainActor
+public final class SupportAskLedger {
+    public static let shared = SupportAskLedger()
+
+    private let defaults: UserDefaults
+    private var decisions: [UUID: Bool] = [:]
+
+    public init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    public func shouldAsk(for summary: CleanSummary, now: Date = Date()) -> Bool {
+        if let decided = decisions[summary.id] { return decided }
+        let decision = SupportPrompt.registerCompletion(summary, now: now, defaults: defaults)
+        decisions[summary.id] = decision
+        return decision
     }
 }

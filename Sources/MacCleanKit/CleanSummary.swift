@@ -5,7 +5,12 @@ import Foundation
 /// across three different outcomes (nothing selected, everything errored,
 /// or genuinely no junk found), and the field combinations here let the
 /// view distinguish them.
-public struct CleanSummary: Sendable, Equatable {
+public struct CleanSummary: Sendable, Equatable, Identifiable {
+    /// Unique per clean, so per-clean decisions (the support card) can be
+    /// made once even when a done screen re-renders or is rebuilt. Excluded
+    /// from `==`, which compares only what happened.
+    public let id = UUID()
+
     /// How many items the user had checked when they clicked Clean.
     /// Zero means the action ran with an empty selection — likely because
     /// every result category had `autoSelect = false` (e.g. Universal
@@ -26,6 +31,13 @@ public struct CleanSummary: Sendable, Equatable {
     public let errorMessages: [String]
 
     public var errorCount: Int { errorMessages.count }
+
+    public static func == (lhs: CleanSummary, rhs: CleanSummary) -> Bool {
+        lhs.selectedCount == rhs.selectedCount
+            && lhs.removedCount == rhs.removedCount
+            && lhs.freedBytes == rhs.freedBytes
+            && lhs.errorMessages == rhs.errorMessages
+    }
 
     /// First raw error message, if any. Used for the single-error
     /// completion screen variant where showing the full text is honest.

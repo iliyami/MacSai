@@ -420,8 +420,10 @@ struct ModuleContainerView: View {
                         .font(.system(size: 12))
                         .foregroundStyle(.primary.opacity(0.65))
                 }
-                SupportCard(freedBytes: summary.freedBytes)
-                    .padding(.horizontal, 40)
+                if SupportAskLedger.shared.shouldAsk(for: summary) {
+                    SupportCard()
+                        .padding(.horizontal, 40)
+                }
             }
 
             HStack(spacing: 10) {

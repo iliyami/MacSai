@@ -308,6 +308,10 @@ struct SystemJunkView: View {
                         .font(.system(size: 12))
                         .foregroundStyle(.primary.opacity(0.65))
                 }
+                if SupportAskLedger.shared.shouldAsk(for: summary) {
+                    SupportCard()
+                        .padding(.horizontal, 40)
+                }
             }
 
             HStack(spacing: 10) {

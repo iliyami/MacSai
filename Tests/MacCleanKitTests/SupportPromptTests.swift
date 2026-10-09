@@ -73,6 +73,42 @@ final class SupportPromptTests: XCTestCase {
         XCTAssertFalse(clean(80 * gb, at: start.addingTimeInterval(365 * 86_400)))
     }
 
+    // MARK: - Clean completion hook
+
+    func testCompletionThatRemovedNothingIsNotACleanAndNeverAsks() {
+        let nothing = CleanSummary(selectedCount: 5, removedCount: 0, freedBytes: 0, errorMessages: ["denied"])
+        XCTAssertFalse(SupportPrompt.registerCompletion(nothing, now: start, defaults: defaults))
+        XCTAssertEqual(SupportPrompt.state(defaults: defaults).cleanCount, 0)
+    }
+
+    func testSecondBigCompletionAsks() {
+        let big = CleanSummary(selectedCount: 9, removedCount: 9, freedBytes: 6 * gb, errorMessages: [])
+        XCTAssertFalse(SupportPrompt.registerCompletion(big, now: start, defaults: defaults))
+        XCTAssertTrue(SupportPrompt.registerCompletion(big, now: start, defaults: defaults))
+    }
+
+    // MARK: - Ledger: one decision per clean, however often a view asks
+
+    @MainActor
+    func testLedgerDecidesEachCleanExactlyOnce() {
+        let ledger = SupportAskLedger(defaults: defaults)
+        let first = CleanSummary(selectedCount: 3, removedCount: 3, freedBytes: 4 * gb, errorMessages: [])
+        let second = CleanSummary(selectedCount: 3, removedCount: 3, freedBytes: 4 * gb, errorMessages: [])
+
+        XCTAssertFalse(ledger.shouldAsk(for: first, now: start), "first clean never asks")
+        XCTAssertFalse(ledger.shouldAsk(for: first, now: start), "re-render must not count it again")
+        XCTAssertTrue(ledger.shouldAsk(for: second, now: start))
+        XCTAssertTrue(ledger.shouldAsk(for: second, now: start), "re-render keeps the card on screen")
+        XCTAssertEqual(SupportPrompt.state(defaults: defaults).cleanCount, 2)
+    }
+
+    func testEachSummaryIsADistinctCleanButValuesStillCompareEqual() {
+        let a = CleanSummary(selectedCount: 1, removedCount: 1, freedBytes: 10, errorMessages: [])
+        let b = CleanSummary(selectedCount: 1, removedCount: 1, freedBytes: 10, errorMessages: [])
+        XCTAssertNotEqual(a.id, b.id)
+        XCTAssertEqual(a, b)
+    }
+
     func testSupportURLIsTheCoffeePage() {
         XCTAssertEqual(MCConstants.supportURL.absoluteString, "https://buymeacoffee.com/iliyami")
     }

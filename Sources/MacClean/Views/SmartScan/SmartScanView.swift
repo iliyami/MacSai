@@ -9,6 +9,7 @@ struct SmartScanView: View {
     @State private var currentModuleName: String = ""
     @State private var selectedItems: Set<URL> = []
     @State private var cleanResults: [ScanResult] = []
+    @State private var askForSupport = false
     @State private var showCleanConfirm = false
     @State private var cleanTask: Task<Void, Never>?
     /// Watches `ScanCoordinator` while a Smart Scan runs. Cancelled by
@@ -437,7 +438,7 @@ struct SmartScanView: View {
                 .foregroundStyle(.primary.opacity(0.65))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 420)
-            SupportCard(freedBytes: freedSize)
+            if askForSupport { SupportCard() }
             Button(L10n.tr("完成", "Done", "Готово")) { resetScan() }
                 .buttonStyle(.bordered)
                 .tint(.primary)
@@ -466,6 +467,7 @@ struct SmartScanView: View {
         scanWatchTask = nil
         selectedItems = []
         cleanResults = []
+        askForSupport = false
         completedModules = []
         currentModuleName = ""
         scanState = .idle
@@ -615,6 +617,12 @@ struct SmartScanView: View {
                 from: modules,
                 selectedItems: result.removedURLs
             )
+            askForSupport = SupportAskLedger.shared.shouldAsk(for: CleanSummary(
+                selectedCount: selection.count,
+                removedCount: result.removedCount,
+                freedBytes: result.freedBytes,
+                errorMessages: []
+            ))
             scanState = .done(freedSize: result.freedBytes, breakdown: breakdown)
         }
     }

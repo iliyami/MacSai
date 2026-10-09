@@ -3,16 +3,17 @@ import MacCleanKit
 
 /// The one place Mac Sai asks for support: an inline, dismissible card on the
 /// post-clean screen, right after the app has visibly helped. It is never a
-/// modal and never blocks anything. `SupportPrompt` decides whether it shows
-/// (a big clean, not the first one, at most every 60 days, never after the
-/// user opts out or follows the link); this view only renders the decision.
+/// modal and never blocks anything. The parent shows it only when
+/// `SupportAskLedger.shouldAsk(for:)` says so (a big clean, not the first one,
+/// at most every 60 days, never after the user opts out or follows the link);
+/// this view only renders and animates it.
 struct SupportCard: View {
-    let freedBytes: UInt64
-
     private enum Phase { case hidden, asking, thanked }
 
-    @State private var phase: Phase = .hidden
-    @State private var evaluated = false
+    // Starts as a real view, not EmptyView: SwiftUI never fires onAppear on
+    // a view that renders nothing, which kept the card from ever showing.
+    @State private var phase: Phase = .asking
+    @State private var revealed = false
     @State private var cupBounce = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -27,15 +28,14 @@ struct SupportCard: View {
                 EmptyView()
             case .asking:
                 askCard
-                    .transition(.asymmetric(
-                        insertion: .opacity.combined(with: .offset(y: 14)),
-                        removal: .opacity.combined(with: .scale(scale: 0.97))
-                    ))
+                    .opacity(revealed ? 1 : 0)
+                    .offset(y: revealed ? 0 : 14)
+                    .onAppear(perform: reveal)
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
             case .thanked:
                 thanks.transition(.opacity)
             }
         }
-        .onAppear(perform: evaluate)
     }
 
     // MARK: - Ask
@@ -126,22 +126,19 @@ struct SupportCard: View {
 
     // MARK: - Actions
 
-    private func evaluate() {
-        // Decide once per completion screen: re-renders must not count the
-        // same clean twice or restart the cooldown.
-        guard !evaluated else { return }
-        evaluated = true
-        guard SupportPrompt.registerClean(freedBytes: freedBytes) else { return }
+    private func reveal() {
         // Let the checkmark and the freed size land first; the card follows.
+        // Its space is reserved from the start so the Done button never jumps.
+        guard !revealed else { return }
+        if reduceMotion {
+            revealed = true
+            return
+        }
         Task { @MainActor in
-            if !reduceMotion { try? await Task.sleep(for: .milliseconds(900)) }
-            withAnimation(reduceMotion ? nil : .spring(response: 0.55, dampingFraction: 0.82)) {
-                phase = .asking
-            }
-            if !reduceMotion {
-                try? await Task.sleep(for: .milliseconds(450))
-                cupBounce += 1
-            }
+            try? await Task.sleep(for: .milliseconds(900))
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.82)) { revealed = true }
+            try? await Task.sleep(for: .milliseconds(450))
+            cupBounce += 1
         }
     }
 
