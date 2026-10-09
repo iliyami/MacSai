@@ -1,0 +1,87 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.0.0",
+  "entity": {
+    "type": "individual",
+    "role": "owner",
+    "name": "Iliya Mirzaei",
+    "email": "iliya.mi78@gmail.com",
+    "description": "Creator and lead maintainer of Mac Sai, a free and open source Mac cleaner, optimizer, uninstaller, and malware scanner. I build and ship it in my own time: native Swift development, Apple code signing and notarization for every release, the official Homebrew cask, security and safety fixes, and reviewing pull requests from a growing group of volunteer contributors.",
+    "webpageUrl": {
+      "url": "https://github.com/iliyami"
+    }
+  },
+  "projects": [
+    {
+      "guid": "mac-sai",
+      "name": "Mac Sai",
+      "description": "Mac Sai is a free, open source (BSD-3-Clause) alternative to subscription Mac cleaners such as CleanMyMac. It is a native Swift 6 and SwiftUI app with 17 modules: system junk cleanup, an uninstaller that finds app leftovers, a duplicate finder with APFS clone consolidation, a disk space visualizer, a malware scanner, browser privacy cleaning, maintenance tasks, and a menu bar system monitor. Every release is signed and notarized by Apple. It ships zero telemetry: there is no server, and the binary's entire network surface (two read-only update checks) is enforced by a CI check on every change.\n\nUsage (October 2026): more than 76,000 release downloads across 27 releases; the official Homebrew cask (mac-sai) ranks #269 of 10,703 casks by 30-day installs, the top 2.5%; about 1,800 GitHub stars, 107 forks, 11 contributors, and 109 merged pull requests; around 4,300 unique visitors to the repository every two weeks. The interface is available in English, Simplified and Traditional Chinese, German, French, and Russian.\n\nSafety is the core design constraint for software that deletes files: deletion goes to the Trash first, system and protected paths are blocklisted, symlink and time-of-check races are guarded, and 900+ automated tests cover the deletion paths.\n\nThe project is maintained by one person with volunteer contributors. Costs, starting with the Apple Developer Program fee required for notarization, exceed income: about $5 in donations to date. Funding would pay for sustained maintenance: keeping up with each new macOS release, security and safety fixes, timely notarized releases, issue triage, and reviewing community contributions.",
+      "webpageUrl": {
+        "url": "https://github.com/iliyami/MacSai",
+        "wellKnown": "https://github.com/iliyami/MacSai/blob/main/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/iliyami/MacSai",
+        "wellKnown": "https://github.com/iliyami/MacSai/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": ["spdx:BSD-3-Clause"],
+      "tags": ["macos", "desktop-app", "system-utilities", "disk-cleanup", "uninstaller", "malware-scanner", "privacy", "security", "swift", "swiftui"]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "bank",
+        "type": "bank",
+        "description": "International bank transfer. Account details are shared directly with funders on request."
+      },
+      {
+        "guid": "buymeacoffee",
+        "type": "payment-provider",
+        "address": "https://buymeacoffee.com/iliyami",
+        "description": "One-time tips and monthly memberships from individual users."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "maintenance",
+        "status": "active",
+        "name": "Sustained maintenance",
+        "description": "A year of part-time maintenance: compatibility with each new macOS release, security and safety fixes, signed and notarized releases, issue triage, and review of community pull requests.",
+        "amount": 10000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "signing-costs",
+        "status": "active",
+        "name": "Code signing and notarization",
+        "description": "The Apple Developer Program membership required to sign and notarize every release so it opens without security warnings.",
+        "amount": 99,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank", "buymeacoffee"]
+      },
+      {
+        "guid": "community",
+        "status": "active",
+        "name": "Community support",
+        "description": "Any amount, one-time or monthly, from people who use Mac Sai.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "monthly",
+        "channels": ["buymeacoffee"]
+      }
+    ],
+    "history": [
+      {
+        "year": 2026,
+        "income": 5,
+        "expenses": 99,
+        "currency": "USD",
+        "description": "Donations received to date, against the Apple Developer Program fee required to sign and notarize releases."
+      }
+    ]
+  }
+}
