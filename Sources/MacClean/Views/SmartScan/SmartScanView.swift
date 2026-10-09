@@ -437,6 +437,7 @@ struct SmartScanView: View {
                 .foregroundStyle(.primary.opacity(0.65))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 420)
+            SupportCard(freedBytes: freedSize)
             Button(L10n.tr("完成", "Done", "Готово")) { resetScan() }
                 .buttonStyle(.bordered)
                 .tint(.primary)

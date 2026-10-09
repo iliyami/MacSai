@@ -485,6 +485,9 @@ struct SettingsPageView: View {
             aboutRow(icon: "tag", tint: .green,
                      title: L10n.tr("发行说明", "Release notes", "Примечания к выпуску"), caption: L10n.tr("更新日志和历史版本", "Changelog and previous versions", "История изменений и предыдущие версии"),
                      url: MCConstants.releasesURL)
+            aboutRow(icon: "cup.and.saucer.fill", tint: .yellow,
+                     title: L10n.tr("支持 Mac Sai", "Support Mac Sai", "Поддержать Mac Sai"), caption: L10n.tr("请开发者喝杯咖啡", "Buy the developer a coffee", "Угостить разработчика кофе"),
+                     url: MCConstants.supportURL)
         }
     }
 

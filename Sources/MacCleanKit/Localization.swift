@@ -242,6 +242,15 @@ public enum L10n {
     /// back to the Simplified string, which is still readable Chinese. Native
     /// review is welcome to refine wording.
     private static let traditionalChineseFallbacks: [String: String] = [
+        // Post-clean support card and Settings link
+        "这次清理，你没花一分钱。": "這次清理，你沒花一分錢。",
+        "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "沒有訂閱，沒有廣告，沒有追蹤。Mac Sai 是我和幾位志願者在業餘時間做的。如果它幫你省下了買清理軟體的錢，請我喝杯咖啡，讓它對所有人繼續免費。",
+        "请我喝杯咖啡": "請我喝杯咖啡",
+        "以后再说": "以後再說",
+        "不再提示": "不再提示",
+        "谢谢你。正因为有你，它才能一直免费。": "謝謝你。正因為有你，它才能一直免費。",
+        "支持 Mac Sai": "支持 Mac Sai",
+        "请开发者喝杯咖啡": "請開發者喝杯咖啡",
         "1 - 3 个月": "1 - 3 個月",
         "3 - 6 个月": "3 - 6 個月",
         "30 天内不再显示": "30 天內不再顯示",
@@ -710,6 +719,15 @@ public enum L10n {
 
     
     private static let frenchFallbacks: [String: String] = [
+        // Post-clean support card and Settings link
+        "这次清理，你没花一分钱。": "Ce nettoyage ne vous a rien coûté.",
+        "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "Pas d'abonnement, pas de pub, pas de pistage. Je développe Mac Sai le soir et le week-end, avec quelques bénévoles. S'il vous a évité de payer un nettoyeur, un café le garde gratuit pour tout le monde.",
+        "请我喝杯咖啡": "Offrez-moi un café",
+        "以后再说": "Plus tard",
+        "不再提示": "Ne plus demander",
+        "谢谢你。正因为有你，它才能一直免费。": "Merci. C'est grâce à vous que ça reste gratuit.",
+        "支持 Mac Sai": "Soutenir Mac Sai",
+        "请开发者喝杯咖啡": "Offrir un café au développeur",
         "1 - 3 个月": "1 - 3 mois",
         "3 - 6 个月": "3 - 6 mois",
         "30 天内不再显示": "Masquer pendant 30 jours",
@@ -1193,6 +1211,15 @@ public enum L10n {
     ]
 
     private static let germanFallbacks: [String: String] = [
+        // Post-clean support card and Settings link
+        "这次清理，你没花一分钱。": "Diese Reinigung hat dich nichts gekostet.",
+        "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "Kein Abo, keine Werbung, kein Tracking. Ich entwickle Mac Sai abends und am Wochenende, zusammen mit ein paar Freiwilligen. Wenn es dir ein bezahltes Reinigungsprogramm erspart hat, hält ein Kaffee es für alle kostenlos.",
+        "请我喝杯咖啡": "Spendier mir einen Kaffee",
+        "以后再说": "Vielleicht später",
+        "不再提示": "Nicht mehr fragen",
+        "谢谢你。正因为有你，它才能一直免费。": "Danke. Wegen Leuten wie dir bleibt das kostenlos.",
+        "支持 Mac Sai": "Mac Sai unterstützen",
+        "请开发者喝杯咖啡": "Spendier dem Entwickler einen Kaffee",
         "1 - 3 个月": "1 bis 3 Monate",
         "3 - 6 个月": "3 bis 6 Monate",
         "30 天内不再显示": "30 Tage ausblenden",

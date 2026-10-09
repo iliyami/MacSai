@@ -207,4 +207,19 @@ final class LocalizationTests: AppLanguageTestCase {
         AppLanguage.current = .fr
         XCTAssertEqual(L10n.tr("新功能", "New feature"), "New feature")
     }
+
+    func testSupportCardIsTranslatedInEveryLanguage() {
+        let expected: [AppLanguage: String] = [
+            .de: "Spendier mir einen Kaffee",
+            .fr: "Offrez-moi un café",
+            .zhHant: "請我喝杯咖啡",
+            .ru: "Угостить кофе",
+        ]
+        for (language, cta) in expected {
+            AppLanguage.current = language
+            XCTAssertEqual(L10n.tr("请我喝杯咖啡", "Buy me a coffee", "Угостить кофе"), cta)
+            let title = L10n.tr("这次清理，你没花一分钱。", "That cleanup cost you nothing.", "Эта очистка не стоила вам ни копейки.")
+            XCTAssertNotEqual(title, "That cleanup cost you nothing.", "\(language) title is untranslated")
+        }
+    }
 }

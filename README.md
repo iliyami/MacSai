@@ -334,7 +334,7 @@ nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-Expected: the only networking class is `_OBJC_CLASS_$_NSURLSession`, and the only fetch endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest` and `formulae.brew.sh/api/cask/mac-sai.json`. The other `github.com/iliyami/MacSai` links just open in your browser. No trackers, no analytics hosts, nothing else. Re-run it after any update; it always describes the exact build you are running.
+Expected: the only networking class is `_OBJC_CLASS_$_NSURLSession`, and the only fetch endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest` and `formulae.brew.sh/api/cask/mac-sai.json`. The other `github.com/iliyami/MacSai` links and the `buymeacoffee.com/iliyami` support link just open in your browser. No trackers, no analytics hosts, nothing else. Re-run it after any update; it always describes the exact build you are running.
 
 Note: on a non-sandboxed Developer ID app like this one, network access is not gated by an entitlement, so this symbol and string inspection, not `codesign --entitlements`, is the real check. The same guard runs in CI on every change ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
 
@@ -412,6 +412,22 @@ Inspired by the open-source Mac utility community:
 - [Tencent Lemon Cleaner](https://github.com/Tencent/lemon-cleaner): modular architecture
 - Squarified Treemap algorithm by Bruls, Huizing, and van Wijk (2000)
 
+## Support and sponsors
+
+Mac Sai is free and stays free: no paid tier, no ads, no tracking. If it saved you from a cleaner subscription, you can [buy me a coffee ☕](https://buymeacoffee.com/iliyami). It keeps the releases signed, notarized, and coming.
+
+### Sponsor slot
+
+Mac Sai has **one** sponsor slot, shown right here. Around 9,000 people visit this repository every month, and the app has been downloaded more than 76,000 times, mostly by developers and Mac power users.
+
+- **One sponsor at a time**, so your name is not lost in a wall of logos.
+- **Vetted.** Developer tools, privacy and security products, and Mac apps that respect their users. No cleaners or "optimizers", no crypto, no affiliate VPN deals, nothing that tracks people.
+- **Never inside the app.** Mac Sai has no ads and no telemetry, and no sponsor changes that.
+
+<p align="center">
+  <strong>This spot is open.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Become the sponsor →</a>
+</p>
+
 ## Star History
 
 <p align="center">
@@ -426,5 +442,5 @@ Inspired by the open-source Mac utility community:
 
 <p align="center">
   <strong>Mac Sai is free software built by the community, for the community.</strong><br>
-  If it saved you from a subscription, a ⭐ helps others find it.
+  If it saved you from a subscription, a ⭐ helps others find it, and a <a href="https://buymeacoffee.com/iliyami">coffee ☕</a> keeps it going.
 </p>

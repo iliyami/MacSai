@@ -330,7 +330,7 @@ nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-預期：唯一的網路類是 `_OBJC_CLASS_$_NSURLSession`，唯一會被請求的端點是 `api.github.com/repos/iliyami/MacSai/releases/latest` 和 `formulae.brew.sh/api/cask/mac-sai.json`。其餘的 `github.com/iliyami/MacSai` 連結只會在瀏覽器中開啟。沒有任何跟蹤器或分析域名，也沒有其他東西。更新後可以再次執行，它始終反映你正在執行的確切構建。
+預期：唯一的網路類是 `_OBJC_CLASS_$_NSURLSession`，唯一會被請求的端點是 `api.github.com/repos/iliyami/MacSai/releases/latest` 和 `formulae.brew.sh/api/cask/mac-sai.json`。其餘的 `github.com/iliyami/MacSai` 連結和支持連結 `buymeacoffee.com/iliyami` 只會在瀏覽器中開啟。沒有任何跟蹤器或分析域名，也沒有其他東西。更新後可以再次執行，它始終反映你正在執行的確切構建。
 
 注意：對於本應用這樣未啟用沙盒的 Developer ID 應用，網路訪問不受 entitlement 限制，因此真正的檢查是這種符號和字串檢查，而不是 `codesign --entitlements`。同樣的守衛會在每次改動時於 CI 中執行（[`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)）。
 
@@ -408,6 +408,22 @@ BSD 3-Clause。詳見 [LICENSE](LICENSE)。你可以使用、修改和再分發�
 - [Tencent Lemon Cleaner](https://github.com/Tencent/lemon-cleaner)：模組化架構
 - 方形化樹狀圖演算法，作者 Bruls、Huizing 與 van Wijk（2000）
 
+## 支持與贊助
+
+Mac Sai 免費，而且會一直免費：沒有付費版，沒有廣告，沒有追蹤。如果它幫你省下了一筆清理軟體的訂閱費，歡迎[請我喝杯咖啡 ☕](https://buymeacoffee.com/iliyami)。這能讓每個版本繼續保持簽署、公證，並持續更新。
+
+### 贊助位
+
+Mac Sai 只有**一個**贊助位，就展示在這裡。每月約有 9,000 人造訪這個儲存庫，App 下載量已超過 76,000 次，使用者以開發者和 Mac 重度使用者為主。
+
+- **同一時間只有一位贊助者**，你的名字不會淹沒在一堆 logo 裡。
+- **經過篩選。** 開發者工具、隱私與安全產品，以及尊重使用者的 Mac App。不接受清理或「最佳化」類軟體、加密貨幣、VPN 推廣分潤，以及任何追蹤使用者的產品。
+- **絕不進入 App 內。** Mac Sai 沒有廣告、沒有遙測，任何贊助都不會改變這一點。
+
+<p align="center">
+  <strong>這個位置目前空缺。</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">成為贊助者 →</a>
+</p>
+
 ## Star 歷史
 
 <p align="center">
@@ -422,5 +438,5 @@ BSD 3-Clause。詳見 [LICENSE](LICENSE)。你可以使用、修改和再分發�
 
 <p align="center">
   <strong>Mac Sai 是由社群、為社群打造的免費軟體。</strong><br>
-  如果它幫你省下了一筆訂閱費，點個 ⭐ 能幫助更多人發現它。
+  如果它幫你省下了一筆訂閱費，點個 ⭐ 能幫助更多人發現它，<a href="https://buymeacoffee.com/iliyami">請杯咖啡 ☕</a> 能讓它走得更遠。
 </p>
