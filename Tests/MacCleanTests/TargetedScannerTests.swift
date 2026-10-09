@@ -48,6 +48,23 @@ final class TargetedScannerTests: XCTestCase {
         }
     }
 
+    func testExcludedPathSubtreeIsSkipped() async throws {
+        try await TestFixtures.withTempDir { dir in
+            let skipped = dir.appending(path: "Homebrew")
+            try TestFixtures.writeFile(at: skipped.appending(path: "downloads/pkg.tar.gz"), size: 1)
+            try TestFixtures.writeFile(at: dir.appending(path: "Homebrewer/keep.cache"), size: 1)
+            try TestFixtures.writeFile(at: dir.appending(path: "other.cache"), size: 1)
+
+            let recursive = ScanTarget(path: dir, recursive: true, excludedPaths: [skipped])
+            let names = Set(await TargetedScanner().scan(targets: [recursive]).map(\.name))
+            XCTAssertEqual(names, ["Homebrewer", "keep.cache", "other.cache"])
+
+            let flat = ScanTarget(path: dir, recursive: false, excludedPaths: [skipped])
+            let flatNames = Set(await TargetedScanner().scan(targets: [flat]).map(\.name))
+            XCTAssertEqual(flatNames, ["Homebrewer", "other.cache"])
+        }
+    }
+
     func testMinSizeFilter() async throws {
         try await TestFixtures.withTempDir { dir in
             try TestFixtures.writeFile(at: dir.appending(path: "tiny.bin"), size: 100)
