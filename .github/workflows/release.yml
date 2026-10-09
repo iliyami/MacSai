@@ -193,23 +193,29 @@ jobs:
           EOF
           )"
           else
+            # Changelog from the previous STABLE tag. `head -1` of all tags is
+            # this release itself, which produced "vX...vX" links.
+            PREV_TAG="$(git tag --sort=-creatordate | grep -vx "$TAG" | grep -v -e '-' | head -1 || true)"
             gh release create "$TAG" \
               ".build/MacSai-${VERSION}.dmg" \
               --title "Mac Sai $TAG" \
               --generate-notes \
-              --notes-start-tag "$(git tag --sort=-creatordate | head -1 || echo '')" \
+              ${PREV_TAG:+--notes-start-tag "$PREV_TAG"} \
               --notes "$(cat <<EOF
           ## Mac Sai $TAG
 
-          ### Install via Homebrew
+          ### Download (fastest)
+
+          Download **MacSai-${VERSION}.dmg** below, open it, and drag Mac Sai to your Applications folder. Updating? Quit Mac Sai first and replace the old copy.
+
+          ### Homebrew
 
           \`\`\`
-          brew install --cask mac-sai
+          brew install --cask mac-sai      # new install
+          brew upgrade --cask mac-sai      # already installed with Homebrew
           \`\`\`
 
-          ### Or download directly
-
-          Download **MacSai-${VERSION}.dmg**, open it, and drag Mac Sai to your Applications folder.
+          Homebrew picks up new releases automatically, usually within a day or two. Until then it still serves the previous version, so if \`brew\` doesn't offer ${VERSION} yet, use the DMG above. If you installed from the DMG, keep updating with the DMG: \`brew install\` refuses to replace an app it didn't install.
 
           ### Requirements
           - macOS 14 (Sonoma) or later
