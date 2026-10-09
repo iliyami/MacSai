@@ -392,7 +392,13 @@ struct SmartScanView: View {
         }
     }
 
+    /// Scrolls when taller than the window (support card on a small window)
+    /// instead of overflowing the pane.
     private func doneView(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
+        FitOrScroll { doneContent(freedSize: freedSize, breakdown: breakdown) }
+    }
+
+    private func doneContent(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
         VStack(spacing: 20) {
             Spacer()
             Image(systemName: "checkmark.circle.fill")

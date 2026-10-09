@@ -375,7 +375,13 @@ struct ModuleContainerView: View {
         }
     }
 
+    /// Scrolls when taller than the window (support card on a small window)
+    /// instead of overflowing the pane.
     private func doneView(summary: CleanSummary) -> some View {
+        FitOrScroll { doneContent(summary: summary) }
+    }
+
+    private func doneContent(summary: CleanSummary) -> some View {
         VStack(spacing: 20) {
             Spacer()
 
