@@ -334,7 +334,7 @@ nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-Attendu : la seule classe réseau est `_OBJC_CLASS_$_NSURLSession`, et les seuls points de terminaison appelés sont `api.github.com/repos/iliyami/MacSai/releases/latest` et `formulae.brew.sh/api/cask/mac-sai.json`. Les autres liens `github.com/iliyami/MacSai` ouvrent simplement votre navigateur. Aucun traqueur, aucun hôte d'analytique, rien d'autre. Relancez-le après chaque mise à jour ; il décrit toujours exactement la version que vous exécutez.
+Attendu : la seule classe réseau est `_OBJC_CLASS_$_NSURLSession`, et les seuls points de terminaison appelés sont `api.github.com/repos/iliyami/MacSai/releases/latest` et `formulae.brew.sh/api/cask/mac-sai.json`. Les autres liens `github.com/iliyami/MacSai` et le lien de soutien `buymeacoffee.com/iliyami` ouvrent simplement votre navigateur. Aucun traqueur, aucun hôte d'analytique, rien d'autre. Relancez-le après chaque mise à jour ; il décrit toujours exactement la version que vous exécutez.
 
 Note : sur une app Developer ID sans bac à sable comme celle-ci, l'accès réseau n'est pas régi par un entitlement, c'est donc cette inspection des symboles et des chaînes, et non `codesign --entitlements`, qui est la vraie vérification. La même protection s'exécute dans la CI à chaque changement ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
 
@@ -412,6 +412,22 @@ Inspiré par la communauté open source des utilitaires Mac :
 - [Tencent Lemon Cleaner](https://github.com/Tencent/lemon-cleaner) : architecture modulaire
 - Algorithme de treemap carré de Bruls, Huizing et van Wijk (2000)
 
+## Soutien et sponsors
+
+Mac Sai est gratuit et le restera : pas de version payante, pas de pub, pas de pistage. S'il vous a évité un abonnement à un nettoyeur, vous pouvez [m'offrir un café ☕](https://buymeacoffee.com/iliyami). Cela permet de continuer à publier des versions signées et notariées.
+
+### Emplacement sponsor
+
+Mac Sai propose **un seul** emplacement sponsor, ici même. Environ 9 000 personnes visitent ce dépôt chaque mois, et l'application a été téléchargée plus de 76 000 fois, surtout par des développeurs et des utilisateurs avancés de Mac.
+
+- **Un seul sponsor à la fois**, pour que votre nom ne se perde pas dans un mur de logos.
+- **Sélectionné.** Outils pour développeurs, produits de confidentialité et de sécurité, et apps Mac qui respectent leurs utilisateurs. Pas de nettoyeurs ni d'« optimiseurs », pas de crypto, pas d'affiliation VPN, rien qui piste les gens.
+- **Jamais dans l'application.** Mac Sai n'a ni pub ni télémétrie, et aucun sponsor n'y changera rien.
+
+<p align="center">
+  <strong>Cet emplacement est libre.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Devenir sponsor →</a>
+</p>
+
 ## Historique des étoiles
 
 <p align="center">
@@ -426,5 +442,5 @@ Inspiré par la communauté open source des utilitaires Mac :
 
 <p align="center">
   <strong>Mac Sai est un logiciel libre construit par la communauté, pour la communauté.</strong><br>
-  S'il vous a évité un abonnement, une ⭐ aide les autres à le trouver.
+  S'il vous a évité un abonnement, une ⭐ aide les autres à le trouver, et un <a href="https://buymeacoffee.com/iliyami">café ☕</a> le fait vivre.
 </p>

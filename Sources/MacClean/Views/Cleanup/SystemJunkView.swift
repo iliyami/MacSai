@@ -265,7 +265,13 @@ struct SystemJunkView: View {
         return L10n.tr("正在清理… \(pct)%", "Cleaning… \(pct)%", "Очистка… \(pct)%")
     }
 
+    /// Scrolls when taller than the window (support card on a small window)
+    /// instead of overflowing the pane.
     private func doneView(summary: CleanSummary) -> some View {
+        FitOrScroll { doneContent(summary: summary) }
+    }
+
+    private func doneContent(summary: CleanSummary) -> some View {
         VStack(spacing: 20) {
             Spacer()
 
@@ -307,6 +313,10 @@ struct SystemJunkView: View {
                          (summary.errorCount > 0 ? L10n.tr(" — \(summary.errorCount) 个错误", " — \(summary.errorCount) error\(summary.errorCount == 1 ? "" : "s")", " — \(summary.errorCount) \(L10n.russianPlural(summary.errorCount, one: "ошибка", few: "ошибки", many: "ошибок"))") : ""))
                         .font(.system(size: 12))
                         .foregroundStyle(.primary.opacity(0.65))
+                }
+                if SupportAskLedger.shared.shouldAsk(for: summary) {
+                    SupportCard()
+                        .padding(.horizontal, 40)
                 }
             }
 

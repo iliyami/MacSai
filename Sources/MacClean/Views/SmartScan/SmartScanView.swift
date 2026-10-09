@@ -9,6 +9,7 @@ struct SmartScanView: View {
     @State private var currentModuleName: String = ""
     @State private var selectedItems: Set<URL> = []
     @State private var cleanResults: [ScanResult] = []
+    @State private var askForSupport = false
     @State private var showCleanConfirm = false
     @State private var cleanTask: Task<Void, Never>?
     /// Watches `ScanCoordinator` while a Smart Scan runs. Cancelled by
@@ -391,7 +392,13 @@ struct SmartScanView: View {
         }
     }
 
+    /// Scrolls when taller than the window (support card on a small window)
+    /// instead of overflowing the pane.
     private func doneView(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
+        FitOrScroll { doneContent(freedSize: freedSize, breakdown: breakdown) }
+    }
+
+    private func doneContent(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
         VStack(spacing: 20) {
             Spacer()
             Image(systemName: "checkmark.circle.fill")
@@ -437,6 +444,7 @@ struct SmartScanView: View {
                 .foregroundStyle(.primary.opacity(0.65))
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 420)
+            if askForSupport { SupportCard() }
             Button(L10n.tr("完成", "Done", "Готово")) { resetScan() }
                 .buttonStyle(.bordered)
                 .tint(.primary)
@@ -465,6 +473,7 @@ struct SmartScanView: View {
         scanWatchTask = nil
         selectedItems = []
         cleanResults = []
+        askForSupport = false
         completedModules = []
         currentModuleName = ""
         scanState = .idle
@@ -614,6 +623,12 @@ struct SmartScanView: View {
                 from: modules,
                 selectedItems: result.removedURLs
             )
+            askForSupport = SupportAskLedger.shared.shouldAsk(for: CleanSummary(
+                selectedCount: selection.count,
+                removedCount: result.removedCount,
+                freedBytes: result.freedBytes,
+                errorMessages: []
+            ))
             scanState = .done(freedSize: result.freedBytes, breakdown: breakdown)
         }
     }
