@@ -253,14 +253,23 @@ public final class MenuBarLauncher {
     /// on the main actor, so the `lastError` write is safe. Do NOT reintroduce
     /// a completion handler that touches `@MainActor` state here.
     func openHelper(at url: URL) async {
-        let config = NSWorkspace.OpenConfiguration()
-        config.activates = false   // Don't steal focus from the main app
-        config.hides = false
         do {
-            _ = try await NSWorkspace.shared.openApplication(at: url, configuration: config)
+            _ = try await NSWorkspace.shared.openApplication(at: url, configuration: Self.helperOpenConfiguration())
         } catch {
             lastError = .registrationFailed(error.localizedDescription)
         }
+    }
+
+    /// How the helper is launched. `promptsUserIfNeeded = false` keeps a
+    /// failed launch silent: by default LaunchServices has CoreServicesUIAgent
+    /// show a Finder "The file can't be found." alert, which tells the user
+    /// nothing. The failure is already reported through `lastError`.
+    static func helperOpenConfiguration() -> NSWorkspace.OpenConfiguration {
+        let config = NSWorkspace.OpenConfiguration()
+        config.activates = false   // Don't steal focus from the main app
+        config.hides = false
+        config.promptsUserIfNeeded = false
+        return config
     }
 
     private func terminateRunningHelper() {

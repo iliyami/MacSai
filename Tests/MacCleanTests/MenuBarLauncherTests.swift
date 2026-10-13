@@ -83,6 +83,16 @@ final class MenuBarLauncherTests: XCTestCase {
                         "A failed helper launch should surface via lastError")
     }
 
+    /// A failed helper launch must stay silent. LaunchServices' default is to
+    /// ask CoreServicesUIAgent to show a Finder "The file can't be found."
+    /// alert, so the test above put one on screen every time the suite ran,
+    /// and a user whose helper went missing would get the same mystery alert.
+    func testHelperLaunchNeverPromptsTheUser() {
+        let config = MenuBarLauncher.helperOpenConfiguration()
+        XCTAssertFalse(config.promptsUserIfNeeded, "a failed launch must not show a Finder alert")
+        XCTAssertFalse(config.activates, "the helper must not steal focus from the main app")
+    }
+
     func testHelperUsesKeepOneInstancePolicyNotMutualExit() throws {
         let src = try String(contentsOf: sourceURL("Sources/MacCleanMenu/MacCleanMenuApp.swift"), encoding: .utf8)
         XCTAssertTrue(
