@@ -18,7 +18,7 @@
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="最新版本" /></a>
   <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
   <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-862%20passing-brightgreen?style=flat-square" alt="測試" />
+  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="測試" />
   <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="無遙測" />
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="已公證" />
   <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="許可證" />
@@ -49,7 +49,7 @@ brew install --cask mac-sai
 
 - **永久免費。** 沒有訂閱、沒有內購、沒有“升級到 Pro”、沒有彈窗催促。BSD-3 許可證。
 - **零遙測。** 沒有分析統計、沒有崩潰上報、沒有追蹤器、沒有可回傳的伺服器。而且不必只聽我們說，你可以[自行驗證](#自行驗證無遙測)，兩條命令即可。
-- **CleanMyMac 的每一項主要工具，集於一身。** 17 個模組，覆蓋清理、防護、效能、應用管理和磁碟洞察，外加一個選單欄小元件。
+- **CleanMyMac 的每一項主要工具，集於一身。** 22 個模組，覆蓋清理、防護、效能、應用管理和磁碟洞察，外加一個選單欄小元件。
 - **安全為先。** 優先移入廢紙簍、受保護路徑黑名單、符號連結與 TOCTOU 防護，以及會校驗每一條路徑的 `SafetyGuard`。它從設計上就力求絕不丟失你的資料。
 - **經 Apple 公證，且完全開源。** 你的 Mac 每次啟動都會校驗簽名，而每一行程式碼都在這裡供你審閱。
 
@@ -66,6 +66,9 @@ brew install --cask mac-sai
 - **系統垃圾**（16+ 類別）
 - **郵件附件**
 - **廢紙簍**
+- **專案垃圾**（建置資料夾）
+- **開發者磁碟占用**（Docker、模擬器）
+- **清理歷史**（一鍵復原）
 
 </td>
 <td width="33%" valign="top">
@@ -73,6 +76,7 @@ brew install --cask mac-sai
 ### 🛡️ 防護
 - **惡意軟體清理**
 - **隱私清理**（瀏覽器）
+- **瀏覽器擴充功能**
 - **已儲存的 Wi-Fi**
 - **權限總覽**
 
@@ -90,6 +94,7 @@ brew install --cask mac-sai
 
 ### 📦 應用
 - **解除安裝器**（含重置為預設）
+- **未使用的應用**
 - **擴充功能**（面板、外掛）
 - **應用更新**
 
@@ -125,12 +130,16 @@ brew install --cask mac-sai
 | **系統垃圾** | 16+ 個掃描類別：使用者/系統快取、日誌、語言檔案、損壞的偏好設定、損壞的登入項、文稿版本、iOS 備份、Xcode 垃圾、包管理器 / IDE / AI 工具快取、已刪除使用者的殘留，以及 **Universal Binary 瘦身**（檢測同時包含 arm64 和 x86_64 切片的胖 Mach-O 二進位制檔案，透過 `lipo` 重寫為你的原生架構，支援取消） |
 | **郵件附件** | 查詢來自 Apple Mail、Outlook 和 Spark 的快取附件 |
 | **廢紙簍** | 清空所有位置（包括外接磁碟）的廢紙簍 |
+| **專案垃圾** | 在你的專案中尋找可重新產生的建置資料夾：`node_modules`、`.next`、`dist`、Rust 和 Maven 的 `target`、Gradle 的 `build`、Python 虛擬環境以及 CocoaPods 的 `Pods`。只有當旁邊的檔案能確認專案類型時才會計入，而 `dist` 和 `Pods` 只有在你的 `.gitignore` 中列出時才會計入。所有內容都移到廢紙簍 |
+| **開發者磁碟占用** | 顯示 Docker 和 Xcode 模擬器占用了多少空間。清理已停止的容器、懸空映像和懸空建置快取（每項都需確認），並刪除無法使用的模擬器和舊的模擬器執行環境。Docker 卷宗以及每個平台最新的執行環境絕不會被觸碰 |
+| **清理歷史** | 列出你最近的清理（最近 30 天，最多 20 次），一鍵把整次清理從廢紙簍放回原處。歷史記錄只儲存在你的 Mac 上的 `~/Library/Logs/MacClean/clean-history.json`，僅你的使用者帳號可讀，絕不會傳送到任何地方 |
 
 ### 🛡️ 防護
 | 模組 | 說明 |
 |--------|------------|
 | **惡意軟體清理** | 基於特徵碼的掃描，提供 3 種深度（快速 / 平衡 / 深度）：檢查啟動代理與守護程序、瀏覽器擴充功能，以及已知的廣告軟體/惡意軟體模式（這是一份精選清單，並非防毒軟體，我們也如實說明） |
 | **隱私清理** | 清理 Safari、Chrome 和 Firefox 的歷史記錄、Cookie 和快取，可按時間過濾。Safari **書籤絕不會被清理** |
+| **瀏覽器擴充功能** | 列出 Safari、Chrome、Brave、Edge、Arc 和 Firefox 中安裝的擴充功能。你自己安裝的 Chromium 和 Firefox 擴充功能可在瀏覽器關閉時移到廢紙簍；由原則或瀏覽器本身安裝的擴充功能會顯示但不會被更動。Safari 擴充功能會連結到 Safari 設定 |
 | **已儲存的 Wi-Fi** | 列出你的首選無線網路，並忘記你選擇的那些 |
 | **權限總覽** | 以“按應用”的視角只讀檢視每個應用持有哪些隱私（TCC）授權，這是系統設定不提供的角度。所有操作都會深鏈到系統設定，由系統設定負責實際的開關 |
 
@@ -144,6 +153,7 @@ brew install --cask mac-sai
 | 模組 | 說明 |
 |--------|------------|
 | **解除安裝器** | 模式匹配引擎，可在 17 個以上的 Library 子目錄中找出每一個關聯檔案（包括安裝在廠商子資料夾中的應用）。支援徹底刪除、**重置為預設**（清除應用的快取和偏好設定但保留應用本身），以及未使用應用檢測 |
+| **未使用的應用** | 根據 Spotlight 的上次使用日期，找出你 3、6 或 12 個月沒有開啟過的應用，並依大小排序。正在執行的應用絕不會列出；如果 Spotlight 沒有使用資料，它會如實說明而不是猜測。一鍵即可把應用交給解除安裝器 |
 | **擴充功能** | 檢視第三方偏好設定面板、Internet 外掛和 Safari 擴充功能。使用者安裝的面板和外掛可移到廢紙簍 |
 | **應用更新** | 透過已安裝應用自身的 Sparkle appcast 源檢查更新（只讀取版本資訊，不傳送任何關於你的資料） |
 
@@ -242,7 +252,7 @@ curl -fsSL https://raw.githubusercontent.com/iliyami/MacSai/main/scripts/install
 git clone https://github.com/iliyami/MacSai.git
 cd MacSai
 swift build
-swift test                     # 執行完整的 862 個測試
+swift test                     # 執行完整的 1048 個測試
 bash scripts/build-dmg.sh      # 構建本地 DMG（未簽名）
 ```
 
@@ -340,7 +350,7 @@ strings -a "$APP" | grep -iE 'https?://' | sort -u
 
 ```
 Mac Sai
-├── MacClean          主 SwiftUI 應用（17 個模組）
+├── MacClean          主 SwiftUI 應用（22 個模組）
 ├── MacCleanKit       共享框架（模型、常量、協議）
 ├── MacCleanHelper    XPC 特權助手（用於 root 操作的 LaunchDaemon）
 └── MacCleanMenu      選單欄監視器（獨立程序）
@@ -380,7 +390,7 @@ Mac Sai 的設計目標是**絕不造成資料丟失**：
 swift test
 ```
 
-基於 XCTest 的測試套件包含 **862 個測試**，並把 `SafetyGuard` 和 `CleaningEngine`（生死攸關的檔案）視為必須完美：對符號連結、路徑穿越、NULL 位元組、SIP、受保護應用、檔案數量上限、TOCTOU 和冪等性的對抗式覆蓋，外加對預演 / 移入廢紙簍 / 永久刪除清理、掃描狀態機、每一個系統垃圾類別、樹狀圖演算法、解除安裝器匹配引擎、重複檔案檢測、appcast 解析，以及完整的“從合成夾具到清理”端到端流程的整合覆蓋。測試夾具（`withTempHome`、`withFakeApp`、`withFakePlist`）確保每個測試都不會觸碰你真實的個人目錄。
+基於 XCTest 的測試套件包含 **1048 個測試**，並把 `SafetyGuard` 和 `CleaningEngine`（生死攸關的檔案）視為必須完美：對符號連結、路徑穿越、NULL 位元組、SIP、受保護應用、檔案數量上限、TOCTOU 和冪等性的對抗式覆蓋，外加對預演 / 移入廢紙簍 / 永久刪除清理、掃描狀態機、每一個系統垃圾類別、樹狀圖演算法、解除安裝器匹配引擎、重複檔案檢測、appcast 解析，以及完整的“從合成夾具到清理”端到端流程的整合覆蓋。測試夾具（`withTempHome`、`withFakeApp`、`withFakePlist`）確保每個測試都不會觸碰你真實的個人目錄。
 
 ---
 

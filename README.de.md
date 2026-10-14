@@ -18,7 +18,7 @@
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="Latest release" /></a>
   <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
   <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-862%20passing-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="Tests" />
   <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="Notarized" />
   <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" />
@@ -49,7 +49,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 
 - **Für immer kostenlos.** Kein Abo, keine In-App-Käufe, kein "Upgrade auf Pro", keine Nag-Screens. BSD-3-lizenziert.
 - **Null Telemetrie.** Keine Analytik, kein Crash-Reporter, keine Tracker, kein Server, an den etwas nach Hause gesendet werden könnte. Und du musst uns nicht einfach glauben, [überprüfe es selbst](#telemetriefreiheit-selbst-überprüfen) mit zwei Befehlen.
-- **Jedes wichtige CleanMyMac-Werkzeug in einer App.** 17 Module für Bereinigung, Schutz, Leistung, Anwendungen und Speicheranalyse, plus ein Menüleisten-Widget.
+- **Jedes wichtige CleanMyMac-Werkzeug in einer App.** 22 Module für Bereinigung, Schutz, Leistung, Anwendungen und Speicheranalyse, plus ein Menüleisten-Widget.
 - **Sicher von Grund auf.** Löschen zuerst in den Papierkorb, eine Sperrliste geschützter Pfade, Schutz gegen Symlinks und TOCTOU, und ein `SafetyGuard`, der jeden Pfad prüft. Es ist so gebaut, dass es deine Daten nie verliert.
 - **Von Apple notarisiert und vollständig quelloffen.** Dein Mac prüft die Signatur bei jedem Start, und jede Zeile ist hier nachlesbar.
 
@@ -66,6 +66,9 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 - **System Junk** (16+ Kategorien)
 - **Mail Attachments**
 - **Trash Bins**
+- **Project Junk** (Build-Ordner)
+- **Disk Hogs** (Docker, Simulatoren)
+- **Clean History** (Wiederherstellen mit einem Klick)
 
 </td>
 <td width="33%" valign="top">
@@ -73,6 +76,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 ### 🛡️ Schutz
 - **Malware Removal**
 - **Privacy** (Browser)
+- **Browser Extensions**
 - **Saved Wi-Fi**
 - **Permissions Overview**
 
@@ -90,6 +94,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 
 ### 📦 Anwendungen
 - **Uninstaller** (+ Auf Standard zurücksetzen)
+- **Unused Apps**
 - **Extensions** (Bereiche, Plug-ins)
 - **Updater**
 
@@ -125,12 +130,16 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 | **System Junk** | 16+ Scan-Kategorien: Benutzer- und System-Caches, Protokolle, Sprachdateien, defekte Einstellungen, defekte Anmeldeobjekte, Dokumentversionen, iOS-Backups, Xcode-Müll, Caches von Paketmanagern / IDEs / KI-Werkzeugen, Reste gelöschter Benutzer, sowie **Universal-Binary-Verschlankung** (findet fette Mach-O-Binärdateien, die sowohl arm64 als auch x86_64 enthalten, und schreibt sie per `lipo` auf deine native Architektur um, mit Abbrechen-Unterstützung) |
 | **Mail Attachments** | Findet zwischengespeicherte Anhänge aus Apple Mail, Outlook und Spark |
 | **Trash Bins** | Leert den Papierkorb an jedem Ort, auch auf externen Laufwerken |
+| **Project Junk** | Findet wiederherstellbare Build-Ordner in deinen Projekten: `node_modules`, `.next`, `dist`, Rust- und Maven-`target`, Gradle-`build`, Python-Virtualenvs und CocoaPods-`Pods`. Ein Ordner zählt nur, wenn die Dateien daneben den Projekttyp bestätigen, und `dist` und `Pods` nur, wenn deine `.gitignore` sie nennt. Alles geht in den Papierkorb |
+| **Disk Hogs** | Zeigt, wie viel Platz Docker und Xcode-Simulatoren belegen. Entfernt gestoppte Container, verwaiste Images und verwaisten Build-Cache (jeweils nach einer Bestätigung) und löscht nicht verfügbare Simulatoren und alte Simulator-Laufzeiten. Docker-Volumes und die neueste Laufzeit jeder Plattform werden nie angerührt |
+| **Clean History** | Listet deine letzten Bereinigungen auf (die letzten 30 Tage, bis zu 20) und holt eine ganze Bereinigung mit einem Klick aus dem Papierkorb zurück. Der Verlauf bleibt auf deinem Mac in `~/Library/Logs/MacClean/clean-history.json`, nur für dein Benutzerkonto lesbar, und wird nirgendwohin gesendet |
 
 ### 🛡️ Schutz
 | Modul | Was es tut |
 |--------|------------|
 | **Malware Removal** | Signaturbasiertes Scannen in 3 Tiefen (Schnell / Ausgewogen / Tief): Launch Agents und Daemons, Browser-Erweiterungen sowie bekannte Adware-/Malware-Muster (kuratierte Liste, kein Antivirus, und das sagt es auch) |
 | **Privacy** | Bereinigt Verlauf, Cookies und Cache von Safari, Chrome und Firefox, mit Zeitfiltern. Safari-**Lesezeichen werden nie angerührt** |
+| **Browser Extensions** | Listet die installierten Erweiterungen in Safari, Chrome, Brave, Edge, Arc und Firefox auf. Selbst installierte Chromium- und Firefox-Erweiterungen können in den Papierkorb, solange der Browser geschlossen ist; per Richtlinie oder vom Browser selbst installierte werden angezeigt, aber nicht angerührt. Safari-Erweiterungen verlinken zu den Safari-Einstellungen |
 | **Saved Wi-Fi** | Listet deine bevorzugten Drahtlosnetzwerke auf und vergisst die von dir ausgewählten |
 | **Permissions Overview** | Eine schreibgeschützte Übersicht pro App, welche Datenschutz-Berechtigungen (TCC) jede App besitzt, der Blickwinkel, den die Systemeinstellungen nicht bieten. Jede Aktion verlinkt tief in die Systemeinstellungen, die die Schalter besitzen |
 
@@ -144,6 +153,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 | Modul | Was es tut |
 |--------|------------|
 | **Uninstaller** | Eine Muster-Suchmaschine, die jede zugehörige Datei über 17+ Library-Unterverzeichnisse findet (auch Apps, die in Hersteller-Unterordnern verschachtelt sind). Vollständige Entfernung, **Auf Standard zurücksetzen** (Caches und Einstellungen einer App löschen, die App aber behalten) und Erkennung ungenutzter Apps |
+| **Unused Apps** | Findet Apps, die du seit 3, 6 oder 12 Monaten nicht geöffnet hast, anhand des Spotlight-Datums der letzten Nutzung, sortiert nach Größe. Laufende Apps werden nie aufgelistet, und wenn Spotlight keine Nutzungsdaten hat, sagt es das, statt zu raten. Ein Klick übergibt eine App an den Uninstaller |
 | **Extensions** | Prüfe Einstellungsbereiche von Drittanbietern, Internet-Plug-ins und Safari-Erweiterungen. Vom Benutzer installierte Bereiche und Plug-ins können in den Papierkorb |
 | **Updater** | Prüft installierte Apps über deren eigene Sparkle-Appcast-Feeds auf Updates (liest nur Versionsinformationen, sendet nichts über dich) |
 
@@ -246,7 +256,7 @@ Hol dir das neueste DMG aus den [Releases](https://github.com/iliyami/MacSai/rel
 git clone https://github.com/iliyami/MacSai.git
 cd MacSai
 swift build
-swift test                     # die volle Suite mit 862 Tests ausführen
+swift test                     # die volle Suite mit 1.048 Tests ausführen
 bash scripts/build-dmg.sh      # ein lokales DMG bauen (unsigniert)
 ```
 
@@ -344,7 +354,7 @@ Hinweis: Bei einer nicht-sandboxed Developer-ID-App wie dieser wird der Netzwerk
 
 ```
 Mac Sai
-├── MacClean          Haupt-SwiftUI-App (17 Module)
+├── MacClean          Haupt-SwiftUI-App (22 Module)
 ├── MacCleanKit       Gemeinsames Framework (Modelle, Konstanten, Protokolle)
 ├── MacCleanHelper    Privilegierter XPC-Helfer (LaunchDaemon für Root-Operationen)
 └── MacCleanMenu      Menüleisten-Monitor (eigenständiger Prozess)
@@ -384,7 +394,7 @@ Mac Sai ist so entworfen, dass es **niemals Datenverlust verursacht**:
 swift test
 ```
 
-Die XCTest-Suite hat **862 Tests** und behandelt `SafetyGuard` und `CleaningEngine` (die Dateien über Leben und Tod) als muss-perfekt-sein: adversariale Abdeckung von Symlinks, Pfad-Traversierung, NULL-Bytes, SIP, geschützten Apps, Dateianzahl-Obergrenzen, TOCTOU und Idempotenz, plus Integrationsabdeckung von Probelauf- / Papierkorb- / permanenter Bereinigung, der Scan-Zustandsmaschine, jeder System-Junk-Kategorie, der Treemap-Mathematik, der Uninstaller-Suchmaschine, der Duplikaterkennung, des Appcast-Parsings und vollständiger End-to-End-Zyklen von Fixture bis Bereinigung. Fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) halten jeden Test von deinem echten Home-Verzeichnis fern.
+Die XCTest-Suite hat **1.048 Tests** und behandelt `SafetyGuard` und `CleaningEngine` (die Dateien über Leben und Tod) als muss-perfekt-sein: adversariale Abdeckung von Symlinks, Pfad-Traversierung, NULL-Bytes, SIP, geschützten Apps, Dateianzahl-Obergrenzen, TOCTOU und Idempotenz, plus Integrationsabdeckung von Probelauf- / Papierkorb- / permanenter Bereinigung, der Scan-Zustandsmaschine, jeder System-Junk-Kategorie, der Treemap-Mathematik, der Uninstaller-Suchmaschine, der Duplikaterkennung, des Appcast-Parsings und vollständiger End-to-End-Zyklen von Fixture bis Bereinigung. Fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) halten jeden Test von deinem echten Home-Verzeichnis fern.
 
 ---
 

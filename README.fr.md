@@ -18,7 +18,7 @@
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="Latest release" /></a>
   <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
   <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-862%20passing-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="Tests" />
   <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="Notarized" />
   <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" />
@@ -49,7 +49,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 
 - **Gratuit, pour toujours.** Pas d'abonnement, pas d'achats intégrés, pas de « passage à Pro », pas de fenêtres insistantes. Sous licence BSD-3.
 - **Zéro télémétrie.** Pas d'analytique, pas de rapport de plantage, pas de traqueurs, aucun serveur où téléphoner. Et vous n'avez pas à nous croire sur parole, [vérifiez-le vous-même](#vérifiez-labsence-de-télémétrie-vous-même) en deux commandes.
-- **Chaque outil majeur de CleanMyMac, dans une seule app.** 17 modules couvrant le nettoyage, la protection, les performances, les applications et l'analyse du disque, plus un widget dans la barre des menus.
+- **Chaque outil majeur de CleanMyMac, dans une seule app.** 22 modules couvrant le nettoyage, la protection, les performances, les applications et l'analyse du disque, plus un widget dans la barre des menus.
 - **Sûr par conception.** Suppression d'abord vers la corbeille, une liste de chemins protégés, des protections contre les liens symboliques et TOCTOU, et un `SafetyGuard` qui valide chaque chemin. Conçu pour ne jamais perdre vos données.
 - **Notarié par Apple et entièrement open source.** Votre Mac vérifie la signature à chaque lancement, et chaque ligne est ici, à lire.
 
@@ -66,6 +66,9 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 - **System Junk** (16+ catégories)
 - **Mail Attachments**
 - **Trash Bins**
+- **Project Junk** (dossiers de build)
+- **Disk Hogs** (Docker, simulateurs)
+- **Clean History** (restauration en un clic)
 
 </td>
 <td width="33%" valign="top">
@@ -73,6 +76,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 ### 🛡️ Protection
 - **Malware Removal**
 - **Privacy** (navigateurs)
+- **Browser Extensions**
 - **Saved Wi-Fi**
 - **Permissions Overview**
 
@@ -90,6 +94,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 
 ### 📦 Applications
 - **Uninstaller** (+ Réinitialiser aux valeurs par défaut)
+- **Unused Apps**
 - **Extensions** (volets, modules)
 - **Updater**
 
@@ -125,12 +130,16 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 | **System Junk** | 16+ catégories de scan : caches utilisateur et système, journaux, fichiers de langue, préférences corrompues, objets d'ouverture invalides, versions de documents, sauvegardes iOS, résidus Xcode, caches des gestionnaires de paquets / IDE / outils d'IA, restes d'utilisateurs supprimés, ainsi que l'**amincissement des binaires universels** (repère les binaires Mach-O gras contenant à la fois arm64 et x86_64 et les réécrit pour votre architecture native via `lipo`, en respectant l'annulation) |
 | **Mail Attachments** | Trouve les pièces jointes mises en cache par Apple Mail, Outlook et Spark |
 | **Trash Bins** | Vide la corbeille à chaque emplacement, y compris sur les disques externes |
+| **Project Junk** | Trouve les dossiers de build régénérables dans vos projets : `node_modules`, `.next`, `dist`, `target` de Rust et Maven, `build` de Gradle, environnements virtuels Python et `Pods` de CocoaPods. Un dossier ne compte que si les fichiers voisins confirment le type de projet, et `dist` et `Pods` seulement si votre `.gitignore` les nomme. Tout part à la corbeille |
+| **Disk Hogs** | Montre l'espace occupé par Docker et les simulateurs Xcode. Supprime les conteneurs arrêtés, les images orphelines et le cache de build orphelin (chacun après une confirmation), et supprime les simulateurs indisponibles et les anciens runtimes de simulateur. Les volumes Docker et le runtime le plus récent de chaque plateforme ne sont jamais touchés |
+| **Clean History** | Liste vos nettoyages récents (les 30 derniers jours, jusqu'à 20) et remet un nettoyage entier hors de la corbeille en un clic. L'historique reste sur votre Mac dans `~/Library/Logs/MacClean/clean-history.json`, lisible uniquement par votre compte utilisateur, et n'est jamais envoyé nulle part |
 
 ### 🛡️ Protection
 | Module | Ce que ça fait |
 |--------|------------|
 | **Malware Removal** | Analyse par signatures à 3 profondeurs (Rapide / Équilibré / Approfondi) : agents et démons de lancement, extensions de navigateur et motifs connus d'adware/malware (liste organisée, pas un antivirus, et il le dit) |
 | **Privacy** | Nettoie l'historique, les cookies et le cache de Safari, Chrome et Firefox, avec des filtres temporels. Les **favoris de Safari ne sont jamais touchés** |
+| **Browser Extensions** | Liste les extensions installées dans Safari, Chrome, Brave, Edge, Arc et Firefox. Les extensions Chromium et Firefox que vous avez installées vous-même peuvent aller à la corbeille quand le navigateur est fermé ; celles installées par une stratégie ou par le navigateur lui-même sont affichées mais laissées intactes. Les extensions Safari renvoient vers les réglages de Safari |
 | **Saved Wi-Fi** | Liste vos réseaux sans fil préférés et oublie ceux que vous choisissez |
 | **Permissions Overview** | Une vue en lecture seule, par app, des autorisations de confidentialité (TCC) détenues par chaque app, l'angle que les Réglages Système ne vous donnent pas. Chaque action renvoie vers les Réglages Système, qui possèdent les interrupteurs |
 
@@ -144,6 +153,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 | Module | Ce que ça fait |
 |--------|------------|
 | **Uninstaller** | Un moteur de correspondance par motifs qui trouve chaque fichier associé dans 17+ sous-dossiers de Library (y compris les apps imbriquées dans des sous-dossiers d'éditeur). Suppression complète, **Réinitialiser aux valeurs par défaut** (effacer les caches et préférences d'une app tout en la conservant) et détection des apps inutilisées |
+| **Unused Apps** | Trouve les apps que vous n'avez pas ouvertes depuis 3, 6 ou 12 mois, d'après la date de dernière utilisation de Spotlight, triées par taille. Les apps en cours d'exécution ne sont jamais listées, et quand Spotlight n'a pas de données d'utilisation, il le dit au lieu de deviner. Un clic confie une app à l'Uninstaller |
 | **Extensions** | Passez en revue les volets de préférences tiers, les modules Internet et les extensions Safari. Les volets et modules installés par l'utilisateur peuvent aller à la corbeille |
 | **Updater** | Vérifie les mises à jour des apps installées via leurs propres flux d'appcast Sparkle (lit uniquement les informations de version, n'envoie rien vous concernant) |
 
@@ -246,7 +256,7 @@ Récupérez le dernier DMG depuis les [Releases](https://github.com/iliyami/MacS
 git clone https://github.com/iliyami/MacSai.git
 cd MacSai
 swift build
-swift test                     # exécuter la suite complète de 862 tests
+swift test                     # exécuter la suite complète de 1048 tests
 bash scripts/build-dmg.sh      # compiler un DMG local (non signé)
 ```
 
@@ -344,7 +354,7 @@ Note : sur une app Developer ID sans bac à sable comme celle-ci, l'accès rése
 
 ```
 Mac Sai
-├── MacClean          App SwiftUI principale (17 modules)
+├── MacClean          App SwiftUI principale (22 modules)
 ├── MacCleanKit       Framework partagé (modèles, constantes, protocoles)
 ├── MacCleanHelper    Assistant XPC privilégié (LaunchDaemon pour les opérations root)
 └── MacCleanMenu      Moniteur de barre des menus (processus indépendant)
@@ -384,7 +394,7 @@ Mac Sai est conçu pour **ne jamais causer de perte de données** :
 swift test
 ```
 
-La suite XCTest compte **862 tests** et traite `SafetyGuard` et `CleaningEngine` (les fichiers de vie ou de mort) comme devant être parfaits : couverture adversariale des liens symboliques, de la traversée de chemins, des octets NULL, de SIP, des apps protégées, des plafonds de nombre de fichiers, du TOCTOU et de l'idempotence, plus une couverture d'intégration du nettoyage en simulation / corbeille / permanent, de la machine à états du scan, de chaque catégorie de System Junk, des calculs de treemap, du moteur de correspondance du désinstalleur, de la détection des doublons, de l'analyse d'appcast, et de cycles complets de bout en bout de la préparation au nettoyage. Les fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) gardent chaque test hors de votre vrai dossier personnel.
+La suite XCTest compte **1048 tests** et traite `SafetyGuard` et `CleaningEngine` (les fichiers de vie ou de mort) comme devant être parfaits : couverture adversariale des liens symboliques, de la traversée de chemins, des octets NULL, de SIP, des apps protégées, des plafonds de nombre de fichiers, du TOCTOU et de l'idempotence, plus une couverture d'intégration du nettoyage en simulation / corbeille / permanent, de la machine à états du scan, de chaque catégorie de System Junk, des calculs de treemap, du moteur de correspondance du désinstalleur, de la détection des doublons, de l'analyse d'appcast, et de cycles complets de bout en bout de la préparation au nettoyage. Les fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) gardent chaque test hors de votre vrai dossier personnel.
 
 ---
 

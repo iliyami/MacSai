@@ -18,7 +18,7 @@
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="最新版本" /></a>
   <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
   <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-862%20passing-brightgreen?style=flat-square" alt="测试" />
+  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="测试" />
   <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="无遥测" />
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="已公证" />
   <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="许可证" />
@@ -49,7 +49,7 @@ brew install --cask mac-sai
 
 - **永久免费。** 没有订阅、没有内购、没有“升级到 Pro”、没有弹窗催促。BSD-3 许可证。
 - **零遥测。** 没有分析统计、没有崩溃上报、没有追踪器、没有可回传的服务器。而且不必只听我们说，你可以[自行验证](#自行验证无遥测)，两条命令即可。
-- **CleanMyMac 的每一项主要工具，集于一身。** 17 个模块，覆盖清理、防护、性能、应用管理和磁盘洞察，外加一个菜单栏小组件。
+- **CleanMyMac 的每一项主要工具，集于一身。** 22 个模块，覆盖清理、防护、性能、应用管理和磁盘洞察，外加一个菜单栏小组件。
 - **安全为先。** 优先移入废纸篓、受保护路径黑名单、符号链接与 TOCTOU 防护，以及会校验每一条路径的 `SafetyGuard`。它从设计上就力求绝不丢失你的数据。
 - **经 Apple 公证，且完全开源。** 你的 Mac 每次启动都会校验签名，而每一行代码都在这里供你审阅。
 
@@ -66,6 +66,9 @@ brew install --cask mac-sai
 - **系统垃圾**（16+ 类别）
 - **邮件附件**
 - **废纸篓**
+- **项目垃圾**（构建文件夹）
+- **开发者磁盘占用**（Docker、模拟器）
+- **清理历史**（一键恢复）
 
 </td>
 <td width="33%" valign="top">
@@ -73,6 +76,7 @@ brew install --cask mac-sai
 ### 🛡️ 防护
 - **恶意软件清理**
 - **隐私清理**（浏览器）
+- **浏览器扩展**
 - **已保存的 Wi-Fi**
 - **权限总览**
 
@@ -90,6 +94,7 @@ brew install --cask mac-sai
 
 ### 📦 应用
 - **卸载器**（含重置为默认）
+- **未使用的应用**
 - **扩展**（面板、插件）
 - **应用更新**
 
@@ -125,12 +130,16 @@ brew install --cask mac-sai
 | **系统垃圾** | 16+ 个扫描类别：用户/系统缓存、日志、语言文件、损坏的偏好设置、损坏的登录项、文稿版本、iOS 备份、Xcode 垃圾、包管理器 / IDE / AI 工具缓存、已删除用户的残留，以及 **Universal Binary 瘦身**（检测同时包含 arm64 和 x86_64 切片的胖 Mach-O 二进制文件，通过 `lipo` 重写为你的原生架构，支持取消） |
 | **邮件附件** | 查找来自 Apple Mail、Outlook 和 Spark 的缓存附件 |
 | **废纸篓** | 清空所有位置（包括外置磁盘）的废纸篓 |
+| **项目垃圾** | 在你的项目中查找可重新生成的构建文件夹：`node_modules`、`.next`、`dist`、Rust 和 Maven 的 `target`、Gradle 的 `build`、Python 虚拟环境以及 CocoaPods 的 `Pods`。只有当旁边的文件能确认项目类型时才会计入，而 `dist` 和 `Pods` 只有在你的 `.gitignore` 中列出时才会计入。所有内容都移入废纸篓 |
+| **开发者磁盘占用** | 显示 Docker 和 Xcode 模拟器占用了多少空间。清理已停止的容器、悬空镜像和悬空构建缓存（每项都需确认），并删除不可用的模拟器和旧的模拟器运行时。Docker 卷以及每个平台最新的运行时绝不会被触碰 |
+| **清理历史** | 列出你最近的清理（最近 30 天，最多 20 次），一键把整次清理从废纸篓放回原处。历史记录只保存在你的 Mac 上的 `~/Library/Logs/MacClean/clean-history.json`，仅你的用户帐户可读，绝不会发送到任何地方 |
 
 ### 🛡️ 防护
 | 模块 | 说明 |
 |--------|------------|
 | **恶意软件清理** | 基于特征码的扫描，提供 3 种深度（快速 / 平衡 / 深度）：检查启动代理与守护进程、浏览器扩展，以及已知的广告软件/恶意软件模式（这是一份精选清单，并非杀毒软件，我们也如实说明） |
 | **隐私清理** | 清理 Safari、Chrome 和 Firefox 的历史记录、Cookie 和缓存，可按时间过滤。Safari **书签绝不会被清理** |
+| **浏览器扩展** | 列出 Safari、Chrome、Brave、Edge、Arc 和 Firefox 中安装的扩展。你自己安装的 Chromium 和 Firefox 扩展可在浏览器关闭时移到废纸篓；由策略或浏览器自身安装的扩展会显示但不会被改动。Safari 扩展会链接到 Safari 设置 |
 | **已保存的 Wi-Fi** | 列出你的首选无线网络，并忘记你选择的那些 |
 | **权限总览** | 以“按应用”的视角只读查看每个应用持有哪些隐私（TCC）授权，这是系统设置不提供的角度。所有操作都会深链到系统设置，由系统设置负责实际的开关 |
 
@@ -144,6 +153,7 @@ brew install --cask mac-sai
 | 模块 | 说明 |
 |--------|------------|
 | **卸载器** | 模式匹配引擎，可在 17 个以上的 Library 子目录中找出每一个关联文件（包括安装在厂商子文件夹中的应用）。支持彻底删除、**重置为默认**（清除应用的缓存和偏好设置但保留应用本身），以及未使用应用检测 |
+| **未使用的应用** | 根据 Spotlight 的上次使用日期，找出你 3、6 或 12 个月没有打开过的应用，并按大小排序。正在运行的应用绝不会列出；如果 Spotlight 没有使用数据，它会如实说明而不是猜测。一键即可把应用交给卸载器 |
 | **扩展** | 查看第三方偏好设置面板、Internet 插件和 Safari 扩展。用户安装的面板和插件可移到废纸篓 |
 | **应用更新** | 通过已安装应用自身的 Sparkle appcast 源检查更新（只读取版本信息，不发送任何关于你的数据） |
 
@@ -242,7 +252,7 @@ curl -fsSL https://raw.githubusercontent.com/iliyami/MacSai/main/scripts/install
 git clone https://github.com/iliyami/MacSai.git
 cd MacSai
 swift build
-swift test                     # 运行完整的 862 个测试
+swift test                     # 运行完整的 1048 个测试
 bash scripts/build-dmg.sh      # 构建本地 DMG（未签名）
 ```
 
@@ -340,7 +350,7 @@ strings -a "$APP" | grep -iE 'https?://' | sort -u
 
 ```
 Mac Sai
-├── MacClean          主 SwiftUI 应用（17 个模块）
+├── MacClean          主 SwiftUI 应用（22 个模块）
 ├── MacCleanKit       共享框架（模型、常量、协议）
 ├── MacCleanHelper    XPC 特权助手（用于 root 操作的 LaunchDaemon）
 └── MacCleanMenu      菜单栏监视器（独立进程）
@@ -380,7 +390,7 @@ Mac Sai 的设计目标是**绝不造成数据丢失**：
 swift test
 ```
 
-基于 XCTest 的测试套件包含 **862 个测试**，并把 `SafetyGuard` 和 `CleaningEngine`（生死攸关的文件）视为必须完美：对符号链接、路径穿越、NULL 字节、SIP、受保护应用、文件数量上限、TOCTOU 和幂等性的对抗式覆盖，外加对预演 / 移入废纸篓 / 永久删除清理、扫描状态机、每一个系统垃圾类别、树状图算法、卸载器匹配引擎、重复文件检测、appcast 解析，以及完整的“从合成夹具到清理”端到端流程的集成覆盖。测试夹具（`withTempHome`、`withFakeApp`、`withFakePlist`）确保每个测试都不会触碰你真实的个人目录。
+基于 XCTest 的测试套件包含 **1048 个测试**，并把 `SafetyGuard` 和 `CleaningEngine`（生死攸关的文件）视为必须完美：对符号链接、路径穿越、NULL 字节、SIP、受保护应用、文件数量上限、TOCTOU 和幂等性的对抗式覆盖，外加对预演 / 移入废纸篓 / 永久删除清理、扫描状态机、每一个系统垃圾类别、树状图算法、卸载器匹配引擎、重复文件检测、appcast 解析，以及完整的“从合成夹具到清理”端到端流程的集成覆盖。测试夹具（`withTempHome`、`withFakeApp`、`withFakePlist`）确保每个测试都不会触碰你真实的个人目录。
 
 ---
 

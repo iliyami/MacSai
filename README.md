@@ -18,7 +18,7 @@
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="Latest release" /></a>
   <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
   <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-862%20passing-brightgreen?style=flat-square" alt="Tests" />
+  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="Tests" />
   <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="Notarized" />
   <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" />
@@ -49,7 +49,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 
 - **Free, forever.** No subscription, no in-app purchases, no "upgrade to Pro", no nag screens. BSD-3 licensed.
 - **Zero telemetry.** No analytics, no crash reporter, no trackers, no server to phone home to. And you do not have to take our word for it, [verify it yourself](#verify-no-telemetry-yourself) in two commands.
-- **Every major CleanMyMac tool, in one app.** 17 modules across cleanup, protection, performance, applications, and disk insight, plus a menu-bar widget.
+- **Every major CleanMyMac tool, in one app.** 22 modules across cleanup, protection, performance, applications, and disk insight, plus a menu-bar widget.
 - **Safe by design.** Trash-first deletion, a protected-paths blocklist, symlink and TOCTOU guards, and a `SafetyGuard` that validates every path. It is built to never lose your data.
 - **Apple-notarized and fully open source.** Your Mac verifies the signature every launch, and every line is here to read.
 
@@ -66,6 +66,9 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 - **System Junk** (16+ categories)
 - **Mail Attachments**
 - **Trash Bins**
+- **Project Junk** (build folders)
+- **Disk Hogs** (Docker, simulators)
+- **Clean History** (one-click Restore)
 
 </td>
 <td width="33%" valign="top">
@@ -73,6 +76,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 ### 🛡️ Protection
 - **Malware Removal**
 - **Privacy** (browsers)
+- **Browser Extensions**
 - **Saved Wi-Fi**
 - **Permissions Overview**
 
@@ -90,6 +94,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 
 ### 📦 Applications
 - **Uninstaller** (+ Reset to Defaults)
+- **Unused Apps**
 - **Extensions** (panes, plug-ins)
 - **Updater**
 
@@ -125,12 +130,16 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 | **System Junk** | 16+ scan categories: user and system caches, logs, language files, broken preferences, broken login items, document versions, iOS backups, Xcode junk, package-manager / IDE / AI-tool caches, deleted-user leftovers, and **Universal Binary thinning** (finds fat Mach-O binaries carrying both arm64 and x86_64 and rewrites them to your native arch via `lipo`, honoring Cancel) |
 | **Mail Attachments** | Finds cached attachments from Apple Mail, Outlook, and Spark |
 | **Trash Bins** | Empties the Trash across every location, including external drives |
+| **Project Junk** | Finds regenerable build folders across your projects: `node_modules`, `.next`, `dist`, Rust and Maven `target`, Gradle `build`, Python virtualenvs, and CocoaPods `Pods`. A folder only counts when the files next to it confirm the project type, and `dist` and `Pods` only when your `.gitignore` names them. Everything goes to the Trash |
+| **Disk Hogs** | Shows how much space Docker and Xcode simulators take. Prunes stopped containers, dangling images, and dangling build cache (each behind a confirmation), and deletes unavailable simulators and old simulator runtimes. Docker volumes and the newest runtime for each platform are never touched |
+| **Clean History** | Lists your recent cleans (the last 30 days, up to 20) and puts a whole clean back from the Trash in one click. The history stays on your Mac in `~/Library/Logs/MacClean/clean-history.json`, readable only by your user account, and is never sent anywhere |
 
 ### 🛡️ Protection
 | Module | What it does |
 |--------|------------|
 | **Malware Removal** | Signature-based scanning at 3 depths (Quick / Balanced / Deep): launch agents and daemons, browser extensions, and known adware/malware patterns (curated list, not an antivirus, and it says so) |
 | **Privacy** | Cleans Safari, Chrome, and Firefox history, cookies, and cache, with time filters. Safari **bookmarks are never touched** |
+| **Browser Extensions** | Lists the extensions installed in Safari, Chrome, Brave, Edge, Arc, and Firefox. Chromium and Firefox extensions you installed yourself can go to the Trash while that browser is closed; ones installed by policy or by the browser itself are shown but left alone. Safari extensions link to Safari's settings |
 | **Saved Wi-Fi** | Lists your preferred wireless networks and forgets the ones you pick |
 | **Permissions Overview** | A read-only, by-app view of which privacy (TCC) grants each app holds, the angle System Settings does not give you. Every action deep-links to System Settings, which owns the toggles |
 
@@ -144,6 +153,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 | Module | What it does |
 |--------|------------|
 | **Uninstaller** | A pattern-matching engine that finds every associated file across 17+ Library subdirectories (including apps nested in vendor subfolders). Complete removal, **Reset to Defaults** (wipe an app's caches and preferences while keeping the app), and unused-app detection |
+| **Unused Apps** | Finds apps you have not opened in 3, 6, or 12 months, using Spotlight's last-used date, sorted by size. Running apps are never listed, and when Spotlight has no usage data it says so instead of guessing. One click hands an app to the Uninstaller |
 | **Extensions** | Review third-party preference panes, Internet Plug-Ins, and Safari extensions. User-installed panes and plug-ins can go to the Trash |
 | **Updater** | Checks installed apps for updates via their own Sparkle appcast feeds (reads version info only, sends nothing about you) |
 
@@ -246,7 +256,7 @@ Grab the latest DMG from [Releases](https://github.com/iliyami/MacSai/releases/l
 git clone https://github.com/iliyami/MacSai.git
 cd MacSai
 swift build
-swift test                     # run the full 862-test suite
+swift test                     # run the full 1,048-test suite
 bash scripts/build-dmg.sh      # build a local DMG (unsigned)
 ```
 
@@ -344,7 +354,7 @@ Note: on a non-sandboxed Developer ID app like this one, network access is not g
 
 ```
 Mac Sai
-├── MacClean          Main SwiftUI app (17 modules)
+├── MacClean          Main SwiftUI app (22 modules)
 ├── MacCleanKit       Shared framework (models, constants, protocols)
 ├── MacCleanHelper    XPC privileged helper (LaunchDaemon for root ops)
 └── MacCleanMenu      Menu-bar monitor (independent process)
@@ -384,7 +394,7 @@ Mac Sai is designed to **never cause data loss**:
 swift test
 ```
 
-The XCTest suite has **862 tests** and treats `SafetyGuard` and `CleaningEngine` (the death-and-life files) as must-be-perfect: adversarial coverage of symlinks, path traversal, NULL bytes, SIP, protected apps, file-count caps, TOCTOU, and idempotence, plus integration coverage of dry-run / trash / permanent cleaning, the scan state machine, every System Junk category, the treemap math, the uninstaller matching engine, duplicate detection, appcast parsing, and full end-to-end fixture-to-clean cycles. Fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) keep every test off your real home directory.
+The XCTest suite has **1,048 tests** and treats `SafetyGuard` and `CleaningEngine` (the death-and-life files) as must-be-perfect: adversarial coverage of symlinks, path traversal, NULL bytes, SIP, protected apps, file-count caps, TOCTOU, and idempotence, plus integration coverage of dry-run / trash / permanent cleaning, the scan state machine, every System Junk category, the treemap math, the uninstaller matching engine, duplicate detection, appcast parsing, and full end-to-end fixture-to-clean cycles. Fixtures (`withTempHome`, `withFakeApp`, `withFakePlist`) keep every test off your real home directory.
 
 ---
 
