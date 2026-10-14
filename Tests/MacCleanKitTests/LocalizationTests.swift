@@ -366,4 +366,31 @@ final class LocalizationTests: AppLanguageTestCase {
         AppLanguage.current = .zhHant
         XCTAssertEqual(L10n.tr("支持文件", "Support files"), "支援檔案")
     }
+
+    /// Two-line headers must keep a real line break in every language. A
+    /// translation that types `\\n` shows the backslash on screen.
+    func testMultiLineStringsKeepARealLineBreakInEveryLanguage() {
+        let multiLine: [(String, String, String)] = [
+            ("扫描 Mac 中的垃圾文件、恶意威胁\n和性能问题",
+             "Scan your Mac for junk files, malware threats,\nand performance issues",
+             "Поиск на Mac мусора, вредоносных программ\nи проблем с производительностью"),
+            ("使用渐进式 SHA-256 哈希检测\n查找重复文件",
+             "Find duplicate files using progressive\nSHA-256 hash detection",
+             "Поиск дубликатов с помощью поэтапного\nхеширования SHA-256"),
+            ("重复文件检测会使用 SHA-256 哈希每个候选文件。\n大型个人目录可能需要 5–15 分钟。",
+             "Duplicate detection hashes every candidate file with SHA-256.\nLarge home folders can take 5–15 minutes.",
+             "При поиске дубликатов для каждого файла вычисляется хеш SHA-256.\nОбработка больших домашних папок может занять 5–15 минут."),
+            ("查找并移除系统缓存、日志、\n语言文件和其他垃圾",
+             "Find and remove system caches, logs,\nlanguage files, and other junk",
+             "Поиск и удаление системных кэшей, журналов,\nфайлов локализации и другого мусора"),
+        ]
+        for language in AppLanguage.allCases {
+            AppLanguage.current = language
+            for (zhHans, english, russian) in multiLine {
+                let value = L10n.tr(zhHans, english, russian)
+                XCTAssertFalse(value.contains("\\n"), "\(language): literal \\n in \(value)")
+                XCTAssertTrue(value.contains("\n"), "\(language): line break lost in \(value)")
+            }
+        }
+    }
 }
