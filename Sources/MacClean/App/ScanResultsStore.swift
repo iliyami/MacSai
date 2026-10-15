@@ -19,6 +19,9 @@ public final class ScanResultsStore {
     }
 
     private var entries: [SidebarItem: Entry] = [:]
+    /// Why each Malware Removal item was flagged, kept alongside its entry so
+    /// the reasons survive switching to another module and back.
+    public var malwareReport: MalwareScanReport?
     public init() {}
 
     public func entry(for item: SidebarItem) -> Entry? { entries[item] }
@@ -27,6 +30,12 @@ public final class ScanResultsStore {
         entries[item] = Entry(results: results, selection: selection, scanComplete: scanComplete)
     }
 
-    public func clear(_ item: SidebarItem) { entries[item] = nil }
-    public func clearAll() { entries.removeAll() }
+    public func clear(_ item: SidebarItem) {
+        entries[item] = nil
+        if item == .malwareRemoval { malwareReport = nil }
+    }
+    public func clearAll() {
+        entries.removeAll()
+        malwareReport = nil
+    }
 }

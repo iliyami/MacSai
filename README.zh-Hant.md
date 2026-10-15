@@ -137,7 +137,7 @@ brew install --cask mac-sai
 ### 🛡️ 防護
 | 模組 | 說明 |
 |--------|------------|
-| **惡意軟體清理** | 基於特徵碼的掃描，提供 3 種深度（快速 / 平衡 / 深度）：檢查啟動代理與守護程序、瀏覽器擴充功能，以及已知的廣告軟體/惡意軟體模式（這是一份精選清單，並非防毒軟體，我們也如實說明） |
+| **惡意軟體清理** | 基於特徵碼的掃描，提供 3 種深度（快速 / 平衡 / 深度）：檢查啟動代理與守護程序、應用程式包、瀏覽器擴充功能，以及已知的廣告軟體/惡意軟體模式。用你 Mac 上已有的 Apple XProtect 特徵和 Safari 擴充功能封鎖清單做精確雜湊比對，另可選用 MalwareBazaar（abuse.ch）雜湊源，其符合項目只列出供你核對，從不預先勾選（並非防毒軟體，我們也如實說明） |
 | **隱私清理** | 清理 Safari、Chrome 和 Firefox 的歷史記錄、Cookie 和快取，可按時間過濾。Safari **書籤絕不會被清理** |
 | **瀏覽器擴充功能** | 列出 Safari、Chrome、Brave、Edge、Arc 和 Firefox 中安裝的擴充功能。你自己安裝的 Chromium 和 Firefox 擴充功能可在瀏覽器關閉時移到廢紙簍；由原則或瀏覽器本身安裝的擴充功能會顯示但不會被更動。Safari 擴充功能會連結到 Safari 設定 |
 | **已儲存的 Wi-Fi** | 列出你的首選無線網路，並忘記你選擇的那些 |
@@ -311,10 +311,11 @@ Mac Sai 使用 Apple **Developer ID** 進行程式碼簽名，並經 **Apple 公
 rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 ```
 
-你應當只會看到兩條網路路徑，二者都是可選且只讀的：
+你應當只會看到三條網路路徑，它們都是可選且只讀的：
 
 - `Sources/MacCleanKit/UpdateChecker.swift`：可選的 Mac Sai 更新檢查（可在設定中關閉）
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`：開啟“應用更新”模組時，由使用者觸發的對其它應用 Sparkle 源的檢查
+- `Sources/MacClean/Modules/Malware/MalwareDatabase.swift`：可選的 MalwareBazaar 雜湊下載。只有在你加入自己的 abuse.ch Auth-Key 並在「設定 > 惡意軟體資料庫」中點按「立即更新」時才會執行，而且只下載雜湊清單，不會傳送任何關於你的 Mac 的資訊
 
 程式碼庫中沒有任何分析、崩潰上報或追蹤 SDK。
 
@@ -336,11 +337,11 @@ APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
 # 二進位制檔案匯入的網路類（只會出現 URLSession）：
 nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 
-# 編譯進二進位制檔案的所有 URL（只有兩個更新端點會被請求）：
+# 編譯進二進位制檔案的所有 URL（只有三個已公開的端點會被請求）：
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-預期：唯一的網路類是 `_OBJC_CLASS_$_NSURLSession`，唯一會被請求的端點是 `api.github.com/repos/iliyami/MacSai/releases/latest` 和 `formulae.brew.sh/api/cask/mac-sai.json`。其餘的 `github.com/iliyami/MacSai` 連結和支持連結 `buymeacoffee.com/iliyami` 只會在瀏覽器中開啟。沒有任何跟蹤器或分析域名，也沒有其他東西。更新後可以再次執行，它始終反映你正在執行的確切構建。
+預期：唯一的網路類是 `_OBJC_CLASS_$_NSURLSession`，唯一會被請求的端點是 `api.github.com/repos/iliyami/MacSai/releases/latest`、`formulae.brew.sh/api/cask/mac-sai.json` 和 `mb-api.abuse.ch/api/v1/`（僅在你加入 MalwareBazaar 金鑰並點按「立即更新」後才會存取）。其餘的 `github.com/iliyami/MacSai` 連結、註冊連結 `auth.abuse.ch` 和支持連結 `buymeacoffee.com/iliyami` 只會在瀏覽器中開啟。沒有任何跟蹤器或分析域名，也沒有其他東西。更新後可以再次執行，它始終反映你正在執行的確切構建。
 
 注意：對於本應用這樣未啟用沙盒的 Developer ID 應用，網路訪問不受 entitlement 限制，因此真正的檢查是這種符號和字串檢查，而不是 `codesign --entitlements`。同樣的守衛會在每次改動時於 CI 中執行（[`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)）。
 

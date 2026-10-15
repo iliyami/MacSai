@@ -137,7 +137,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 ### 🛡️ Protection
 | Module | What it does |
 |--------|------------|
-| **Malware Removal** | Signature-based scanning at 3 depths (Quick / Balanced / Deep): launch agents and daemons, browser extensions, and known adware/malware patterns (curated list, not an antivirus, and it says so) |
+| **Malware Removal** | Signature-based scanning at 3 depths (Quick / Balanced / Deep): launch agents and daemons, app bundles, browser extensions, and known adware/malware patterns. Exact-hash matching against Apple's XProtect signatures already on your Mac and its Safari extension blocklist, plus an optional MalwareBazaar (abuse.ch) hash feed whose matches are listed for review, never pre-selected (not an antivirus, and it says so) |
 | **Privacy** | Cleans Safari, Chrome, and Firefox history, cookies, and cache, with time filters. Safari **bookmarks are never touched** |
 | **Browser Extensions** | Lists the extensions installed in Safari, Chrome, Brave, Edge, Arc, and Firefox. Chromium and Firefox extensions you installed yourself can go to the Trash while that browser is closed; ones installed by policy or by the browser itself are shown but left alone. Safari extensions link to Safari's settings |
 | **Saved Wi-Fi** | Lists your preferred wireless networks and forgets the ones you pick |
@@ -315,10 +315,11 @@ Do not take our word for it. Both the source and the running process are checkab
 rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 ```
 
-You should only ever see two network paths, both optional and both read-only:
+You should only ever see three network paths, all optional and all read-only:
 
 - `Sources/MacCleanKit/UpdateChecker.swift`: the optional Mac Sai update check (turn it off in Settings)
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`: the user-driven check of *other apps'* Sparkle feeds when you open the Updater
+- `Sources/MacClean/Modules/Malware/MalwareDatabase.swift`: the opt-in MalwareBazaar hash download. It only runs when you add your own abuse.ch Auth-Key and press Update Now in Settings > Malware Databases, and it only downloads hash lists; nothing about your Mac is sent
 
 There is no analytics, crash reporter, or tracker SDK anywhere in the codebase.
 
@@ -340,11 +341,11 @@ APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
 # Networking classes the binary imports (only URLSession appears):
 nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 
-# Every URL compiled into the binary (only the two update endpoints are fetched):
+# Every URL compiled into the binary (only the three disclosed endpoints are fetched):
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-Expected: the only networking class is `_OBJC_CLASS_$_NSURLSession`, and the only fetch endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest` and `formulae.brew.sh/api/cask/mac-sai.json`. The other `github.com/iliyami/MacSai` links and the `buymeacoffee.com/iliyami` support link just open in your browser. No trackers, no analytics hosts, nothing else. Re-run it after any update; it always describes the exact build you are running.
+Expected: the only networking class is `_OBJC_CLASS_$_NSURLSession`, and the only fetch endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json`, and `mb-api.abuse.ch/api/v1/` (contacted only after you add a MalwareBazaar key and press Update Now). The other `github.com/iliyami/MacSai` links, the `auth.abuse.ch` sign-up link, and the `buymeacoffee.com/iliyami` support link just open in your browser. No trackers, no analytics hosts, nothing else. Re-run it after any update; it always describes the exact build you are running.
 
 Note: on a non-sandboxed Developer ID app like this one, network access is not gated by an entitlement, so this symbol and string inspection, not `codesign --entitlements`, is the real check. The same guard runs in CI on every change ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
 

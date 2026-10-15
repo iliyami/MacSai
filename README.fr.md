@@ -137,7 +137,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 ### 🛡️ Protection
 | Module | Ce que ça fait |
 |--------|------------|
-| **Malware Removal** | Analyse par signatures à 3 profondeurs (Rapide / Équilibré / Approfondi) : agents et démons de lancement, extensions de navigateur et motifs connus d'adware/malware (liste organisée, pas un antivirus, et il le dit) |
+| **Malware Removal** | Analyse par signatures à 3 profondeurs (Rapide / Équilibré / Approfondi) : agents et démons de lancement, paquets d'apps, extensions de navigateur et motifs connus d'adware/malware. Correspondance exacte de hachages avec les signatures Apple XProtect déjà présentes sur votre Mac et sa liste de blocage des extensions Safari, plus un flux optionnel de hachages MalwareBazaar (abuse.ch) dont les correspondances sont listées pour vérification, jamais présélectionnées (pas un antivirus, et il le dit) |
 | **Privacy** | Nettoie l'historique, les cookies et le cache de Safari, Chrome et Firefox, avec des filtres temporels. Les **favoris de Safari ne sont jamais touchés** |
 | **Browser Extensions** | Liste les extensions installées dans Safari, Chrome, Brave, Edge, Arc et Firefox. Les extensions Chromium et Firefox que vous avez installées vous-même peuvent aller à la corbeille quand le navigateur est fermé ; celles installées par une stratégie ou par le navigateur lui-même sont affichées mais laissées intactes. Les extensions Safari renvoient vers les réglages de Safari |
 | **Saved Wi-Fi** | Liste vos réseaux sans fil préférés et oublie ceux que vous choisissez |
@@ -315,10 +315,11 @@ Ne nous croyez pas sur parole. Le code source comme le processus en cours d'exé
 rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 ```
 
-Vous ne devriez jamais voir que deux chemins réseau, tous deux optionnels et en lecture seule :
+Vous ne devriez jamais voir que trois chemins réseau, tous optionnels et en lecture seule :
 
 - `Sources/MacCleanKit/UpdateChecker.swift` : la vérification optionnelle des mises à jour de Mac Sai (désactivable dans les Réglages)
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift` : la vérification, déclenchée par l'utilisateur, des flux Sparkle *d'autres apps* lorsque vous ouvrez l'Updater
+- `Sources/MacClean/Modules/Malware/MalwareDatabase.swift` : le téléchargement optionnel des hachages MalwareBazaar. Il ne s'exécute que si vous ajoutez votre propre Auth-Key abuse.ch et cliquez sur Mettre à jour dans Réglages > Bases de logiciels malveillants, et il ne télécharge que des listes de hachages ; rien sur votre Mac n'est envoyé
 
 Il n'y a aucun SDK d'analytique, de rapport de plantage ou de traqueur nulle part dans le code.
 
@@ -340,11 +341,11 @@ APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
 # Les classes réseau que le binaire importe (seul URLSession apparaît) :
 nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 
-# Chaque URL compilée dans le binaire (seuls les deux points de terminaison de mise à jour sont appelés) :
+# Chaque URL compilée dans le binaire (seuls les trois points de terminaison déclarés sont appelés) :
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-Attendu : la seule classe réseau est `_OBJC_CLASS_$_NSURLSession`, et les seuls points de terminaison appelés sont `api.github.com/repos/iliyami/MacSai/releases/latest` et `formulae.brew.sh/api/cask/mac-sai.json`. Les autres liens `github.com/iliyami/MacSai` et le lien de soutien `buymeacoffee.com/iliyami` ouvrent simplement votre navigateur. Aucun traqueur, aucun hôte d'analytique, rien d'autre. Relancez-le après chaque mise à jour ; il décrit toujours exactement la version que vous exécutez.
+Attendu : la seule classe réseau est `_OBJC_CLASS_$_NSURLSession`, et les seuls points de terminaison appelés sont `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json` et `mb-api.abuse.ch/api/v1/` (contacté seulement après l'ajout d'une clé MalwareBazaar et un clic sur Mettre à jour). Les autres liens `github.com/iliyami/MacSai`, le lien d'inscription `auth.abuse.ch` et le lien de soutien `buymeacoffee.com/iliyami` ouvrent simplement votre navigateur. Aucun traqueur, aucun hôte d'analytique, rien d'autre. Relancez-le après chaque mise à jour ; il décrit toujours exactement la version que vous exécutez.
 
 Note : sur une app Developer ID sans bac à sable comme celle-ci, l'accès réseau n'est pas régi par un entitlement, c'est donc cette inspection des symboles et des chaînes, et non `codesign --entitlements`, qui est la vraie vérification. La même protection s'exécute dans la CI à chaque changement ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
 

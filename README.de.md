@@ -137,7 +137,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 ### 🛡️ Schutz
 | Modul | Was es tut |
 |--------|------------|
-| **Malware Removal** | Signaturbasiertes Scannen in 3 Tiefen (Schnell / Ausgewogen / Tief): Launch Agents und Daemons, Browser-Erweiterungen sowie bekannte Adware-/Malware-Muster (kuratierte Liste, kein Antivirus, und das sagt es auch) |
+| **Malware Removal** | Signaturbasiertes Scannen in 3 Tiefen (Schnell / Ausgewogen / Tief): Launch Agents und Daemons, App-Bundles, Browser-Erweiterungen sowie bekannte Adware-/Malware-Muster. Exakter Hash-Abgleich mit Apples XProtect-Signaturen, die schon auf deinem Mac liegen, und Apples Sperrliste für Safari-Erweiterungen, dazu ein optionaler Hash-Feed von MalwareBazaar (abuse.ch), dessen Treffer nur zur Prüfung aufgelistet und nie vorausgewählt werden (kein Antivirus, und das sagt es auch) |
 | **Privacy** | Bereinigt Verlauf, Cookies und Cache von Safari, Chrome und Firefox, mit Zeitfiltern. Safari-**Lesezeichen werden nie angerührt** |
 | **Browser Extensions** | Listet die installierten Erweiterungen in Safari, Chrome, Brave, Edge, Arc und Firefox auf. Selbst installierte Chromium- und Firefox-Erweiterungen können in den Papierkorb, solange der Browser geschlossen ist; per Richtlinie oder vom Browser selbst installierte werden angezeigt, aber nicht angerührt. Safari-Erweiterungen verlinken zu den Safari-Einstellungen |
 | **Saved Wi-Fi** | Listet deine bevorzugten Drahtlosnetzwerke auf und vergisst die von dir ausgewählten |
@@ -315,10 +315,11 @@ Glaub uns nicht einfach. Sowohl der Quellcode als auch der laufende Prozess sind
 rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 ```
 
-Du solltest nur je zwei Netzwerkpfade sehen, beide optional und beide nur lesend:
+Du solltest nur je drei Netzwerkpfade sehen, alle optional und alle nur lesend:
 
 - `Sources/MacCleanKit/UpdateChecker.swift`: die optionale Update-Prüfung von Mac Sai (in den Einstellungen abschaltbar)
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`: die vom Benutzer ausgelöste Prüfung der Sparkle-Feeds *anderer Apps*, wenn du den Updater öffnest
+- `Sources/MacClean/Modules/Malware/MalwareDatabase.swift`: der optionale Download von MalwareBazaar-Hashes. Er läuft nur, wenn du deinen eigenen abuse.ch-Auth-Key hinterlegst und unter Einstellungen > Malware-Datenbanken auf Jetzt aktualisieren klickst, und lädt nur Hash-Listen; nichts über deinen Mac wird gesendet
 
 Es gibt nirgends im Code Analytik, einen Crash-Reporter oder ein Tracker-SDK.
 
@@ -340,11 +341,11 @@ APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
 # Netzwerk-Klassen, die die Binärdatei importiert (nur URLSession erscheint):
 nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 
-# Jede in die Binärdatei kompilierte URL (nur die zwei Update-Endpunkte werden abgerufen):
+# Jede in die Binärdatei kompilierte URL (nur die drei offengelegten Endpunkte werden abgerufen):
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-Erwartet: die einzige Netzwerk-Klasse ist `_OBJC_CLASS_$_NSURLSession`, und die einzigen abgerufenen Endpunkte sind `api.github.com/repos/iliyami/MacSai/releases/latest` und `formulae.brew.sh/api/cask/mac-sai.json`. Die anderen `github.com/iliyami/MacSai`-Links und der Unterstützungslink `buymeacoffee.com/iliyami` öffnen nur deinen Browser. Keine Tracker, keine Analytik-Hosts, sonst nichts. Führe es nach jedem Update erneut aus; es beschreibt immer genau den Build, den du gerade betreibst.
+Erwartet: die einzige Netzwerk-Klasse ist `_OBJC_CLASS_$_NSURLSession`, und die einzigen abgerufenen Endpunkte sind `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json` und `mb-api.abuse.ch/api/v1/` (nur nachdem du einen MalwareBazaar-Schlüssel hinterlegt und auf Jetzt aktualisieren geklickt hast). Die anderen `github.com/iliyami/MacSai`-Links, der Registrierungslink `auth.abuse.ch` und der Unterstützungslink `buymeacoffee.com/iliyami` öffnen nur deinen Browser. Keine Tracker, keine Analytik-Hosts, sonst nichts. Führe es nach jedem Update erneut aus; es beschreibt immer genau den Build, den du gerade betreibst.
 
 Hinweis: Bei einer nicht-sandboxed Developer-ID-App wie dieser wird der Netzwerkzugriff nicht durch ein Entitlement geregelt, diese Symbol- und String-Prüfung, nicht `codesign --entitlements`, ist also die echte Prüfung. Dieselbe Absicherung läuft bei jeder Änderung in der CI ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
 
