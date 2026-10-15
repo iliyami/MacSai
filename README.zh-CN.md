@@ -137,7 +137,7 @@ brew install --cask mac-sai
 ### 🛡️ 防护
 | 模块 | 说明 |
 |--------|------------|
-| **恶意软件清理** | 基于特征码的扫描，提供 3 种深度（快速 / 平衡 / 深度）：检查启动代理与守护进程、浏览器扩展，以及已知的广告软件/恶意软件模式（这是一份精选清单，并非杀毒软件，我们也如实说明） |
+| **恶意软件清理** | 基于特征码的扫描，提供 3 种深度（快速 / 平衡 / 深度）：检查启动代理与守护进程、应用包、浏览器扩展，以及已知的广告软件/恶意软件模式。用你 Mac 上已有的 Apple XProtect 特征和 Safari 扩展黑名单做精确哈希比对，另可选用 MalwareBazaar（abuse.ch）哈希源，其匹配项只列出供你核对，从不预先勾选（并非杀毒软件，我们也如实说明） |
 | **隐私清理** | 清理 Safari、Chrome 和 Firefox 的历史记录、Cookie 和缓存，可按时间过滤。Safari **书签绝不会被清理** |
 | **浏览器扩展** | 列出 Safari、Chrome、Brave、Edge、Arc 和 Firefox 中安装的扩展。你自己安装的 Chromium 和 Firefox 扩展可在浏览器关闭时移到废纸篓；由策略或浏览器自身安装的扩展会显示但不会被改动。Safari 扩展会链接到 Safari 设置 |
 | **已保存的 Wi-Fi** | 列出你的首选无线网络，并忘记你选择的那些 |
@@ -311,10 +311,11 @@ Mac Sai 使用 Apple **Developer ID** 进行代码签名，并经 **Apple 公证
 rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 ```
 
-你应当只会看到两条网络路径，二者都是可选且只读的：
+你应当只会看到三条网络路径，它们都是可选且只读的：
 
 - `Sources/MacCleanKit/UpdateChecker.swift`：可选的 Mac Sai 更新检查（可在设置中关闭）
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`：打开“应用更新”模块时，由用户触发的对其它应用 Sparkle 源的检查
+- `Sources/MacClean/Modules/Malware/MalwareDatabase.swift`：可选的 MalwareBazaar 哈希下载。只有在你添加自己的 abuse.ch Auth-Key 并在“设置 > 恶意软件数据库”中点击“立即更新”时才会运行，而且只下载哈希列表，不会发送关于你的 Mac 的任何信息
 
 代码库中没有任何分析、崩溃上报或追踪 SDK。
 
@@ -336,11 +337,11 @@ APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
 # 二进制文件导入的网络类（只会出现 URLSession）：
 nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
 
-# 编译进二进制文件的所有 URL（只有两个更新端点会被请求）：
+# 编译进二进制文件的所有 URL（只有三个已公开的端点会被请求）：
 strings -a "$APP" | grep -iE 'https?://' | sort -u
 ```
 
-预期：唯一的网络类是 `_OBJC_CLASS_$_NSURLSession`，唯一会被请求的端点是 `api.github.com/repos/iliyami/MacSai/releases/latest` 和 `formulae.brew.sh/api/cask/mac-sai.json`。其余的 `github.com/iliyami/MacSai` 链接和支持链接 `buymeacoffee.com/iliyami` 只会在浏览器中打开。没有任何跟踪器或分析域名，也没有其他东西。更新后可以再次运行，它始终反映你正在运行的确切构建。
+预期：唯一的网络类是 `_OBJC_CLASS_$_NSURLSession`，唯一会被请求的端点是 `api.github.com/repos/iliyami/MacSai/releases/latest`、`formulae.brew.sh/api/cask/mac-sai.json` 和 `mb-api.abuse.ch/api/v1/`（仅在你添加 MalwareBazaar 密钥并点击“立即更新”后才会访问）。其余的 `github.com/iliyami/MacSai` 链接、注册链接 `auth.abuse.ch` 和支持链接 `buymeacoffee.com/iliyami` 只会在浏览器中打开。没有任何跟踪器或分析域名，也没有其他东西。更新后可以再次运行，它始终反映你正在运行的确切构建。
 
 注意：对于本应用这样未启用沙盒的 Developer ID 应用，网络访问不受 entitlement 限制，因此真正的检查是这种符号和字符串检查，而不是 `codesign --entitlements`。同样的守卫会在每次改动时于 CI 中运行（[`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)）。
 

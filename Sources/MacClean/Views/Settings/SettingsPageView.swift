@@ -32,6 +32,11 @@ struct SettingsPageView: View {
     @State private var languageSearch: String = ""
     @State private var excludedFolders: [String] = FolderExclusionPreferences.paths
     @State private var exclusionError: String?
+    @State private var malwareSignatures: MalwareSignatureSummary?
+    @State private var bazaarKeyDraft = ""
+    @State private var bazaarHasKey = false
+    @State private var bazaarUpdating = false
+    @State private var bazaarMessage: String?
 
     /// Selectable languages filtered by the search field (case-insensitive).
     private var filteredLanguages: [(name: String, lprojs: [String])] {
@@ -47,6 +52,7 @@ struct SettingsPageView: View {
             appearanceSection
             languageSection
             excludedFoldersSection
+            malwareDatabasesSection
             aboutSection
         }
         .formStyle(.grouped)
@@ -58,6 +64,8 @@ struct SettingsPageView: View {
             keptLanguages = LanguagePreferences.userKept
             selectable = LanguagePreferences.selectableLanguages()
             excludedFolders = FolderExclusionPreferences.paths
+            bazaarHasKey = MalwareBazaarKeychain.hasKey
+            refreshMalwareSignatures()
             Task.detached(priority: .userInitiated) {
                 let found = LanguageScanner().discoverLproj(in: LanguageScanner.defaultRoots)
                 await MainActor.run {
@@ -469,6 +477,94 @@ struct SettingsPageView: View {
             )
         case .reject(.alreadyCovered):
             return L10n.tr("该路径已被现有排除项覆盖。", "That path is already covered by an existing exclusion.", "Этот путь уже покрыт существующим исключением.")
+        }
+    }
+
+    // MARK: - Malware Databases
+
+    private var malwareDatabasesSection: some View {
+        Section(MalwareStrings.settingsSection) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Apple XProtect")
+                Text(malwareSignatures.map(MalwareStrings.xprotectRow) ?? MalwareStrings.updating)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("MalwareBazaar (abuse.ch)")
+                Text(MalwareStrings.bazaarExplanation)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            if bazaarHasKey {
+                HStack {
+                    Button(MalwareStrings.updateNow) { updateMalwareBazaar() }
+                        .disabled(bazaarUpdating)
+                    if bazaarUpdating { ProgressView().controlSize(.small) }
+                    Spacer()
+                    Button(MalwareStrings.removeKey, role: .destructive) {
+                        MalwareBazaarKeychain.delete()
+                        MalwareBazaarStore.delete()
+                        bazaarHasKey = false
+                        bazaarMessage = nil
+                        refreshMalwareSignatures()
+                    }
+                    .buttonStyle(.borderless)
+                    .disabled(bazaarUpdating)
+                }
+            } else {
+                HStack {
+                    SecureField(MalwareStrings.authKeyPlaceholder, text: $bazaarKeyDraft)
+                        .textFieldStyle(.roundedBorder)
+                    Button(MalwareStrings.saveKey) {
+                        if MalwareBazaarKeychain.save(bazaarKeyDraft) {
+                            bazaarKeyDraft = ""
+                            bazaarHasKey = true
+                            bazaarMessage = MalwareStrings.keySaved
+                        } else {
+                            bazaarMessage = MalwareStrings.keySaveFailed
+                        }
+                    }
+                    .disabled(bazaarKeyDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+                if let signup = MalwareBazaarFeed.authKeySignupURL {
+                    Button(MalwareStrings.getKey) { NSWorkspace.shared.open(signup) }
+                        .buttonStyle(.link)
+                }
+            }
+
+            Text(bazaarStatusLine)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var bazaarStatusLine: String {
+        if let bazaarMessage { return bazaarMessage }
+        guard let summary = malwareSignatures, summary.bazaarHashCount > 0,
+              let updated = summary.bazaarUpdatedAt else { return MalwareStrings.neverUpdated }
+        return MalwareStrings.bazaarStatus(count: summary.bazaarHashCount, updatedAt: updated)
+    }
+
+    private func refreshMalwareSignatures() {
+        Task.detached(priority: .utility) {
+            let summary = MalwareDatabase.loadCurrent().summary
+            await MainActor.run { malwareSignatures = summary }
+        }
+    }
+
+    private func updateMalwareBazaar() {
+        bazaarUpdating = true
+        bazaarMessage = MalwareStrings.updating
+        Task {
+            let outcome = await MalwareBazaarStore.updateNow()
+            bazaarUpdating = false
+            bazaarMessage = MalwareStrings.outcomeMessage(outcome)
+            refreshMalwareSignatures()
         }
     }
 
