@@ -52,20 +52,14 @@ jobs:
           test -f Tests/MacCleanTests/CleaningEngineTests.swift || { echo "::error::CleaningEngine tests missing"; exit 1; }
           echo "All safety-critical test files present."
 
+  # Secrets are covered by GitHub secret scanning and push protection, which
+  # recognize real credential formats. The network surface is checked against
+  # the built binary in Build & Test (scripts/check-network-surface.sh).
   security-audit:
     name: Security Audit
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v6
-
-      - name: Check for hardcoded secrets
-        run: |
-          echo "Scanning for potential secrets..."
-          if grep -rn "password\|secret\|api_key\|token" Sources/ --include="*.swift" | grep -v "//\|Password\|password:\|\.password\|kSecAttr\|SecItem\|Keychain\|saved passwords"; then
-            echo "::warning::Potential secrets found in source code"
-            exit 1
-          fi
-          echo "No secrets found."
 
       - name: Check SafetyGuard integrity
         run: |
@@ -77,14 +71,3 @@ jobs:
             echo "$UNSAFE"
           fi
           echo "SafetyGuard checks passed."
-
-      - name: Verify no telemetry
-        run: |
-          echo "Verifying zero network calls..."
-          NETWORK=$(grep -rnE "URLSession|NSURLConnection|URLRequest" Sources/MacCleanKit Sources/MacClean/Modules Sources/MacClean/Core --include="*.swift" | grep -v "// " | grep -v "URLSession.shared.data" || true)
-          # Note: UpdaterModule uses URLSession to fetch Sparkle appcasts. That's user-initiated only.
-          if echo "$NETWORK" | grep -v "UpdaterModule.swift" | grep -q "URLSession"; then
-            echo "::warning::Unexpected network usage detected:"
-            echo "$NETWORK"
-          fi
-          echo "Network audit done — only UpdaterModule should fetch appcasts."
