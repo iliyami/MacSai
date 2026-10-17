@@ -154,7 +154,7 @@ jobs:
           export VERSION="${{ steps.version.outputs.version }}"
           bash scripts/build-dmg.sh --notarize
           ls -la .build/MacSai-${VERSION}.dmg
-          xcrun stapler validate .build/MacSai-${VERSION}.dmg
+          # build-dmg.sh already staples and validates the DMG (with retries).
 
       - name: Clean up signing keychain
         if: always()

@@ -50,6 +50,25 @@ if [[ "${1:-}" == "--notarize" ]]; then
     SIGNING_IDENTITY="$APPLE_DEVELOPER_ID"
 fi
 
+# Stapling and validating fetch the ticket from Apple's CloudKit service,
+# which sometimes drops the connection ("-1005 The network connection was
+# lost", error 68) after notarization already succeeded. Retry instead of
+# failing the whole release.
+stapler_with_retry() {
+    local attempt
+    for attempt in 1 2 3 4; do
+        if xcrun stapler "$@"; then
+            return 0
+        fi
+        if [[ $attempt -lt 4 ]]; then
+            echo "  stapler $1 failed (attempt ${attempt}/4), retrying in $((attempt * 15))s..."
+            sleep $((attempt * 15))
+        fi
+    done
+    echo "ERROR: stapler $1 failed after 4 attempts"
+    return 1
+}
+
 echo "=== Building Mac Sai v${VERSION} ==="
 echo "Signing identity: $SIGNING_IDENTITY"
 echo "Notarize: $NOTARIZE"
@@ -259,8 +278,8 @@ if [[ "$NOTARIZE" == "true" ]]; then
         --keychain-profile "${NOTARY_PROFILE}" \
         --wait
     rm -f "${APP_ZIP}"
-    xcrun stapler staple "${APP_BUNDLE}"
-    xcrun stapler validate "${APP_BUNDLE}"
+    stapler_with_retry staple "${APP_BUNDLE}"
+    stapler_with_retry validate "${APP_BUNDLE}"
     echo "  → App notarized and stapled (verifies offline)"
 fi
 
@@ -288,8 +307,8 @@ if [[ "$NOTARIZE" == "true" ]]; then
     xcrun notarytool submit ".build/${DMG_NAME}" \
         --keychain-profile "${NOTARY_PROFILE}" \
         --wait
-    xcrun stapler staple ".build/${DMG_NAME}"
-    xcrun stapler validate ".build/${DMG_NAME}"
+    stapler_with_retry staple ".build/${DMG_NAME}"
+    stapler_with_retry validate ".build/${DMG_NAME}"
     echo "  → Notarization complete (DMG stapled; app inside stapled too)"
 else
     echo "[7/7] Skipping notarization (no --notarize flag)"
