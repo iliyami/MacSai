@@ -3,6 +3,43 @@ import XCTest
 @testable import MacCleanKit
 
 final class LocalizationTests: AppLanguageTestCase {
+    func testJapaneseLanguageSelectionAndRegionalIdentifiers() {
+        XCTAssertTrue(AppLanguage.allCases.contains(.ja))
+        XCTAssertEqual(AppLanguage.ja.rawValue, "ja")
+        XCTAssertEqual(AppLanguage.ja.pickerLabel, "日本語")
+        XCTAssertEqual(AppLanguage.ja.localeIdentifier, "ja")
+        for identifier in ["ja", "ja-JP", "ja_JP", "JA-jp"] {
+            XCTAssertEqual(AppLanguage.preferredLanguage(for: identifier), .ja, identifier)
+        }
+    }
+
+    func testJapaneseTranslationOverloadsAndFallbacks() {
+        AppLanguage.current = .ja
+        XCTAssertEqual(L10n.tr("设置", "Settings"), "設定")
+        XCTAssertEqual(L10n.tr("设置", "Settings", "Настройки"), "設定")
+        XCTAssertEqual(L10n.tr("设置"), "設定")
+        XCTAssertEqual(MaintenanceTask.freeUpRAM.title, "RAM を解放")
+        XCTAssertEqual(ScanCategory.userCaches.displayName, "ユーザーキャッシュファイル")
+        XCTAssertEqual(FileListSort.sizeDescending.label, "サイズの大きい順")
+        XCTAssertEqual(L10n.tr("未翻译", "New feature"), "New feature")
+        XCTAssertEqual(L10n.tr("未翻译", "New feature", "Russian"), "New feature")
+        XCTAssertEqual(L10n.tr("未翻译"), "未翻译")
+        for count in [1, 2] {
+            let english = "\(count) threat\(count == 1 ? "" : "s") found"
+            XCTAssertEqual(L10n.tr("发现 \(count) 个威胁", english), english)
+            XCTAssertEqual(L10n.tr("发现 \(count) 个威胁", english, "Russian"), english)
+        }
+    }
+
+    func testJapaneseLanguageResourcesCannotBeOfferedForCleanup() {
+        let original = LanguagePreferences.discoveredLproj
+        defer { LanguagePreferences.discoveredLproj = original }
+        let folders: Set<String> = ["ja.lproj", "ja-JP.lproj", "ja_JP.lproj", "Japanese.lproj"]
+        LanguagePreferences.discoveredLproj = folders
+        XCTAssertTrue(folders.isSubset(of: LanguagePreferences.alwaysKept))
+        XCTAssertTrue(LanguagePreferences.selectableLanguages().isEmpty)
+    }
+
     func testGermanLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.de))
         XCTAssertEqual(AppLanguage.de.pickerLabel, "Deutsch")
@@ -230,7 +267,7 @@ final class LocalizationTests: AppLanguageTestCase {
             ("清除", "Clear", "Очистить"),
             ("这只会忘掉恢复记录，废纸篓里的文件不会被动。之后就不能一键恢复这些清理了。", "This only forgets the restore list. Nothing in the Trash is touched, but these cleans can no longer be restored in one click.", "Это"),
         ]
-        for language in [AppLanguage.de, .fr, .it] {
+        for language in [AppLanguage.de, .fr, .it, .ja] {
             AppLanguage.current = language
             for (zh, en, ru) in strings {
                 let value = L10n.tr(zh, en, ru)
@@ -283,6 +320,7 @@ final class LocalizationTests: AppLanguageTestCase {
             .de: "Spendier mir einen Kaffee",
             .fr: "Offrez-moi un café",
             .it: "Offrimi un caffè",
+            .ja: "コーヒーをおごる",
             .zhHant: "請我喝杯咖啡",
             .ru: "Угостить кофе",
         ]
@@ -304,7 +342,7 @@ final class LocalizationTests: AppLanguageTestCase {
         let sameAsSimplified: Set<String> = [
             "容器", "卷", "大小", "取消", "永久清理", "清理完成", "未能完成", "已停止",
         ]
-        for language in [AppLanguage.de, .fr, .it, .ru] {
+        for language in [AppLanguage.de, .fr, .it, .ja, .ru] {
             AppLanguage.current = language
             for (index, value) in DiskHogsText.all.enumerated() where !sameAsEnglish.contains(english[index]) || language == .ru {
                 XCTAssertNotEqual(value, english[index], "\(language) is missing: \(english[index])")
@@ -334,7 +372,7 @@ final class LocalizationTests: AppLanguageTestCase {
             ("正在查找项目…", "Finding projects…", "Поиск проектов…"),
             ("正在计算文件夹大小…", "Measuring folders…", "Подсчёт размера папок…"),
         ]
-        for language in [AppLanguage.de, .fr, .it, .zhHant, .ru] {
+        for language in [AppLanguage.de, .fr, .it, .ja, .zhHant, .ru] {
             AppLanguage.current = language
             for s in strings {
                 let text = L10n.tr(s.zh, s.en, s.ru)
@@ -378,7 +416,7 @@ final class LocalizationTests: AppLanguageTestCase {
         let sameInTraditional: Set<String> = ["未知"]
 
         for (zh, english) in strings {
-            for language in [AppLanguage.de, .fr, .it] {
+            for language in [AppLanguage.de, .fr, .it, .ja] {
                 AppLanguage.current = language
                 XCTAssertNotEqual(L10n.tr(zh, english), english, "\(language) is missing \"\(english)\"")
             }
