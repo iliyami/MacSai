@@ -324,9 +324,9 @@ struct SettingsPageView: View {
     private var languageSection: some View {
         Section(L10n.tr("语言清理", "Language Cleanup", "Очистка языковых файлов")) {
             Text(L10n.tr(
-                "英文、基础资源、中文、俄文和德文会始终保留。已勾选的语言会保留；未勾选的语言文件可由“系统垃圾”移除。",
-                "English, Base resources, Chinese, Russian, and German are always kept. Checked languages are preserved; unchecked language files can be removed by System Junk.",
-                "Английский, базовые ресурсы, китайский, русский и немецкий языки сохраняются всегда. Отмеченные языки сохраняются; файлы неотмеченных языков можно удалить в разделе «Системный мусор»."
+                "Base 资源、Mac Sai 的界面语言以及你的 Mac 在“语言与地区”中设置的语言会始终保留。已勾选的语言会保留；未勾选的语言文件可由“系统垃圾”移除。",
+                "Base resources, Mac Sai's interface languages, and the languages in your Mac's Language & Region settings are always kept. Checked languages are preserved; unchecked language files can be removed by System Junk.",
+                "Базовые ресурсы, языки интерфейса Mac Sai и языки из настроек «Язык и регион» вашего Mac сохраняются всегда. Отмеченные языки сохраняются; файлы неотмеченных языков можно удалить в разделе «Системный мусор»."
             ))
                 .font(.caption)
                 .foregroundStyle(.secondary)

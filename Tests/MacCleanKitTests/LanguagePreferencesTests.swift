@@ -2,6 +2,73 @@ import XCTest
 @testable import MacCleanKit
 
 final class LanguagePreferencesTests: EnglishAppLanguageTestCase {
+    private var originalSystemLanguages: (() -> [String])!
+
+    // Pin the Mac's languages so results don't depend on the machine running
+    // the tests (a Japanese Mac would otherwise keep ja.lproj everywhere).
+    override func setUp() {
+        super.setUp()
+        originalSystemLanguages = LanguagePreferences.systemPreferredLanguages
+        LanguagePreferences.systemPreferredLanguages = { ["en-US"] }
+    }
+
+    override func tearDown() {
+        LanguagePreferences.systemPreferredLanguages = originalSystemLanguages
+        super.tearDown()
+    }
+
+    // MARK: - The Mac's own languages are always kept
+
+    func testSystemLanguageFoldersCoverCodeRegionAndLegacyNames() {
+        let dutch = LanguagePreferences.systemLanguageFolders(for: ["nl-NL"])
+        for folder in ["nl.lproj", "nl-NL.lproj", "nl_NL.lproj", "Dutch.lproj"] {
+            XCTAssertTrue(dutch.contains(folder), folder)
+        }
+        let portuguese = LanguagePreferences.systemLanguageFolders(for: ["pt_PT"])
+        for folder in ["pt.lproj", "pt-PT.lproj", "pt_PT.lproj", "Portuguese.lproj"] {
+            XCTAssertTrue(portuguese.contains(folder), folder)
+        }
+        let chinese = LanguagePreferences.systemLanguageFolders(for: ["zh-Hans-CN"])
+        for folder in ["zh.lproj", "zh-Hans.lproj", "zh_Hans.lproj", "zh-CN.lproj", "zh_CN.lproj", "zh-Hans-CN.lproj"] {
+            XCTAssertTrue(chinese.contains(folder), folder)
+        }
+    }
+
+    func testEverySystemLanguageIsKeptNotJustTheFirst() {
+        let folders = LanguagePreferences.systemLanguageFolders(for: ["sv-SE", "nl-NL"])
+        XCTAssertTrue(folders.contains("sv.lproj"))
+        XCTAssertTrue(folders.contains("nl.lproj"))
+    }
+
+    func testMalformedIdentifiersAreIgnored() {
+        XCTAssertTrue(LanguagePreferences.systemLanguageFolders(for: ["", "-", "_"]).isEmpty)
+    }
+
+    func testSystemLanguageIsPreservedWithoutUserOptIn() {
+        LanguagePreferences.systemPreferredLanguages = { ["nl-NL", "en-US"] }
+        let preserved = LanguagePreferences.effectivePreserved(userKept: [])
+        XCTAssertTrue(preserved.contains("nl.lproj"))
+        XCTAssertTrue(preserved.contains("Dutch.lproj"))
+    }
+
+    func testLanguageFilesScanNeverMatchesTheMacsLanguage() {
+        LanguagePreferences.systemPreferredLanguages = { ["nl-NL"] }
+        let target = LanguageFilesCategory().targets[0]
+        for folder in ["nl.lproj", "nl_NL.lproj", "Dutch.lproj"] {
+            XCTAssertFalse(target.matchesByNameRules(URL(filePath: "/Applications/X.app/Contents/Resources/\(folder)")), folder)
+        }
+        XCTAssertTrue(target.matchesByNameRules(URL(filePath: "/Applications/X.app/Contents/Resources/sv.lproj")),
+                      "a language nobody uses is still offered")
+    }
+
+    func testSystemLanguageIsNotOfferedAsAToggle() {
+        let original = LanguagePreferences.discoveredLproj
+        defer { LanguagePreferences.discoveredLproj = original }
+        LanguagePreferences.systemPreferredLanguages = { ["nl-NL"] }
+        LanguagePreferences.discoveredLproj = ["nl.lproj", "Dutch.lproj", "sv.lproj"]
+        let lprojs = LanguagePreferences.selectableLanguages().flatMap(\.lprojs)
+        XCTAssertEqual(lprojs, ["sv.lproj"])
+    }
 
     // MARK: - effectivePreserved (unchanged contract)
 

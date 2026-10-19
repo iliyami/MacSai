@@ -1,12 +1,54 @@
 import Foundation
 
 /// Which `.lproj` language folders are kept (excluded) during Language Files
-/// cleanup. A small always-kept default set (English + Base) plus any extra
+/// cleanup. A small always-kept default set (Base + Mac Sai's interface
+/// languages), the languages the Mac itself is set to, plus any extra
 /// languages the user opts to keep, persisted in UserDefaults. The effective
 /// set is never empty, so cleanup can never wipe the UI's own language.
 public enum LanguagePreferences {
     /// Never offered for deletion regardless of user choice.
     public static let alwaysKept: Set<String> = MCConstants.preservedLanguages
+
+    // MARK: - The Mac's own languages
+
+    /// The languages in System Settings > General > Language & Region, most
+    /// preferred first. Overridable in tests.
+    nonisolated(unsafe) public static var systemPreferredLanguages: () -> [String] = { Locale.preferredLanguages }
+
+    /// Every `.lproj` folder name an app might use for the given language
+    /// identifiers: the bare code ("nl"), each script and region variant in
+    /// both separators ("nl-NL", "nl_NL", "zh-Hans", "zh_CN"), the full
+    /// identifier, and the legacy English name ("Dutch.lproj"). Removing these
+    /// would switch the user's apps to another language, so they are always
+    /// kept, whatever the user checked.
+    public static func systemLanguageFolders(for identifiers: [String]) -> Set<String> {
+        var folders: Set<String> = []
+        for identifier in identifiers {
+            let parts = identifier
+                .split(whereSeparator: { $0 == "-" || $0 == "_" })
+                .map(String.init)
+            guard let language = parts.first, !language.isEmpty else { continue }
+            var codes: Set<String> = [language]
+            for subtag in parts.dropFirst() {
+                codes.insert("\(language)-\(subtag)")
+                codes.insert("\(language)_\(subtag)")
+            }
+            if parts.count > 2 {
+                codes.insert(parts.joined(separator: "-"))
+                codes.insert(parts.joined(separator: "_"))
+            }
+            folders.formUnion(codes.map { "\($0).lproj" })
+            if let name = Locale(identifier: "en").localizedString(forLanguageCode: language) {
+                folders.insert("\(name).lproj")
+            }
+        }
+        return folders
+    }
+
+    /// Folders for the Mac's own languages; see `systemLanguageFolders(for:)`.
+    public static var systemKept: Set<String> {
+        systemLanguageFolders(for: systemPreferredLanguages())
+    }
 
     // MARK: - Discovered languages (persisted cache)
 
@@ -50,7 +92,7 @@ public enum LanguagePreferences {
     public static func selectableLanguages(
         language: AppLanguage = AppLanguage.current
     ) -> [(name: String, lprojs: [String])] {
-        let candidates = discoveredLproj.subtracting(alwaysKept)
+        let candidates = discoveredLproj.subtracting(alwaysKept).subtracting(systemKept)
         return Dictionary(grouping: candidates) { displayName(forLproj: $0, language: language) }
             .map { (name: $0.key, lprojs: $0.value.sorted()) }
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
@@ -66,9 +108,10 @@ public enum LanguagePreferences {
         set { UserDefaults.standard.set(Array(newValue).sorted(), forKey: userKeptKey) }
     }
 
-    /// Effective excluded-from-cleanup set = always-kept ∪ user-kept.
-    /// Pass `userKept:` explicitly in tests; defaults to the persisted value.
+    /// Effective excluded-from-cleanup set = always-kept ∪ the Mac's own
+    /// languages ∪ user-kept. Pass `userKept:` explicitly in tests; defaults to
+    /// the persisted value.
     public static func effectivePreserved(userKept extra: Set<String>? = nil) -> Set<String> {
-        alwaysKept.union(extra ?? userKept)
+        alwaysKept.union(systemKept).union(extra ?? userKept)
     }
 }
