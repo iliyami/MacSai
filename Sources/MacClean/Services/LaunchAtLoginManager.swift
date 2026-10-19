@@ -17,8 +17,12 @@ public final class LaunchAtLoginManager {
         public var errorDescription: String? {
             switch self {
             case .updateFailed(let enabling, let message):
-                let action = enabling ? L10n.tr("开启") : L10n.tr("关闭")
-                return L10n.tr("无法\(action)开机自动启动：\(message)", "Couldn't \(action) launch at login: \(message)", "Не удалось \(action) запуск при входе: \(message)")
+                // Whole sentences with a placeholder: splicing a translated
+                // verb into one sentence can never match a translation key.
+                let template = enabling
+                    ? L10n.tr("无法开启登录时启动：{message}", "Couldn't turn on launch at login: {message}", "Не удалось включить запуск при входе: {message}")
+                    : L10n.tr("无法关闭登录时启动：{message}", "Couldn't turn off launch at login: {message}", "Не удалось отключить запуск при входе: {message}")
+                return template.replacingOccurrences(of: "{message}", with: message)
             }
         }
     }

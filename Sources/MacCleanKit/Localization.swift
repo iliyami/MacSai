@@ -229,8 +229,6 @@ public enum L10n {
         "快速": "Quick",
         "平衡": "Balanced",
         "深度": "Deep",
-        "开启": "enable",
-        "关闭": "disable",
         "压缩包": "Archives",
         "已选择": "Selected",
         "运行中": "Running",
@@ -256,6 +254,8 @@ public enum L10n {
     /// back to the Simplified string, which is still readable Chinese. Native
     /// review is welcome to refine wording.
     private static let traditionalChineseFallbacks: [String: String] = [
+        "无法开启登录时启动：{message}": "無法開啟登入時啟動：{message}",
+        "无法关闭登录时启动：{message}": "無法關閉登入時啟動：{message}",
         // Post-clean support card and Settings link
         "这次清理，你没花一分钱。": "這次清理，你沒花一分錢。",
         "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "沒有訂閱，沒有廣告，沒有追蹤。Mac Sai 是我和幾位志願者在業餘時間做的。如果它幫你省下了買清理軟體的錢，請我喝杯咖啡，讓它對所有人繼續免費。",
@@ -327,7 +327,6 @@ public enum L10n {
         "全部展开": "全部展開",
         "全部折叠": "全部摺疊",
         "关于": "關於",
-        "关闭": "關閉",
         "内存": "記憶體",
         "内存使用率": "記憶體使用率",
         "内存压力过高": "記憶體壓力過高",
@@ -498,7 +497,6 @@ public enum L10n {
         "未使用的应用": "未使用的應用",
         "废纸篓为空": "廢紙簍為空",
         "建议": "建議",
-        "开启": "開啟",
         "开始使用": "開始使用",
         "强制退出": "強制退出",
         "强制退出前会要求确认": "強制退出前會要求確認",
@@ -818,6 +816,8 @@ public enum L10n {
 
     
     private static let frenchFallbacks: [String: String] = [
+        "无法开启登录时启动：{message}": "Impossible d'activer le lancement au démarrage : {message}",
+        "无法关闭登录时启动：{message}": "Impossible de désactiver le lancement au démarrage : {message}",
         // Post-clean support card and Settings link
         "这次清理，你没花一分钱。": "Ce nettoyage ne vous a rien coûté.",
         "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "Pas d'abonnement, pas de pub, pas de pistage. Je développe Mac Sai le soir et le week-end, avec quelques bénévoles. S'il vous a évité de payer un nettoyeur, un café le garde gratuit pour tout le monde.",
@@ -897,7 +897,6 @@ public enum L10n {
         "全部展开": "Tout développer",
         "全部折叠": "Tout réduire",
         "关于": "À propos",
-        "关闭": "Désactiver",
         "其他": "Autre",
         "内存": "Mémoire",
         "内存使用率": "Utilisation de la mémoire",
@@ -1090,7 +1089,6 @@ public enum L10n {
         "未使用的应用": "Apps inutilisées",
         "废纸篓为空": "La corbeille est vide",
         "建议": "Recommandé",
-        "开启": "Activer",
         "开始使用": "Commencer",
         "强制退出": "Forcer à quitter",
         "强制退出前会要求确认": "Demande de confirmation avant de forcer à quitter",
@@ -1404,6 +1402,8 @@ public enum L10n {
     ]
 
     private static let germanFallbacks: [String: String] = [
+        "无法开启登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht aktiviert werden: {message}",
+        "无法关闭登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht deaktiviert werden: {message}",
         // Post-clean support card and Settings link
         "这次清理，你没花一分钱。": "Diese Reinigung hat dich nichts gekostet.",
         "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "Kein Abo, keine Werbung, kein Tracking. Ich entwickle Mac Sai abends und am Wochenende, zusammen mit ein paar Freiwilligen. Wenn es dir ein bezahltes Reinigungsprogramm erspart hat, hält ein Kaffee es für alle kostenlos.",
@@ -1483,7 +1483,6 @@ public enum L10n {
         "全部展开": "Alle aufklappen",
         "全部折叠": "Alle zuklappen",
         "关于": "Über die App",
-        "关闭": "deaktivieren",
         "其他": "Sonstige",
         "内存": "Arbeitsspeicher",
         "内存使用率": "Speicherauslastung",
@@ -1677,7 +1676,6 @@ public enum L10n {
         "未使用的应用": "Ungenutzte Apps",
         "废纸篓为空": "Papierkorb ist leer",
         "建议": "Empfehlungen",
-        "开启": "aktivieren",
         "开始使用": "Los geht’s",
         "强制退出": "Sofort beenden",
         "强制退出前会要求确认": "Sofortiges Beenden erfordert zuerst eine Bestätigung",
@@ -2023,6 +2021,8 @@ public enum L10n {
     ]
 
     private static let italianFallbacks: [String: String] = [
+        "无法开启登录时启动：{message}": "Impossibile attivare l'apertura al login: {message}",
+        "无法关闭登录时启动：{message}": "Impossibile disattivare l'apertura al login: {message}",
         "查找并移除系统缓存、日志、\n语言文件和其他垃圾": "Trova e rimuovi cache di sistema, registri,\nfile di localizzazione e altri file non necessari",
         "清理会删除悬空的构建缓存。下次构建可能会变慢。": "L'eliminazione rimuove la cache di compilazione orfana. La prossima compilazione potrebbe essere più lenta.",
         "代码项目中的依赖和构建文件夹。": "Cartelle di dipendenze e di compilazione nei tuoi progetti di codice.",
@@ -2185,7 +2185,6 @@ public enum L10n {
         "全部展开": "Espandi tutto",
         "全部折叠": "Comprimi tutto",
         "关于": "Info",
-        "关闭": "disattiva",
         "其他": "Altro",
         "内存": "Memoria",
         "内存使用率": "Utilizzo memoria",
@@ -2298,7 +2297,6 @@ public enum L10n {
         "废纸篓": "Cestini",
         "废纸篓为空": "Il Cestino è vuoto",
         "建议": "Consigli",
-        "开启": "attiva",
         "开始使用": "Inizia",
         "强制退出": "Uscita forzata",
         "强制退出前会要求确认": "Richiede conferma prima dell'uscita forzata",
@@ -2675,8 +2673,6 @@ public enum L10n {
         "快速": "Быстро",
         "平衡": "Сбалансированно",
         "深度": "Глубоко",
-        "开启": "включить",
-        "关闭": "отключить",
         "压缩包": "Архивы",
         "已选择": "Выбрано",
         "运行中": "Работает",
