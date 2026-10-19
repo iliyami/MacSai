@@ -56,7 +56,7 @@ final class BrowserExtensionsLocalizationTests: EnglishAppLanguageTestCase {
         AppLanguage.current = .zhHans
         let simplified = allStrings()
 
-        for language in [AppLanguage.de, .fr, .it, .ru] {
+        for language in [AppLanguage.de, .fr, .it, .ja, .ru] {
             AppLanguage.current = language
             for (index, value) in allStrings().enumerated() {
                 XCTAssertNotEqual(value, english[index], "\(language) is untranslated: \(english[index])")
@@ -70,7 +70,7 @@ final class BrowserExtensionsLocalizationTests: EnglishAppLanguageTestCase {
     }
 
     func testNoEmDashesOrUnfilledPlaceholders() {
-        for language in [AppLanguage.en, .de, .fr, .it, .ru, .zhHans, .zhHant] {
+        for language in [AppLanguage.en, .de, .fr, .it, .ja, .ru, .zhHans, .zhHant] {
             AppLanguage.current = language
             for value in allStrings() {
                 XCTAssertFalse(value.contains("\u{2014}"), "\(language) has an em dash: \(value)")
