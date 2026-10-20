@@ -2,8 +2,9 @@
 # check-network-surface.sh
 #
 # Verifies the SHIPPED BINARY's network surface matches what the README claims:
-# the only networking class it imports is URLSession, the only URLs compiled in
-# are the two disclosed update endpoints, and there is no tracker, analytics, or
+# the only networking class it imports is URLSession, the only URLs it fetches
+# are the three disclosed endpoints (two update checks and the opt-in
+# MalwareBazaar hash download), and there is no tracker, analytics, or
 # crash-reporter SDK anywhere in it.
 #
 # The point (raised by a reviewer): the repo and the installed binary are two
@@ -41,7 +42,7 @@ STRS="$(strings -a "$BIN" 2>/dev/null || true)"
 fail=0
 
 # 1) Low-level networking symbols would mean a channel that bypasses the
-#    disclosed, URLSession-based update checks. None should be present.
+#    disclosed, URLSession-based fetches. None should be present.
 BANNED_SYMBOLS='NWConnection|NWBrowser|nw_connection|nw_endpoint|CFSocket|CFStreamCreatePairWithSocketToHost|CFReadStreamCreate|CFWriteStreamCreate'
 sym_hits="$(grep -iE "$BANNED_SYMBOLS" <<<"$SYMS" | sort -u || true)"
 if [ -n "$sym_hits" ]; then
@@ -59,10 +60,11 @@ if [ -n "$host_hits" ]; then
     fail=1
 fi
 
-# 3) Sanity: the two disclosed update endpoints should be present.
+# 3) Sanity: the three disclosed fetch endpoints should be present.
 for endpoint in \
     "api.github.com/repos/iliyami/MacSai/releases/latest" \
-    "formulae.brew.sh/api/cask/mac-sai.json"; do
+    "formulae.brew.sh/api/cask/mac-sai.json" \
+    "mb-api.abuse.ch/api/v1/"; do
     if ! grep -qF "$endpoint" <<<"$STRS"; then
         echo "::warning::expected update endpoint not found in binary: $endpoint"
     fi

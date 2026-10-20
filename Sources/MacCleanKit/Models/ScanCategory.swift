@@ -106,7 +106,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .mailAttachments: L10n.tr("邮件附件的缓存副本。", "Saved copies of Mail attachments.", "Кэшированные копии почтовых вложений.")
         case .trashBins: L10n.tr("当前位于废纸篓中的项目。", "Items currently sitting in the Trash.", "Объекты, находящиеся в Корзине.")
         case .malware: L10n.tr("在磁盘上发现的已知恶意文件。", "Known malicious files found on disk.", "Известные вредоносные файлы, найденные на диске.")
-        case .possibleThreats: L10n.tr("在黑名单上、但也可能是你有意安装的软件的项目。", "Blocklist matches that may also be software you installed on purpose.", "Совпадения с чёрным списком, которые могут оказаться программами, установленными вами намеренно.")
+        case .possibleThreats: L10n.tr("在黑名单上或由社区报告、但也可能是你有意安装的软件的项目。", "Blocklist and community-reported matches that may also be software you installed on purpose.", "Совпадения с чёрным списком и сообщениями сообщества, которые могут оказаться программами, установленными вами намеренно.")
         case .browserPrivacy: L10n.tr("浏览历史和跟踪数据；Cookie 与会话会保留。", "Browsing history and tracking data. Cookies and sessions stay.", "История браузера и данные отслеживания. Cookie и сеансы сохраняются.")
         case .systemPrivacy: L10n.tr("最近项目列表和其他隐私痕迹。", "Recent-items lists and other privacy traces.", "Списки недавних объектов и другие следы активности.")
         case .largeFiles: L10n.tr("占用空间最多的文件。", "The files taking up the most space.", "Файлы, занимающие больше всего места.")
@@ -197,7 +197,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .mailAttachments: L10n.tr("邮件保存在磁盘上的附件副本。IMAP 和 Exchange 账户可从服务器重新下载，POP 账户不行。", "Copies of attachments Mail saved on disk. Mail can download them again from the server for IMAP and Exchange accounts, not for POP.", "Копии вложений, сохранённые Почтой на диске. Для IMAP и Exchange Почта может скачать их с сервера снова, для POP — нет.")
         case .trashBins: L10n.tr("已在废纸篓中。清倒是永久性的，无法撤销。", "Already in the Trash. Emptying it is permanent and can't be undone.", "Уже в Корзине. Очистка окончательная, её нельзя отменить.")
         case .malware: L10n.tr("匹配已知恶意软件特征。如果它属于你有意安装的软件，请先检查路径。", "Matched a known malware signature. Check the path first if it belongs to software you installed on purpose.", "Совпадает с известной сигнатурой вредоносного ПО. Если это программа, установленная вами намеренно, сначала проверьте путь.")
-        case .possibleThreats: L10n.tr("不会预先勾选。黑名单可能也涵盖曾经正当的软件的旧版本，删除前请逐个核对。", "Nothing is pre-selected. A blocklist can also cover older versions of once-legitimate software, so check each one before removing it.", "Ничего не отмечено заранее. Чёрный список может охватывать и старые версии некогда законных программ, поэтому проверьте каждый объект перед удалением.")
+        case .possibleThreats: L10n.tr("不会预先勾选。黑名单可能也涵盖曾经正当的软件的旧版本，社区报告也未经厂商确认，删除前请逐个核对。", "Nothing is pre-selected. A blocklist can also cover older versions of once-legitimate software, and community reports aren't confirmed by any vendor, so check each one before removing it.", "Ничего не отмечено заранее. Чёрный список может охватывать и старые версии некогда законных программ, а сообщения сообщества не подтверждены производителями, поэтому проверьте каждый объект перед удалением.")
         case .browserPrivacy: L10n.tr("你的浏览历史和跟踪数据。清理后无法恢复；Cookie 和登录会话会保留。", "Your browsing history and tracking data. Can't be restored after cleaning; cookies and logged-in sessions stay.", "История браузера и данные отслеживания. После очистки восстановить нельзя; cookie и активные входы сохраняются.")
         case .systemPrivacy: L10n.tr("最近项目列表和类似痕迹。应用的“最近打开”菜单将会清空。", "Recent-items lists and similar traces. Apps' Open Recent menus will start empty.", "Списки недавних объектов и похожие следы. Меню «Недавние» в приложениях станут пустыми.")
         case .largeFiles: L10n.tr("你自己的文件，仅按大小挑选。这里没有任何东西天生就是垃圾；请逐个检查。", "Your own files, picked only by size. Nothing here is junk by definition; check each one.", "Ваши собственные файлы, отобранные только по размеру. Мусором они не являются по определению; проверьте каждый.")
@@ -245,8 +245,8 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
              .universalBinaries, .appLeftovers, .deletedUsers,
              .packageManagerCaches, .ideCaches, .aiToolCaches, .possibleThreats:
             // possibleThreats: matches that need the user's judgement (a
-            // blocklist that also covers once-legitimate software). List
-            // them, never pre-check them.
+            // blocklist that also covers once-legitimate software, community
+            // reports no vendor confirmed). List them, never pre-check them.
             // appLeftovers: deletes another app's leftover data; detection is
             // conservative but never auto-checked — the user reviews first.
             // universalBinaries: thinning rewrites the app's binaries in
