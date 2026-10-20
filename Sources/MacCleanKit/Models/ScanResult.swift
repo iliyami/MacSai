@@ -49,3 +49,12 @@ public struct ModuleScanResult: Sendable {
         ByteCountFormatter.string(fromByteCount: Int64(totalSize), countStyle: .file)
     }
 }
+
+public extension Array where Element == ScanResult {
+    /// What a results screen checks when a scan finishes: every item of the
+    /// categories that ask for it (`autoSelect`) and nothing else, so items
+    /// listed for review start unchecked.
+    var preselectedURLs: Set<URL> {
+        Set(filter(\.autoSelect).flatMap { $0.items.map(\.url) })
+    }
+}

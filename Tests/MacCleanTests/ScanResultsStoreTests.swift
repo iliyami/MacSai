@@ -38,6 +38,18 @@ final class ScanResultsStoreTests: XCTestCase {
         XCTAssertNil(store.entry(for: .malwareRemoval))
     }
 
+    func testMalwareReportIsClearedWithItsEntry() {
+        let store = ScanResultsStore()
+        store.malwareReport = .empty
+        store.clear(.systemJunk)
+        XCTAssertNotNil(store.malwareReport, "clearing another module keeps the malware reasons")
+        store.clear(.malwareRemoval)
+        XCTAssertNil(store.malwareReport)
+        store.malwareReport = .empty
+        store.clearAll()
+        XCTAssertNil(store.malwareReport)
+    }
+
     func testAbsentLookupIsNil() {
         XCTAssertNil(ScanResultsStore().entry(for: .duplicates))
     }
