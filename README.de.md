@@ -137,7 +137,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 ### 🛡️ Schutz
 | Modul | Was es tut |
 |--------|------------|
-| **Malware Removal** | Signaturbasiertes Scannen in 3 Tiefen (Schnell / Ausgewogen / Tief): Launch Agents und Daemons, Browser-Erweiterungen sowie bekannte Adware-/Malware-Muster (kuratierte Liste, kein Antivirus, und das sagt es auch) |
+| **Malware Removal** | Signaturbasiertes Scannen in 3 Tiefen (Schnell / Ausgewogen / Tief): Launch Agents und Daemons, App-Bundles, Browser-Erweiterungen sowie bekannte Adware-/Malware-Muster. Exakter Hash-Abgleich mit Apples XProtect-Signaturen, die schon auf deinem Mac liegen, offline; Safari-Erweiterungen auf Apples Sperrliste werden zur Prüfung aufgelistet und nie vorausgewählt (kein Antivirus, und das sagt es auch) |
 | **Privacy** | Bereinigt Verlauf, Cookies und Cache von Safari, Chrome und Firefox, mit Zeitfiltern. Safari-**Lesezeichen werden nie angerührt** |
 | **Browser Extensions** | Listet die installierten Erweiterungen in Safari, Chrome, Brave, Edge, Arc und Firefox auf. Selbst installierte Chromium- und Firefox-Erweiterungen können in den Papierkorb, solange der Browser geschlossen ist; per Richtlinie oder vom Browser selbst installierte werden angezeigt, aber nicht angerührt. Safari-Erweiterungen verlinken zu den Safari-Einstellungen |
 | **Saved Wi-Fi** | Listet deine bevorzugten Drahtlosnetzwerke auf und vergisst die von dir ausgewählten |

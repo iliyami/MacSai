@@ -812,6 +812,20 @@ public enum L10n {
         "你自己的文件，仅按大小挑选。这里没有任何东西天生就是垃圾；请逐个检查。": "你自己的檔案，僅按大小挑選。這裡沒有任何東西天生就是垃圾；請逐一檢查。",
         "很久没打开过的你自己的文件。旧并不代表不需要；请逐个检查。": "很久沒打開過的你自己的檔案。舊並不代表不需要；請逐一檢查。",
         "逐字节完全相同的副本。每个需要的文件请至少保留一份。": "逐位元組完全相同的拷貝。每個需要的檔案請至少保留一份。",
+        "可能的威胁": "可能的威脅",
+        "在黑名单上、但也可能是你有意安装的软件的项目。": "在封鎖清單上、但也可能是你有意安裝的軟體的項目。",
+        "不会预先勾选。黑名单可能也涵盖曾经正当的软件的旧版本，删除前请逐个核对。": "不會預先勾選。封鎖清單也可能涵蓋曾經正當的軟體的舊版本，刪除前請逐一核對。",
+        "Apple XProtect 特征：{name}": "Apple XProtect 特徵：{name}",
+        "在 Apple 的 Safari 扩展黑名单中：{name}": "在 Apple 的 Safari 擴充功能封鎖清單中：{name}",
+        "名称与已知家族相符：{name}": "名稱與已知家族相符：{name}",
+        "启动代理会运行“{name}”": "啟動代理會執行「{name}」",
+        "正在比对 XProtect 哈希值...": "正在比對 XProtect 雜湊值...",
+        "标记原因": "標示原因",
+        "没有可直接移除的威胁": "沒有可直接移除的威脅",
+        "已发现，但需要管理员才能移除": "已發現，但需要管理員才能移除",
+        "这些项目位于 Mac Sai 无法修改的系统文件夹中。请在 Finder 中显示每一项，然后输入管理员密码将其移到废纸篓。": "這些項目位於 Mac Sai 無法修改的系統資料夾中。請在 Finder 中顯示每一項，然後輸入管理員密碼將其移到廢紙簍。",
+        "Apple XProtect {version}：{count} 个哈希值，{blocked} 个被屏蔽的 Safari 扩展": "Apple XProtect {version}：{count} 個雜湊值，{blocked} 個被封鎖的 Safari 擴充功能",
+        "未在这台 Mac 上找到 Apple XProtect 数据": "未在這台 Mac 上找到 Apple XProtect 資料",
     ]
 
     
@@ -1399,6 +1413,20 @@ public enum L10n {
         "验证启动磁盘": "Vérifier le disque de démarrage",
         "高级": "Avancé",
         "麦克风": "Microphone",
+        "可能的威胁": "Menaces possibles",
+        "在黑名单上、但也可能是你有意安装的软件的项目。": "Correspondances avec une liste de blocage qui peuvent aussi être des logiciels installés volontairement.",
+        "不会预先勾选。黑名单可能也涵盖曾经正当的软件的旧版本，删除前请逐个核对。": "Rien n'est présélectionné. Une liste de blocage peut aussi couvrir d'anciennes versions de logiciels autrefois légitimes, vérifiez donc chaque élément avant de le supprimer.",
+        "Apple XProtect 特征：{name}": "Signature Apple XProtect : {name}",
+        "在 Apple 的 Safari 扩展黑名单中：{name}": "Dans la liste de blocage des extensions Safari d'Apple : {name}",
+        "名称与已知家族相符：{name}": "Le nom correspond à une famille connue : {name}",
+        "启动代理会运行“{name}”": "L'agent de lancement exécute « {name} »",
+        "正在比对 XProtect 哈希值...": "Comparaison des hachages XProtect...",
+        "标记原因": "Pourquoi ces éléments sont signalés",
+        "没有可直接移除的威胁": "Aucune menace que Mac Sai peut supprimer",
+        "已发现，但需要管理员才能移除": "Trouvé, mais la suppression nécessite un administrateur",
+        "这些项目位于 Mac Sai 无法修改的系统文件夹中。请在 Finder 中显示每一项，然后输入管理员密码将其移到废纸篓。": "Ils se trouvent dans des dossiers système que Mac Sai ne peut pas modifier. Affichez chacun d'eux dans le Finder et placez-le dans la Corbeille avec votre mot de passe administrateur.",
+        "Apple XProtect {version}：{count} 个哈希值，{blocked} 个被屏蔽的 Safari 扩展": "Apple XProtect {version} : {count} hachages, {blocked} extensions Safari bloquées",
+        "未在这台 Mac 上找到 Apple XProtect 数据": "Données Apple XProtect introuvables sur ce Mac",
     ]
 
     private static let germanFallbacks: [String: String] = [
@@ -2018,6 +2046,20 @@ public enum L10n {
         "你自己的文件，仅按大小挑选。这里没有任何东西天生就是垃圾；请逐个检查。": "Deine eigenen Dateien, nur nach Größe ausgewählt. Nichts davon ist automatisch Müll; prüfe jede einzelne.",
         "很久没打开过的你自己的文件。旧并不代表不需要；请逐个检查。": "Deine eigenen Dateien, die du lange nicht geöffnet hast. Alt heißt nicht überflüssig; prüfe jede einzelne.",
         "逐字节完全相同的副本。每个需要的文件请至少保留一份。": "Byte für Byte identische Kopien. Behalte von jeder benötigten Datei mindestens eine Kopie.",
+        "可能的威胁": "Mögliche Bedrohungen",
+        "在黑名单上、但也可能是你有意安装的软件的项目。": "Treffer auf einer Sperrliste, die auch absichtlich installierte Software sein können.",
+        "不会预先勾选。黑名单可能也涵盖曾经正当的软件的旧版本，删除前请逐个核对。": "Nichts ist vorausgewählt. Eine Sperrliste kann auch ältere Versionen einst seriöser Software erfassen, prüfe daher jedes Objekt, bevor du es entfernst.",
+        "Apple XProtect 特征：{name}": "Apple-XProtect-Signatur: {name}",
+        "在 Apple 的 Safari 扩展黑名单中：{name}": "Auf Apples Sperrliste für Safari-Erweiterungen: {name}",
+        "名称与已知家族相符：{name}": "Name entspricht einer bekannten Familie: {name}",
+        "启动代理会运行“{name}”": "Startobjekt führt „{name}“ aus",
+        "正在比对 XProtect 哈希值...": "XProtect-Hashes werden abgeglichen...",
+        "标记原因": "Warum diese markiert wurden",
+        "没有可直接移除的威胁": "Keine Bedrohungen, die Mac Sai entfernen kann",
+        "已发现，但需要管理员才能移除": "Gefunden, aber zum Entfernen sind Administratorrechte nötig",
+        "这些项目位于 Mac Sai 无法修改的系统文件夹中。请在 Finder 中显示每一项，然后输入管理员密码将其移到废纸篓。": "Sie liegen in Systemordnern, die Mac Sai nicht ändern kann. Zeige jedes Objekt im Finder an und lege es dort mit deinem Administratorpasswort in den Papierkorb.",
+        "Apple XProtect {version}：{count} 个哈希值，{blocked} 个被屏蔽的 Safari 扩展": "Apple XProtect {version}: {count} Hashes, {blocked} gesperrte Safari-Erweiterungen",
+        "未在这台 Mac 上找到 Apple XProtect 数据": "Keine Apple-XProtect-Daten auf diesem Mac gefunden",
     ]
 
     private static let italianFallbacks: [String: String] = [
@@ -2635,6 +2677,20 @@ public enum L10n {
         "你自己的文件，仅按大小挑选。这里没有任何东西天生就是垃圾；请逐个检查。": "I tuoi file personali, selezionati solo per dimensione. Nulla qui è di per sé non necessario; controlla ogni singolo file.",
         "很久没打开过的你自己的文件。旧并不代表不需要；请逐个检查。": "I tuoi file personali che non apri da molto tempo. Vecchio non significa inutile; controlla ogni singolo file.",
         "逐字节完全相同的副本。每个需要的文件请至少保留一份。": "Copie identiche byte per byte. Conserva almeno una copia per ciascun file di cui hai bisogno.",
+        "可能的威胁": "Possibili minacce",
+        "在黑名单上、但也可能是你有意安装的软件的项目。": "Corrispondenze con una blocklist che potrebbero anche essere software installato di proposito.",
+        "不会预先勾选。黑名单可能也涵盖曾经正当的软件的旧版本，删除前请逐个核对。": "Nulla è preselezionato. Una blocklist può includere anche vecchie versioni di software un tempo legittimo, quindi controlla ogni elemento prima di rimuoverlo.",
+        "Apple XProtect 特征：{name}": "Firma Apple XProtect: {name}",
+        "在 Apple 的 Safari 扩展黑名单中：{name}": "Nella blocklist di Apple per le estensioni di Safari: {name}",
+        "名称与已知家族相符：{name}": "Il nome corrisponde a una famiglia nota: {name}",
+        "启动代理会运行“{name}”": "L'agente di avvio esegue «{name}»",
+        "正在比对 XProtect 哈希值...": "Confronto degli hash XProtect...",
+        "标记原因": "Perché sono stati segnalati",
+        "没有可直接移除的威胁": "Nessuna minaccia che Mac Sai possa rimuovere",
+        "已发现，但需要管理员才能移除": "Trovato, ma per rimuoverlo serve un amministratore",
+        "这些项目位于 Mac Sai 无法修改的系统文件夹中。请在 Finder 中显示每一项，然后输入管理员密码将其移到废纸篓。": "Si trovano in cartelle di sistema che Mac Sai non può modificare. Mostra ciascuno nel Finder e spostalo nel Cestino da lì con la password di amministratore.",
+        "Apple XProtect {version}：{count} 个哈希值，{blocked} 个被屏蔽的 Safari 扩展": "Apple XProtect {version}: {count} hash, {blocked} estensioni di Safari bloccate",
+        "未在这台 Mac 上找到 Apple XProtect 数据": "Dati di Apple XProtect non trovati su questo Mac",
     ]
 
     private static let russianFallbacks: [String: String] = [

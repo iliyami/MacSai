@@ -137,7 +137,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 ### 🛡️ Protection
 | Module | Ce que ça fait |
 |--------|------------|
-| **Malware Removal** | Analyse par signatures à 3 profondeurs (Rapide / Équilibré / Approfondi) : agents et démons de lancement, extensions de navigateur et motifs connus d'adware/malware (liste organisée, pas un antivirus, et il le dit) |
+| **Malware Removal** | Analyse par signatures à 3 profondeurs (Rapide / Équilibré / Approfondi) : agents et démons de lancement, paquets d'apps, extensions de navigateur et motifs connus d'adware/malware. Correspondance exacte de hachages avec les signatures Apple XProtect déjà présentes sur votre Mac, hors ligne ; les extensions Safari de la liste de blocage d'Apple sont listées pour vérification, jamais présélectionnées (pas un antivirus, et il le dit) |
 | **Privacy** | Nettoie l'historique, les cookies et le cache de Safari, Chrome et Firefox, avec des filtres temporels. Les **favoris de Safari ne sont jamais touchés** |
 | **Browser Extensions** | Liste les extensions installées dans Safari, Chrome, Brave, Edge, Arc et Firefox. Les extensions Chromium et Firefox que vous avez installées vous-même peuvent aller à la corbeille quand le navigateur est fermé ; celles installées par une stratégie ou par le navigateur lui-même sont affichées mais laissées intactes. Les extensions Safari renvoient vers les réglages de Safari |
 | **Saved Wi-Fi** | Liste vos réseaux sans fil préférés et oublie ceux que vous choisissez |
