@@ -3,6 +3,7 @@ import MacCleanKit
 
 struct SystemJunkView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.moduleIsSelected) private var moduleIsSelected
     @AppStorage("removeBackgroundColors") private var removeBackgroundColors = false
     @State private var viewModel = SystemJunkViewModel()
     @State private var showLargeSelectionConfirm = false
@@ -26,7 +27,11 @@ struct SystemJunkView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .toolbar { ToolbarItem { CleanupPermissionsButton() } }
+        .toolbar {
+            if moduleIsSelected {
+                ToolbarItem { CleanupPermissionsButton() }
+            }
+        }
         .onAppear {
             if let e = appState.scanResultsStore.entry(for: .systemJunk) {
                 viewModel.restore(results: e.results, selection: e.selection, scanComplete: e.scanComplete)

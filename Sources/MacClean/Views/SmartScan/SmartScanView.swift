@@ -3,6 +3,7 @@ import MacCleanKit
 
 struct SmartScanView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.moduleIsSelected) private var moduleIsSelected
     @AppStorage("removeBackgroundColors") private var removeBackgroundColors = false
     @State private var scanState: SmartScanState = .idle
     @State private var completedModules: [CompletedModule] = []
@@ -72,7 +73,11 @@ struct SmartScanView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .toolbar { ToolbarItem { CleanupPermissionsButton() } }
+        .toolbar {
+            if moduleIsSelected {
+                ToolbarItem { CleanupPermissionsButton() }
+            }
+        }
         .sheet(isPresented: $showActivityLog) { LogViewerView() }
         // Recompute the selected-size total only when the results or selection
         // actually change, NOT on every body pass. The footer reads
