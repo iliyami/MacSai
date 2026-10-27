@@ -50,6 +50,10 @@ into command arguments, or distribute it with an archive.
    release notes, then uses the pinned `generate_appcast` tool to sign the feed
    and archive. It uploads the feed and notes with that release. The private key
    is passed through standard input, not argv or a generated source file.
+   Before publication, the script verifies every archive against the configured
+   public key, checks its HTTPS URL and exact size, and verifies the signed feed
+   with the same signing key source. A warning-only signing failure cannot
+   publish an unsigned or mismatched update.
 4. Download the published feed and archive and test an old configured build
    updating to the new version before announcing automatic updates as available.
 
@@ -77,6 +81,7 @@ directory, then run:
 
 ```sh
 SPARKLE_KEY_ACCOUNT=your-keychain-account \
+SPARKLE_PUBLIC_ED_KEY=your-base64-public-key \
   bash scripts/generate-update-feed.sh path/to/archives https://your-host/path/
 ```
 
