@@ -70,6 +70,24 @@ final class CategoryTests: XCTestCase {
         XCTAssertTrue(exts?.contains("crash") == true)
     }
 
+    func testUserLogsPreserveCleanupDiagnosticsWithoutExcludingOtherApps() {
+        let target = UserLogCategory().targets[0]
+        XCTAssertTrue(target.isExcludedPath(MCConstants.operationLogDir))
+        XCTAssertTrue(target.isExcludedPath(MCConstants.operationLogFile))
+        XCTAssertTrue(target.isExcludedPath(MCConstants.cleanHistoryFile))
+        XCTAssertTrue(target.isExcludedPath(
+            MCConstants.operationLogDir.appending(path: "archive/previous.log")
+        ))
+
+        let unrelatedLog = MCConstants.userLogs.appending(path: "ExampleApp/session.log")
+        XCTAssertFalse(target.isExcludedPath(unrelatedLog))
+        XCTAssertTrue(target.matchesByNameRules(unrelatedLog))
+        // Match a complete directory component, not a name prefix.
+        XCTAssertFalse(target.isExcludedPath(
+            MCConstants.userLogs.appending(path: "MacClean-other/operations.log")
+        ))
+    }
+
     func testSystemLogTargetsTwoDirs() {
         let cat = SystemLogCategory()
         XCTAssertEqual(cat.targets.count, 2)

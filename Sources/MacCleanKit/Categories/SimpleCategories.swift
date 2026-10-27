@@ -38,7 +38,11 @@ public struct UserLogCategory: JunkCategory {
             ScanTarget(
                 path: MCConstants.userLogs,
                 recursive: true,
-                fileExtensions: ["log", "txt", "crash", "diag", "ips"]
+                fileExtensions: ["log", "txt", "crash", "diag", "ips"],
+                // Keep cleanup diagnostics and restore history. Removing our
+                // own log erases earlier failures and immediately recreates it
+                // with the entry recording its removal.
+                excludedPaths: [MCConstants.operationLogDir]
             ),
         ]
     }
