@@ -22,6 +22,11 @@ jobs:
       - name: Verify VERSION ↔ MCConstants.appVersion sync
         run: bash scripts/check-version-sync.sh
 
+      - name: Validate update build configuration
+        run: |
+          python3 scripts/test-update-configuration.py
+          bash -n scripts/build-dmg.sh scripts/generate-update-feed.sh
+
       - name: Build
         run: swift build
 
