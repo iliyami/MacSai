@@ -98,7 +98,9 @@ jobs:
         run: swift build -c release
 
       - name: Run tests
-        run: swift test
+        run: |
+          swift test
+          python3 scripts/test-update-feed.py
 
       # --- Signing & notarization ---------------------------------------------
       # All secrets live in GitHub repo settings; nothing sensitive is committed.
@@ -163,6 +165,7 @@ jobs:
         if: steps.version.outputs.prerelease == 'false' && vars.SPARKLE_FEED_URL != ''
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
           RELEASE_TAG: ${{ steps.version.outputs.tag }}
