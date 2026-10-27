@@ -99,9 +99,9 @@ struct SettingsPageView: View {
             }
             if selfUpdater.usesInAppUpdates {
                 Toggle(L10n.tr("自动检查更新", "Automatically check for updates", "Автоматически проверять обновления"),
-                       isOn: Binding(get: { selfUpdater.automaticChecks }, set: selfUpdater.setAutomaticChecks))
+                       isOn: Binding(get: { selfUpdater.automaticChecks }, set: { selfUpdater.setAutomaticChecks($0) }))
                 Toggle(L10n.tr("自动下载并安装更新", "Automatically download and install updates", "Автоматически загружать и устанавливать обновления"),
-                       isOn: Binding(get: { selfUpdater.automaticDownloads }, set: selfUpdater.setAutomaticDownloads))
+                       isOn: Binding(get: { selfUpdater.automaticDownloads }, set: { selfUpdater.setAutomaticDownloads($0) }))
                     .disabled(!selfUpdater.automaticChecks)
                 Text(L10n.tr("更新会在退出时安装，也可以选择立即重启应用。", "Updates install when you quit, or you can choose to restart the app now.", "Обновления устанавливаются при выходе. Можно также выбрать немедленный перезапуск приложения."))
                     .font(.caption).foregroundStyle(.secondary)
