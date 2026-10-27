@@ -148,6 +148,9 @@ jobs:
         env:
           APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
           NOTARY_PROFILE: MacSai
+          BUILD_NUMBER: ${{ github.run_number }}
+          SPARKLE_FEED_URL: ${{ vars.SPARKLE_FEED_URL }}
+          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
         run: |
           # Export so build-dmg.sh names the DMG / Info.plist with this version
           # (the beta tag's version, which differs from the committed VERSION).
@@ -155,6 +158,27 @@ jobs:
           bash scripts/build-dmg.sh --notarize
           ls -la .build/MacSai-${VERSION}.dmg
           # build-dmg.sh already staples and validates the DMG (with retries).
+
+      - name: Generate signed stable update feed
+        if: steps.version.outputs.prerelease == 'false' && vars.SPARKLE_FEED_URL != ''
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
+            echo "::error::Configured in-app updates require SPARKLE_PRIVATE_KEY. Refusing an unsigned feed."
+            exit 1
+          fi
+          rm -rf .build/update-feed
+          mkdir -p .build/update-feed
+          cp ".build/MacSai-${RELEASE_VERSION}.dmg" .build/update-feed/
+          gh api "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
+            -f tag_name="$RELEASE_TAG" --jq .body \
+            > ".build/update-feed/MacSai-${RELEASE_VERSION}.md"
+          bash scripts/generate-update-feed.sh .build/update-feed \
+            "https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/"
 
       - name: Clean up signing keychain
         if: always()
@@ -170,10 +194,14 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           TAG="${{ steps.version.outputs.tag }}"
+          ASSETS=(".build/MacSai-${VERSION}.dmg")
+          if [ -n "$SPARKLE_FEED_URL" ] && [ -f .build/update-feed/appcast.xml ] && [ "${{ steps.version.outputs.prerelease }}" = "false" ]; then
+            ASSETS+=(.build/update-feed/appcast.xml ".build/update-feed/MacSai-${VERSION}.md")
+          fi
 
           if [ "${{ steps.version.outputs.prerelease }}" = "true" ]; then
             gh release create "$TAG" \
-              ".build/MacSai-${VERSION}.dmg" \
+              "${ASSETS[@]}" \
               --title "Mac Sai $TAG (beta)" \
               --prerelease \
               --notes "$(cat <<EOF
@@ -197,7 +225,7 @@ jobs:
             # this release itself, which produced "vX...vX" links.
             PREV_TAG="$(git tag --sort=-creatordate | grep -vx "$TAG" | grep -v -e '-' | head -1 || true)"
             gh release create "$TAG" \
-              ".build/MacSai-${VERSION}.dmg" \
+              "${ASSETS[@]}" \
               --title "Mac Sai $TAG" \
               --generate-notes \
               ${PREV_TAG:+--notes-start-tag "$PREV_TAG"} \
@@ -228,6 +256,7 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SPARKLE_FEED_URL: ${{ vars.SPARKLE_FEED_URL }}
 
       - name: Update Homebrew cask in tap repo
         if: steps.version.outputs.prerelease != 'true'

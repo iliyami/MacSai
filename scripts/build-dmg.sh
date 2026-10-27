@@ -11,6 +11,16 @@
 #   BUILD_ARCHS         — swift build arch flags (default: "--arch arm64 --arch x86_64").
 #                         Override with "--arch $(uname -m)" for a fast native-only dev build.
 #
+# Optional update configuration:
+#   BUILD_NUMBER          — monotonically increasing CFBundleVersion (defaults to VERSION's numeric part)
+#   SPARKLE_FEED_URL      — HTTPS appcast URL; requires SPARKLE_PUBLIC_ED_KEY
+#   SPARKLE_PUBLIC_ED_KEY — base64 Ed25519 PUBLIC key (never the private key)
+#   UPDATE_CHANNEL_NAME   — optional visible channel label for test/distribution builds
+#   SWIFT_BUILD_SYSTEM    — optional SwiftPM build system (e.g. native)
+#   LOCAL_SIGNING_IDENTITY — optional stable local identity for non-notarized test builds
+#   DMG_STAGING_ROOT      — existing parent for a fresh staging dir (e.g. /private/tmp)
+#                           to avoid file-provider FinderInfo stamping in synced folders
+#
 # Environment variables for proper signing/notarization:
 #   APPLE_DEVELOPER_ID  — "Developer ID Application: Your Name (TEAMID)"
 #   NOTARY_PROFILE      — Keychain profile name (created via `xcrun notarytool store-credentials`)
@@ -20,12 +30,24 @@ set -euo pipefail
 APP_NAME="Mac Sai"
 BUNDLE_ID="com.macclean.app"
 VERSION="${VERSION:-$(cat VERSION 2>/dev/null | tr -d '[:space:]' || echo '1.0.0')}"
+BUILD_NUMBER="${BUILD_NUMBER:-${VERSION%%-*}}"
+if [[ ! "$BUILD_NUMBER" =~ ^[0-9]+(\.[0-9]+){0,2}$ ]]; then
+    echo "ERROR: BUILD_NUMBER must have one to three numeric components"
+    exit 1
+fi
+SWIFT_BUILD_OPTIONS=()
+if [[ -n "${SWIFT_BUILD_SYSTEM:-}" ]]; then
+    SWIFT_BUILD_OPTIONS+=(--build-system "$SWIFT_BUILD_SYSTEM")
+fi
 # BUILD_DIR is resolved AFTER the build via `swift build --show-bin-path`:
 # multi-arch builds emit to .build/apple/Products/Release/ while single-arch
 # (BUILD_ARCHS override) emits to .build/<triple>/release/. Hardcoding one of
 # them silently bundles stale binaries from the other (a 1.9.0 app shipped in
 # a 1.10.0 wrapper during dev-install testing — binary and Info.plist drift).
 DMG_DIR=".build/dmg"
+if [[ -n "${DMG_STAGING_ROOT:-}" ]]; then
+    DMG_DIR=$(mktemp -d "${DMG_STAGING_ROOT%/}/macsai-staging.XXXXXX")
+fi
 DMG_NAME="MacSai-${VERSION}.dmg"
 
 # Detect signing capability
@@ -34,7 +56,7 @@ if [[ "${1:-}" == "--app-only" ]]; then
     APP_ONLY=true
 fi
 NOTARIZE=false
-SIGNING_IDENTITY="-"  # ad-hoc by default
+SIGNING_IDENTITY="${LOCAL_SIGNING_IDENTITY:--}"  # ad-hoc unless explicitly configured
 if [[ "${1:-}" == "--notarize" ]]; then
     NOTARIZE=true
     if [[ -z "${APPLE_DEVELOPER_ID:-}" ]]; then
@@ -77,9 +99,9 @@ echo ""
 # Step 1: Build release as a universal (arm64 + x86_64) binary
 BUILD_ARCHS="${BUILD_ARCHS:---arch arm64 --arch x86_64}"
 echo "[1/7] Building release binaries (${BUILD_ARCHS})..."
-swift build -c release ${BUILD_ARCHS} --product MacClean
-swift build -c release ${BUILD_ARCHS} --product MacCleanMenu
-BUILD_DIR=$(swift build -c release ${BUILD_ARCHS} --product MacClean --show-bin-path)
+swift build "${SWIFT_BUILD_OPTIONS[@]}" -c release ${BUILD_ARCHS} --product MacClean
+swift build "${SWIFT_BUILD_OPTIONS[@]}" -c release ${BUILD_ARCHS} --product MacCleanMenu
+BUILD_DIR=$(swift build "${SWIFT_BUILD_OPTIONS[@]}" -c release ${BUILD_ARCHS} --product MacClean --show-bin-path)
 echo "  → Binaries: ${BUILD_DIR}"
 
 # Step 2: Create .app bundle
@@ -123,7 +145,7 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" << PLIST
     <key>CFBundleShortVersionString</key>
     <string>${VERSION}</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>${BUILD_NUMBER}</string>
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
     <key>NSPrincipalClass</key>
@@ -150,6 +172,18 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" << PLIST
 </dict>
 </plist>
 PLIST
+
+python3 scripts/configure-updates.py "${APP_BUNDLE}/Contents/Info.plist"
+SPARKLE_SOURCE="${BUILD_DIR}/Sparkle.framework"
+if [[ ! -d "$SPARKLE_SOURCE" ]]; then
+    SPARKLE_SOURCE=".build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework"
+fi
+if [[ ! -d "$SPARKLE_SOURCE" ]]; then
+    echo "ERROR: Sparkle.framework missing after build"
+    exit 1
+fi
+mkdir -p "${APP_BUNDLE}/Contents/Frameworks"
+ditto "$SPARKLE_SOURCE" "${APP_BUNDLE}/Contents/Frameworks/Sparkle.framework"
 
 if [ -f "Resources/AppIcon.icns" ]; then
     cp "Resources/AppIcon.icns" "${APP_BUNDLE}/Contents/Resources/"
@@ -199,7 +233,7 @@ cat > "${MENU_APP}/Contents/Info.plist" << MENU_PLIST
     <key>CFBundleShortVersionString</key>
     <string>${VERSION}</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>${BUILD_NUMBER}</string>
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
     <key>NSPrincipalClass</key>
@@ -237,26 +271,38 @@ ENTITLEMENTS
 
 # Step 4: Sign the app
 echo "[4/7] Signing app bundle..."
+# Only remove resource-fork/Finder metadata from our generated staging copy.
+# Never remove quarantine from downloads or modify the installed application.
+xattr -r -d com.apple.FinderInfo "${APP_BUNDLE}" 2>/dev/null || true
+xattr -r -d com.apple.ResourceFork "${APP_BUNDLE}" 2>/dev/null || true
+SIGN_OPTIONS=(--force --sign "$SIGNING_IDENTITY")
 if [[ "$NOTARIZE" == "true" ]]; then
-    codesign --force --deep --options runtime \
-        --entitlements "${ENTITLEMENTS_FILE}" \
-        --sign "$SIGNING_IDENTITY" \
-        --timestamp \
-        "${APP_BUNDLE}"
-    echo "  → Signed with Developer ID + hardened runtime"
-else
-    codesign --force --deep --sign "$SIGNING_IDENTITY" "${APP_BUNDLE}"
-    echo "  → Ad-hoc signed (no Developer ID provided)"
+    SIGN_OPTIONS+=(--options runtime --timestamp)
 fi
+SPARKLE_BUNDLE="${APP_BUNDLE}/Contents/Frameworks/Sparkle.framework"
+SPARKLE_VERSION="${SPARKLE_BUNDLE}/Versions/B"
+# Sign nested executable bundles inside out. Do not rely on --deep to infer
+# entitlements or the identity of Sparkle's installer components.
+for component in \
+    "${SPARKLE_VERSION}/Autoupdate" \
+    "${SPARKLE_VERSION}/Updater.app" \
+    "${SPARKLE_VERSION}/XPCServices/Installer.xpc" \
+    "${SPARKLE_VERSION}/XPCServices/Downloader.xpc" \
+    "${SPARKLE_BUNDLE}" \
+    "${MENU_APP}"; do
+    codesign "${SIGN_OPTIONS[@]}" "$component"
+done
+codesign "${SIGN_OPTIONS[@]}" --entitlements "${ENTITLEMENTS_FILE}" "${APP_BUNDLE}"
 
 # Verify signature
-codesign --verify --verbose=1 "${APP_BUNDLE}" 2>&1 | head -3
+codesign --verify --deep --strict --verbose=1 "${APP_BUNDLE}" 2>&1 | head -3
 
 # --app-only: stop here with the signed bundle (dev-install path).
 if [[ "$APP_ONLY" == "true" ]]; then
     echo ""
     echo "=== App bundle ready (skipped DMG/notarization) ==="
     echo "App: ${APP_BUNDLE}"
+    printf '%s\n' "${APP_BUNDLE}" > .build/last-app-path
     exit 0
 fi
 
