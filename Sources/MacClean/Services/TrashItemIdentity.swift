@@ -16,7 +16,7 @@ struct TrashItemIdentity: Sendable, Equatable {
         let path = withoutTrailingSlash(url.path(percentEncoded: false))
         guard url.isFileURL, url.host == nil || url.host == "" || url.host == "localhost",
               path.hasPrefix("/"), path != "/", !path.contains("\0"),
-              withoutTrailingSlash(url.standardizedFileURL.path(percentEncoded: false)) == path else {
+              canonical(url.standardizedFileURL.path(percentEncoded: false)) == canonical(path) else {
             throw CocoaError(.fileReadInvalidFileName)
         }
         let resolved = url.resolvingSymlinksInPath().path(percentEncoded: false)

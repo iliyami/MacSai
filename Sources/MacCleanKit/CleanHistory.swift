@@ -104,8 +104,15 @@ public enum CleanHistoryRestore {
     }
 
     private static func isNormalizedAbsolute(_ path: String) -> Bool {
-        path.hasPrefix("/") && !path.contains("\0")
-            && URL(filePath: path).standardizedFileURL.path(percentEncoded: false) == path
+        guard path.hasPrefix("/"), !path.contains("\0") else { return false }
+        // On macOS 15 standardization adds a directory marker when the
+        // item exists, even with a non-directory URL hint. Ignore only that
+        // marker when comparing; traversal and non-normalized input still
+        // differ and remain rejected.
+        let normalized = URL(filePath: path).standardizedFileURL.path(percentEncoded: false)
+        let comparable = normalized.count > 1 && normalized.hasSuffix("/")
+            ? String(normalized.dropLast()) : normalized
+        return comparable == path
     }
 }
 

@@ -37,6 +37,35 @@ final class BatchTrashTests: XCTestCase {
         }
     }
 
+    func testSystemPrivateVarAliasReachesBatchWithSameFileIdentity() async throws {
+        try await TestFixtures.withTempDir { root in
+            let file = root.appending(path: "fixture.cache")
+            try TestFixtures.writeFile(at: file, size: 17)
+            let path = file.path(percentEncoded: false)
+            let publicPath = path.hasPrefix("/private/var/") ? String(path.dropFirst("/private".count)) : path
+            try XCTSkipUnless(publicPath.hasPrefix("/var/"), "Fixture needs macOS's standard /var alias")
+            let alias = URL(filePath: "/private" + publicPath)
+            let ordinary = try TrashItemIdentity.read(URL(filePath: publicPath))
+            let aliased = try TrashItemIdentity.read(alias)
+            XCTAssertEqual(aliased.device, ordinary.device)
+            XCTAssertEqual(aliased.inode, ordinary.inode)
+            XCTAssertEqual(aliased.parentDevice, ordinary.parentDevice)
+            XCTAssertEqual(aliased.parentInode, ordinary.parentInode)
+
+            let trash = root.appending(path: "trash")
+            let recorder = RecyclerRecorder(trash: trash)
+            let engine = CleaningEngine(trashService: .init(recycle: { await recorder.move($0) }),
+                                       trashRoot: trash.path)
+            let result = await engine.clean(items: [item(alias)])
+            XCTAssertTrue(result.errors.isEmpty)
+            XCTAssertEqual(result.removedCount, 1)
+            let calls = await recorder.calls
+            XCTAssertEqual(calls, [[alias]])
+            XCTAssertFalse(FileManager.default.fileExists(atPath: publicPath))
+            XCTAssertEqual(try Data(contentsOf: trash.appending(path: "fixture.cache")).count, 17)
+        }
+    }
+
     func testPartialSystemFailureCountsMovedFileAndReportsOtherFile() async throws {
         try await TestFixtures.withTempDir { root in
             let first = root.appending(path: "a")

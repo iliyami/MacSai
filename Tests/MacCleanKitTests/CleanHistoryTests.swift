@@ -51,6 +51,23 @@ final class CleanHistoryTests: XCTestCase {
         XCTAssertFalse(CleanHistoryRestore.isRestorableDestination("a/b", trashRoot: root, uid: 501))
     }
 
+    func testExistingDirectoryPathsRemainValidForRestore() throws {
+        let temporary = FileManager.default.temporaryDirectory
+            .appending(path: "MacCleanRestorePathTest-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: temporary) }
+        let trash = temporary.appending(path: ".Trash")
+        let directory = trash.appending(path: "folder")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let trashPath = trash.path(percentEncoded: false)
+        let directoryPath = directory.path(percentEncoded: false)
+
+        XCTAssertTrue(CleanHistoryRestore.isInsideTrash(directoryPath, trashRoot: trashPath, uid: 501))
+        XCTAssertTrue(CleanHistoryRestore.isRestorableDestination(
+            temporary.path(percentEncoded: false), trashRoot: trashPath, uid: 501))
+        XCTAssertFalse(CleanHistoryRestore.isInsideTrash(directoryPath + "/..", trashRoot: trashPath, uid: 501))
+        XCTAssertFalse(CleanHistoryRestore.isInsideTrash(directoryPath + "/.", trashRoot: trashPath, uid: 501))
+    }
+
     func testRemovingRestoredItemsDropsEmptySessions() {
         let a = CleanHistoryItem(id: UUID(), originalPath: "/a", trashPath: "/t/a", bytes: 1)
         let b = CleanHistoryItem(id: UUID(), originalPath: "/b", trashPath: "/t/b", bytes: 1)
