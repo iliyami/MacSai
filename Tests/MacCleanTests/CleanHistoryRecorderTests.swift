@@ -112,6 +112,23 @@ final class CleanHistoryRecorderTests: XCTestCase {
         XCTAssertEqual(CleanHistoryRecorder.load().count, 1)
     }
 
+    func testDirectoryURLHistoryRoundTripRestoresPayload() throws {
+        let folder = URL(filePath: dir.appending(path: "Caches/folder").path(percentEncoded: false),
+                         directoryHint: .isDirectory)
+        let payload = folder.appending(path: "payload.cache")
+        try write("payload", to: payload)
+        CleanHistoryRecorder.record(trashedItems: [try fakeTrashItem(folder)])
+        let session = try XCTUnwrap(CleanHistoryRecorder.load().first)
+        XCTAssertFalse(try XCTUnwrap(session.items.first?.originalPath).hasSuffix("/"))
+
+        let summary = CleanHistoryRecorder.restore(session)
+
+        XCTAssertEqual(summary.restored, 1)
+        XCTAssertEqual(summary.failed, 0)
+        XCTAssertEqual(contents(payload), "payload")
+        XCTAssertTrue(CleanHistoryRecorder.load().isEmpty)
+    }
+
     func testNeverRestoresADifferentFileThatReusedTheTrashName() throws {
         let originalA = dir.appending(path: "AppA/Cache.db")
         try write("A", to: originalA)

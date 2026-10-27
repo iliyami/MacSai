@@ -39,9 +39,15 @@ public enum CleanHistoryRecorder {
             date: now,
             items: kept.map {
                 let trashPath = $0.trashURL.path(percentEncoded: false)
+                // Directory URLs can carry a terminal '/' marker. Store a
+                // normalized original path so Restore's strict path policy
+                // accepts the now-missing directory without changing guards.
+                let rawOriginalPath = $0.originalURL.path(percentEncoded: false)
+                let originalPath = rawOriginalPath.count > 1 && rawOriginalPath.hasSuffix("/")
+                    ? String(rawOriginalPath.dropLast()) : rawOriginalPath
                 return CleanHistoryItem(
                     id: UUID(),
-                    originalPath: $0.originalURL.path(percentEncoded: false),
+                    originalPath: originalPath,
                     trashPath: trashPath,
                     bytes: $0.bytes,
                     trashFileID: fileID(atPath: trashPath)
