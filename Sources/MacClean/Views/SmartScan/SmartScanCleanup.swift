@@ -16,13 +16,10 @@ enum SmartScanCleanup {
         modules.flatMap(\.categories).filter { !$0.items.isEmpty }
     }
 
-    /// Pre-check every item in auto-select categories (mirrors per-module views).
+    /// Start with categories approved for automatic cleanup; personal data and
+    /// irreversible actions still need an explicit selection.
     static func defaultSelection(from modules: [ModuleScanResult]) -> Set<URL> {
-        var urls: Set<URL> = []
-        for result in allResults(from: modules) where result.autoSelect {
-            urls.formUnion(result.items.map(\.url))
-        }
-        return urls
+        CleanupSelectionPolicy.safeURLs(in: allResults(from: modules))
     }
 
     /// Per-module size/count of the user's selection, in module scan order.

@@ -18,6 +18,7 @@ func fileListResultsSignature(sort: FileListSort, results: [ScanResult]) -> Stri
 /// `displayResults`; the render path never sorts.
 public struct FileListView: View {
     let results: [ScanResult]
+    let showsBulkSelection: Bool
     @Binding var selectedItems: Set<URL>
     @State private var expansion = FileListExpansion()
     @State private var sort: FileListSort = .default
@@ -37,8 +38,9 @@ public struct FileListView: View {
     /// switching away from a finished junk scan and back.
     @State private var rows: [FileListRow] = []
 
-    public init(results: [ScanResult], selectedItems: Binding<Set<URL>>) {
+    public init(results: [ScanResult], selectedItems: Binding<Set<URL>>, showsBulkSelection: Bool = false) {
         self.results = results
+        self.showsBulkSelection = showsBulkSelection
         self._selectedItems = selectedItems
         self._displayResults = State(initialValue: results)
     }
@@ -62,6 +64,14 @@ public struct FileListView: View {
         // apps). A
         // sidebar switch changes none of these, so it does no work here.
         .onChange(of: rowsKey, initial: true) { _, _ in
+            rows = FileListRows.flatten(
+                results: displayResults,
+                isExpanded: { expansion.isExpanded($0) },
+                selectedItems: selectedItems,
+                appRunningURLs: appRunningURLs
+            )
+        }
+        .onChange(of: selectedItems) { _, _ in
             rows = FileListRows.flatten(
                 results: displayResults,
                 isExpanded: { expansion.isExpanded($0) },
@@ -106,20 +116,73 @@ public struct FileListView: View {
         fileListResultsSignature(sort: sort, results: displayResults)
     }
 
-    /// Cheap key that changes whenever the flattened rows would differ, used to
-    /// memoize `rows`. Every selection mutation here changes `selectedItems.count`
-    /// (toggle is +/-1; select-all unions or subtracts), so the count is a
-    /// sufficient selection key without hashing the whole set. All components are
-    /// O(number of categories), never O(number of items).
+    /// Selection is observed separately: bulk actions can replace the URLs
+    /// without changing their count. This key covers the displayed rows only.
     private var rowsKey: String {
-        "\(displayedResultsSignature)|sel:\(selectedItems.count)|exp:\(expansion.signature)|run:\(appRunningURLs.count)"
+        "\(displayedResultsSignature)|exp:\(expansion.signature)|run:\(appRunningURLs.count)"
     }
 
     /// Compact sort control above the list. Defaults to largest-first; lets the
     /// user flip to smallest-first or name order.
     private var sortBar: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                if showsBulkSelection { selectionControls }
+                Spacer(minLength: 8)
+                sortControl
+            }
+            VStack(alignment: .leading, spacing: 8) {
+                if showsBulkSelection { selectionControls }
+                HStack { Spacer(); sortControl }
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+    }
+
+    private var selectionControls: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 12) {
+                selectAllButton
+                selectSafeButton
+                deselectAllButton
+            }
+            .fixedSize(horizontal: true, vertical: false)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 12) { selectAllButton; selectSafeButton }
+                deselectAllButton
+            }
+        }
+        .buttonStyle(.borderless)
+        .font(.caption)
+        .disabled(results.isEmpty)
+    }
+
+    private var selectAllButton: some View {
+        Button(L10n.tr("全选", "Select All", "Выбрать всё")) {
+            selectedItems = CleanupSelectionPolicy.allURLs(in: results)
+        }
+    }
+
+    private var selectSafeButton: some View {
+        Button(L10n.tr("选择安全项目", "Select Safe Items", "Выбрать безопасные")) {
+            selectedItems = CleanupSelectionPolicy.safeURLs(in: results)
+        }
+        .help(L10n.tr(
+            "仅保留安全的临时文件、缓存、日志和残留文件。不选择个人数据、废纸篓或应用修改。",
+            "Keeps safe temporary files, caches, logs and leftovers selected. Excludes personal data, Trash and application changes.",
+            "Оставляет безопасные временные файлы, кэш, журналы и остатки. Личные данные, Корзина и изменения приложений не выбираются."))
+    }
+
+    private var deselectAllButton: some View {
+        Button(L10n.tr("取消全选", "Deselect All", "Снять всё")) {
+            selectedItems.removeAll()
+        }
+        .disabled(selectedItems.isEmpty)
+    }
+
+    private var sortControl: some View {
         HStack(spacing: 6) {
-            Spacer()
             Image(systemName: "arrow.up.arrow.down")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
@@ -138,8 +201,6 @@ public struct FileListView: View {
             .menuStyle(.borderlessButton)
             .fixedSize()
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
     }
 
     /// Toggle selection of a single file by URL.

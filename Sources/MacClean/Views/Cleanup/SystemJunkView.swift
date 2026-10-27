@@ -47,7 +47,7 @@ struct SystemJunkView: View {
         }
         .respondsToModuleShortcuts(
             onScan: { viewModel.startScan() },
-            onClean: { viewModel.startCleaning(engine: appState.cleaningEngine) },
+            onClean: { requestCleanup() },
             canScan: {
                 switch viewModel.state {
                 case .idle, .empty, .done, .results: true
@@ -104,56 +104,16 @@ struct SystemJunkView: View {
     }
 
     private var resultsView: some View {
-        VStack(spacing: 0) {
-            HStack {
-                SizeDisplay(size: viewModel.totalSelectedSize, label: L10n.tr("已选择待清理", "selected to clean", "выбрано для очистки"))
-                    .foregroundStyle(.primary)
-
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 6) {
-                    Text(L10n.tr("已选择 \(viewModel.selectedCount) / \(viewModel.totalFileCount) 个文件", "\(viewModel.selectedCount) of \(viewModel.totalFileCount) files", "Выбрано \(viewModel.selectedCount) из \(viewModel.totalFileCount) \(L10n.russianPlural(viewModel.totalFileCount, one: "файла", few: "файлов", many: "файлов"))"))
-                        .font(.system(size: 12))
-                        .foregroundStyle(.primary.opacity(0.6))
-
-                    Button(L10n.tr("清理", "Clean", "Очистить")) {
-                        if viewModel.selectedCount > MCConstants.cleanConfirmationThreshold {
-                            showLargeSelectionConfirm = true
-                        } else {
-                            viewModel.startCleaning(engine: appState.cleaningEngine)
-                        }
-                    }
-                    .buttonStyle(SuperEllipseButtonStyle(
-                        gradient: ModuleTheme.cleanup.buttonGradient,
-                        size: CGSize(width: 110, height: 40)
-                    ))
-                    // Prevent clicking Clean with nothing checked — that
-                    // path used to drop the user into a misleading "0 bytes
-                    // cleaned up" screen that looked like a failed clean.
-                    .disabled(viewModel.selectedCount == 0)
-                    .opacity(viewModel.selectedCount == 0 ? 0.5 : 1.0)
-                    .help(viewModel.selectedCount == 0
-                          ? L10n.tr("请至少勾选一个要清理的项目", "Check at least one item to clean", "Выберите хотя бы один объект для очистки")
-                          : L10n.tr("将 \(viewModel.selectedCount) 项移到废纸篓", "Move \(viewModel.selectedCount) item(s) to Trash", "Переместить \(viewModel.selectedCount) \(L10n.russianPlural(viewModel.selectedCount, one: "объект", few: "объекта", many: "объектов")) в Корзину"))
-                    .alert(
-                        L10n.tr("清理 \(viewModel.selectedCount.formatted()) 项？", "Clean \(viewModel.selectedCount.formatted()) items?", "Очистить \(viewModel.selectedCount.formatted()) \(L10n.russianPlural(viewModel.selectedCount, one: "объект", few: "объекта", many: "объектов"))?"),
-                        isPresented: $showLargeSelectionConfirm
-                    ) {
-                        Button(L10n.tr("取消", "Cancel", "Отмена"), role: .cancel) { }
-                        Button(L10n.tr("继续", "Continue", "Продолжить"), role: .destructive) {
-                            viewModel.startCleaning(engine: appState.cleaningEngine)
-                        }
-                    } message: {
-                        Text(L10n.tr("约 \(ByteCountFormatter.string(fromByteCount: Int64(viewModel.totalSelectedSize), countStyle: .file)) 数据，可能需要几分钟。清理过程中可以取消。", "That's about \(ByteCountFormatter.string(fromByteCount: Int64(viewModel.totalSelectedSize), countStyle: .file)) of data and may take several minutes. You can cancel mid-cleanup.", "Объём данных — около \(ByteCountFormatter.string(fromByteCount: Int64(viewModel.totalSelectedSize), countStyle: .file)). Это может занять несколько минут. Очистку можно отменить."))
-                    }
-                }
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 14)
+        VStack(spacing: 16) {
+            SizeDisplay(size: viewModel.totalSelectedSize,
+                        label: L10n.tr("已选择待清理", "selected to clean", "выбрано для очистки"))
+                .foregroundStyle(.primary)
+                .padding(.top, 16)
 
             FileListView(
                 results: viewModel.results,
-                selectedItems: $viewModel.selectedItems
+                selectedItems: $viewModel.selectedItems,
+                showsBulkSelection: true
             )
             .background {
                 if removeBackgroundColors { Color.clear }
@@ -161,7 +121,37 @@ struct SystemJunkView: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal, 20)
+
+            CleanupActionBar(
+                selectedCount: viewModel.selectedCount,
+                totalCount: viewModel.totalFileCount,
+                selectedSize: viewModel.totalSelectedSize,
+                gradient: ModuleTheme.cleanup.buttonGradient,
+                action: { requestCleanup() }
+            )
+            .alert(
+                L10n.tr("清理 \(viewModel.selectedCount.formatted()) 项？", "Clean \(viewModel.selectedCount.formatted()) items?", "Очистить \(viewModel.selectedCount.formatted()) \(L10n.russianPlural(viewModel.selectedCount, one: "объект", few: "объекта", many: "объектов"))?"),
+                isPresented: $showLargeSelectionConfirm
+            ) {
+                Button(L10n.tr("取消", "Cancel", "Отмена"), role: .cancel) { }
+                Button(L10n.tr("继续", "Continue", "Продолжить"), role: .destructive) {
+                    viewModel.startCleaning(engine: appState.cleaningEngine)
+                }
+            } message: {
+                Text(cleanupConfirmationMessage(for: CleanupSelectionPolicy.selectedCategories(
+                    in: viewModel.results, selection: viewModel.selectedItems)))
+            }
+            .padding(.horizontal, 20)
             .padding(.bottom, 20)
+        }
+    }
+
+    private func requestCleanup() {
+        if viewModel.selectedCount > MCConstants.cleanConfirmationThreshold
+            || CleanupSelectionPolicy.requiresReview(in: viewModel.results, selection: viewModel.selectedItems) {
+            showLargeSelectionConfirm = true
+        } else {
+            viewModel.startCleaning(engine: appState.cleaningEngine)
         }
     }
 

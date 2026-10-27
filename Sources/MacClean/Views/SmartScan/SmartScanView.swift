@@ -89,7 +89,7 @@ struct SmartScanView: View {
             rebuildCleanSizeIndex()
             recomputeSelectedCleanSize()
         }
-        .onChange(of: selectedItems.count) { _, _ in
+        .onChange(of: selectedItems) { _, _ in
             recomputeSelectedCleanSize()
         }
         .respondsToModuleShortcuts(
@@ -295,7 +295,7 @@ struct SmartScanView: View {
 
             // Fill the remaining height so the list is tall enough to review
             // comfortably (issue #85), instead of a short fixed box.
-            FileListView(results: cleanResults, selectedItems: $selectedItems)
+            FileListView(results: cleanResults, selectedItems: $selectedItems, showsBulkSelection: true)
                 .frame(maxHeight: .infinity)
                 .background {
                     if removeBackgroundColors { Color.clear }
@@ -304,29 +304,21 @@ struct SmartScanView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .padding(.horizontal, 20)
 
-            // Footer: running selection on the left, the clean action on the right.
-            HStack {
-                Text(L10n.tr("已选择 \(selectedItems.count)/\(totalCleanItems) 项", "\(selectedItems.count)/\(totalCleanItems) selected", "Выбрано \(selectedItems.count) из \(totalCleanItems) \(L10n.russianPlural(totalCleanItems, one: "объекта", few: "объектов", many: "объектов"))"))
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(.primary.opacity(0.7))
-                Spacer()
-                Button { showCleanConfirm = true } label: {
-                    Text(L10n.tr("清理 · \(FileSizeFormatter.format(selectedCleanSize))", "Clean · \(FileSizeFormatter.format(selectedCleanSize))", "Очистить · \(FileSizeFormatter.format(selectedCleanSize))"))
-                }
-                .buttonStyle(SuperEllipseButtonStyle(
-                    gradient: ModuleTheme.smartScan.buttonGradient,
-                    size: CGSize(width: 200, height: 46)
-                ))
-                .disabled(selectedItems.isEmpty)
-                .opacity(selectedItems.isEmpty ? 0.5 : 1)
+            CleanupActionBar(
+                selectedCount: selectedItems.count,
+                totalCount: totalCleanItems,
+                selectedSize: selectedCleanSize,
+                gradient: ModuleTheme.smartScan.buttonGradient,
+                action: { showCleanConfirm = true }
+            )
                 .alert(L10n.tr("清理 \(selectedItems.count) 项？", "Clean \(selectedItems.count) item\(selectedItems.count == 1 ? "" : "s")?", "Очистить \(selectedItems.count) \(L10n.russianPlural(selectedItems.count, one: "объект", few: "объекта", many: "объектов"))?"), isPresented: $showCleanConfirm) {
                     Button(L10n.tr("取消", "Cancel", "Отмена"), role: .cancel) { }
                     Button(L10n.tr("清理", "Clean", "Очистить"), role: .destructive) { runCleanup() }
                 } message: {
-                    Text(L10n.tr("选中的项目会移到废纸篓，如有需要仍可恢复。", "Selected items will be moved to the Trash so you can recover them if needed.", "Выбранные объекты будут перемещены в Корзину, откуда при необходимости их можно восстановить."))
+                    Text(cleanupConfirmationMessage(for: CleanupSelectionPolicy.selectedCategories(
+                        in: cleanResults, selection: selectedItems)))
                 }
-            }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, 20)
             .padding(.bottom, 24)
         }
         .padding(.horizontal, 20)
@@ -337,10 +329,9 @@ struct SmartScanView: View {
         cleanResults.reduce(0) { $0 + $1.items.count }
     }
 
-    /// Cheap signature of the result set (category + item count), used to
-    /// rebuild the size index only when the results change. O(categories).
+    /// Include the scan generation so a same-count rescan refreshes sizes.
     private var cleanResultsSignature: String {
-        cleanResults.map { "\($0.category.rawValue):\($0.items.count)" }.joined(separator: ",")
+        fileListResultsSignature(sort: .default, results: cleanResults)
     }
 
     /// Rebuild the url -> size lookup so recomputing the selected total is
@@ -353,12 +344,10 @@ struct SmartScanView: View {
         cleanSizeIndex = map
     }
 
-    /// Sum the selected items' sizes via the index. Every selection mutation
-    /// changes `selectedItems.count`, so this is driven by an O(1) onChange key.
+    /// Observe the URLs themselves: selecting only safe items may replace a
+    /// selection with different URLs but the same item count.
     private func recomputeSelectedCleanSize() {
-        var total: UInt64 = 0
-        for url in selectedItems { total += cleanSizeIndex[url] ?? 0 }
-        selectedCleanSize = total
+        selectedCleanSize = CleanupSelectionPolicy.selectedSize(selectedItems, sizesByURL: cleanSizeIndex)
     }
 
     // MARK: - Empty / Done / Cleaning
@@ -422,7 +411,7 @@ struct SmartScanView: View {
                     : L10n.tr("清理完成", "Cleanup finished", "Очистка завершена")))
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(.primary)
-            SizeDisplay(size: summary.freedBytes, label: L10n.tr("可回收", "ready to reclaim", "можно освободить"))
+            SizeDisplay(size: summary.freedBytes, label: L10n.tr("已处理", "processed", "обработано"))
                 .foregroundStyle(.primary)
 
             if !breakdown.isEmpty {
@@ -485,14 +474,14 @@ struct SmartScanView: View {
     }
 
     private func recentlyCleanedDetail(_ row: SmartScanCleanup.RecentlyCleanedRow) -> String {
-        let size = FileSizeFormatter.format(row.size)
-        if row.itemCount <= 1 {
-            return size
-        }
+        // The engine measures directories recursively at cleanup time, while
+        // scan metadata may contain only the directory entry's size. Keep the
+        // factual total above; don't present stale per-module scan estimates
+        // as a breakdown of that total.
         return L10n.tr(
-            "\(size)（\(row.itemCount) 项）",
-            "\(size) (\(row.itemCount) items)",
-            "\(size) (\(row.itemCount) \(L10n.russianPlural(row.itemCount, one: "объект", few: "объекта", many: "объектов")))"
+            "\(row.itemCount.formatted()) 项",
+            "\(row.itemCount.formatted()) items",
+            "\(row.itemCount.formatted()) \(L10n.russianPlural(row.itemCount, one: "объект", few: "объекта", many: "объектов"))"
         )
     }
 
