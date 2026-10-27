@@ -53,6 +53,65 @@ final class CleanHistoryRecorderTests: XCTestCase {
         XCTAssertTrue(CleanHistoryRecorder.load().isEmpty, "a restored session must not be offered again")
     }
 
+    func testEngineHistoryRestoreRoundTripPreservesSystemPrivateVarAlias() async throws {
+        let file = dir.appending(path: "fixture.cache")
+        try write("payload", to: file)
+        let path = file.path(percentEncoded: false)
+        let publicPath = path.hasPrefix("/private/var/") ? String(path.dropFirst("/private".count)) : path
+        try XCTSkipUnless(publicPath.hasPrefix("/var/"), "Fixture needs macOS's standard /var alias")
+        let alias = URL(filePath: "/private" + publicPath)
+        let trash = try XCTUnwrap(fakeTrash)
+        let service = BatchTrashService { urls in
+            var relocated: [URL: URL] = [:]
+            do {
+                for url in urls {
+                    let target = trash.appending(path: url.lastPathComponent)
+                    try FileManager.default.moveItem(at: url, to: target)
+                    relocated[url] = target
+                }
+                return BatchTrashReceipt(relocated: relocated, errorMessage: nil)
+            } catch {
+                return BatchTrashReceipt(relocated: relocated, errorMessage: error.localizedDescription)
+            }
+        }
+        let result = await CleaningEngine(trashService: service, trashRoot: trash.path)
+            .clean(items: [FileItem(url: alias, name: alias.lastPathComponent, size: 7,
+                                   allocatedSize: 7, isDirectory: false)])
+        XCTAssertEqual(result.removedCount, 1)
+        XCTAssertTrue(result.errors.isEmpty)
+        CleanHistoryRecorder.record(trashedItems: result.trashedItems)
+        let session = try XCTUnwrap(CleanHistoryRecorder.load().first)
+        XCTAssertEqual(session.items.first?.originalPath, alias.path(percentEncoded: false))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: publicPath))
+
+        let summary = CleanHistoryRecorder.restore(session)
+
+        XCTAssertEqual(summary.restored, 1)
+        XCTAssertEqual(summary.failed, 0)
+        XCTAssertEqual(contents(file), "payload")
+        XCTAssertEqual(contents(alias), "payload")
+        XCTAssertTrue(CleanHistoryRecorder.load().isEmpty)
+    }
+
+    func testReappearedSystemAliasDestinationIsNotOverwritten() throws {
+        let file = dir.appending(path: "fixture.cache")
+        try write("old", to: file)
+        let path = file.path(percentEncoded: false)
+        let publicPath = path.hasPrefix("/private/var/") ? String(path.dropFirst("/private".count)) : path
+        try XCTSkipUnless(publicPath.hasPrefix("/var/"), "Fixture needs macOS's standard /var alias")
+        let alias = URL(filePath: "/private" + publicPath)
+        CleanHistoryRecorder.record(trashedItems: [try fakeTrashItem(alias)])
+        try write("new", to: file)
+
+        let summary = CleanHistoryRecorder.restore(try XCTUnwrap(CleanHistoryRecorder.load().first))
+
+        XCTAssertEqual(summary.restored, 0)
+        XCTAssertTrue(summary.restoredItemIDs.isEmpty)
+        XCTAssertEqual(contents(file), "new")
+        XCTAssertEqual(contents(fakeTrash.appending(path: "fixture.cache")), "old")
+        XCTAssertEqual(CleanHistoryRecorder.load().count, 1)
+    }
+
     func testNeverRestoresADifferentFileThatReusedTheTrashName() throws {
         let originalA = dir.appending(path: "AppA/Cache.db")
         try write("A", to: originalA)
