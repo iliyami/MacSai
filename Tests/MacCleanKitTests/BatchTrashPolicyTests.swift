@@ -62,4 +62,35 @@ final class BatchTrashPolicyTests: XCTestCase {
                                                 missing: [], trashRoot: trash, uid: 501)
         XCTAssertEqual(outcomes[source], .moved(to: target))
     }
+
+    func testDirectoryReceiptIsNormalizedForRestoreAcrossFoundationVersions() {
+        let target = URL(filePath: trash + "/folder", directoryHint: .isDirectory)
+        let outcomes = BatchTrashPolicy.outcomes(requested: [source], relocated: [source: target],
+                                                missing: [], trashRoot: trash, uid: 501)
+        let restorable = URL(filePath: trash + "/folder", directoryHint: .notDirectory)
+        XCTAssertEqual(outcomes[source], .moved(to: restorable))
+        if case .moved(let destination) = outcomes[source] {
+            XCTAssertFalse(destination.path(percentEncoded: false).hasSuffix("/"))
+            XCTAssertTrue(CleanHistoryRestore.isInsideTrash(destination.path(percentEncoded: false),
+                                                           trashRoot: trash, uid: 501))
+        }
+    }
+
+    func testDirectoryMarkerCannotHideDuplicateDestinations() {
+        let target = URL(filePath: trash + "/folder", directoryHint: .notDirectory)
+        let directoryTarget = URL(filePath: trash + "/folder", directoryHint: .isDirectory)
+        let outcomes = BatchTrashPolicy.outcomes(requested: [source, other],
+                                                relocated: [source: target, other: directoryTarget],
+                                                missing: [], trashRoot: trash, uid: 501)
+        XCTAssertEqual(outcomes[source], .invalidReceipt)
+        XCTAssertEqual(outcomes[other], .invalidReceipt)
+    }
+
+    func testDirectoryMarkerCannotHideIdentityDestination() {
+        let source = URL(filePath: trash + "/folder", directoryHint: .notDirectory)
+        let target = URL(filePath: trash + "/folder", directoryHint: .isDirectory)
+        let outcomes = BatchTrashPolicy.outcomes(requested: [source], relocated: [source: target],
+                                                missing: [], trashRoot: trash, uid: 501)
+        XCTAssertEqual(outcomes[source], .invalidReceipt)
+    }
 }
