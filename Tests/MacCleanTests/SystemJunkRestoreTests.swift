@@ -34,8 +34,10 @@ final class SystemJunkRestoreTests: XCTestCase {
                               allocatedSize: 1_000, isDirectory: false)
         let vm = SystemJunkViewModel()
         vm.restore(results: [ScanResult(category: .userCaches, items: [cache]),
+                             ScanResult(category: .systemCaches, items: [cache]),
                              ScanResult(category: .iosDeviceBackups, items: [backup])],
                    selection: [backup.url], scanComplete: true)
+        XCTAssertEqual(vm.totalFileCount, 2, "Select All and its denominator must count each URL only once")
         XCTAssertEqual(vm.selectedCount, 1)
         XCTAssertEqual(vm.totalSelectedSize, 1_000)
         vm.selectedItems = CleanupSelectionPolicy.safeURLs(in: vm.results)

@@ -58,7 +58,7 @@ final class SystemJunkViewModel {
     }
 
     var totalFileCount: Int {
-        results.reduce(0) { $0 + $1.fileCount }
+        sizeByURL.count
     }
 
     func startScan() {

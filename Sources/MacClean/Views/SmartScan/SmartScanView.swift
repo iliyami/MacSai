@@ -326,7 +326,7 @@ struct SmartScanView: View {
 
     /// Total number of cleanable items found (across all categories).
     private var totalCleanItems: Int {
-        cleanResults.reduce(0) { $0 + $1.items.count }
+        cleanSizeIndex.count
     }
 
     /// Include the scan generation so a same-count rescan refreshes sizes.
