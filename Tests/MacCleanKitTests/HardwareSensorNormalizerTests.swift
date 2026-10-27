@@ -4,6 +4,75 @@ import XCTest
 @testable import MacCleanKit
 
 final class HardwareSensorNormalizerTests: XCTestCase {
+    func testBatteryReaderKeepsLegacySourceAndDoesNotQueryPackUnnecessarily() {
+        var loadedClasses: [String] = []
+        let temperature = HardwareSensorNormalizer.readBatteryTemperature { serviceClass in
+            loadedClasses.append(serviceClass)
+            return [["Temperature": 3_125]]
+        }
+
+        XCTAssertEqual(temperature, 31.25)
+        XCTAssertEqual(loadedClasses, ["AppleSmartBattery"])
+    }
+
+    func testBatteryReaderFindsMacOS27PackTemperatureInMixedBatteryData() {
+        var loadedClasses: [String] = []
+        let temperature = HardwareSensorNormalizer.readBatteryTemperature { serviceClass in
+            loadedClasses.append(serviceClass)
+            if serviceClass == "AppleSmartBattery" {
+                // macOS 27's root record retains capacities but no temperature.
+                return [["BatteryData": ["CurrentCapacity": 80, "MaxCapacity": 100]]]
+            }
+            return [["BatteryData": [
+                "Temperature": 3_019,
+                "VirtualTemperature": 3_019,
+                "Serial": "fixture-only",
+                "LifetimeData": ["AverageTemperature": 252, "MaximumTemperature": 41],
+            ]]]
+        }
+
+        XCTAssertEqual(temperature, 30.19)
+        XCTAssertEqual(loadedClasses, ["AppleSmartBattery", "AppleSmartBatteryPack"])
+    }
+
+    func testBatteryReaderUsesHundredthsForColdPackWithoutGuessingScale() {
+        let temperature = HardwareSensorNormalizer.readBatteryTemperature { serviceClass in
+            serviceClass == "AppleSmartBatteryPack"
+                ? [["BatteryData": ["Temperature": 800]]]
+                : []
+        }
+
+        XCTAssertEqual(temperature, 8)
+    }
+
+    func testBatteryReaderSkipsInvalidEntriesAndUsesVirtualTemperature() {
+        let temperature = HardwareSensorNormalizer.readBatteryTemperature { serviceClass in
+            guard serviceClass == "AppleSmartBatteryPack" else {
+                return [["Temperature": 0]]
+            }
+            return [
+                ["BatteryData": "malformed"],
+                ["BatteryData": ["Temperature": Double.infinity]],
+                ["BatteryData": ["Temperature": 0, "VirtualTemperature": 2_950]],
+            ]
+        }
+
+        XCTAssertEqual(temperature, 29.5)
+    }
+
+    func testBatteryReaderNeverSubstitutesHistoricalOrNonBatteryTemperatures() {
+        let temperature = HardwareSensorNormalizer.readBatteryTemperature { _ in
+            [["CPUTemperature": 45, "BatteryData": [
+                "Temperature": 12_100,
+                "VirtualTemperature": -1,
+                "LifetimeData": ["AverageTemperature": 252, "MaximumTemperature": 41],
+            ]]]
+        }
+
+        XCTAssertNil(temperature)
+        XCTAssertNil(HardwareSensorNormalizer.readBatteryTemperature { _ in [] })
+    }
+
     func testGPUUsageChoosesMaximumAcrossKnownKeysAndSamples() throws {
         let samples: [[String: NSNumber]] = [
             ["Device Utilization %": 24],

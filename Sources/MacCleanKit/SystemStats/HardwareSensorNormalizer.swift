@@ -16,6 +16,44 @@ public enum HardwareSensorNormalizer {
         "VirtualTemperature",
     ]
 
+    /// macOS 27 moves the detailed battery data into a battery-pack entry.
+    /// Keep the original service first for earlier macOS releases.
+    public static let batteryTemperatureServiceClasses = [
+        "AppleSmartBattery",
+        "AppleSmartBatteryPack",
+    ]
+
+    /// Loads only battery entries, preserving the original source preference.
+    /// The injected loader keeps registry access at the application boundary.
+    public static func readBatteryTemperature(
+        loadProperties: (String) -> [[String: Any]]
+    ) -> Double? {
+        for serviceClass in batteryTemperatureServiceClasses {
+            for properties in loadProperties(serviceClass) {
+                let directValues = properties.compactMapValues { $0 as? NSNumber }
+                if let temperature = batteryTemperatureCelsius(from: directValues) {
+                    return temperature
+                }
+
+                // BatteryData contains strings, dictionaries and other values
+                // alongside the current temperature. Inspect only known keys;
+                // LifetimeData's historical temperatures are not live readings.
+                if let batteryData = properties["BatteryData"] as? [String: Any] {
+                    for key in batteryTemperatureKeys {
+                        guard let raw = batteryData[key] as? NSNumber else { continue }
+                        // BatteryData uses hundredths of a degree Celsius.
+                        // Do not infer its scale from magnitude: 800 means 8°C.
+                        let temperature = raw.doubleValue / 100
+                        if temperature.isFinite, temperature > 0, temperature <= 120 {
+                            return temperature
+                        }
+                    }
+                }
+            }
+        }
+        return nil
+    }
+
     /// Returns the highest finite GPU utilization as a fraction in `0...1`.
     public static func gpuUsageFraction(from samples: [[String: NSNumber]]) -> Double? {
         var maximumPercent: Double?

@@ -241,22 +241,30 @@ public actor SystemStatsCollector {
     }
 
     private func getBatterySensorTemperature() -> Double? {
-        guard let matching = IOServiceMatching("AppleSmartBattery") else { return nil }
-        let service = IOServiceGetMatchingService(kIOMainPortDefault, matching)
-        guard service != 0 else { return nil }
-        defer { IOObjectRelease(service) }
+        HardwareSensorNormalizer.readBatteryTemperature { serviceClass in
+            guard let matching = IOServiceMatching(serviceClass) else { return [] }
+            var iterator: io_iterator_t = 0
+            guard IOServiceGetMatchingServices(kIOMainPortDefault, matching, &iterator)
+                    == KERN_SUCCESS else { return [] }
+            defer { IOObjectRelease(iterator) }
 
-        var properties: [String: NSNumber] = [:]
-        for key in HardwareSensorNormalizer.batteryTemperatureKeys {
-            if let value = IORegistryEntryCreateCFProperty(
-                service,
-                key as CFString,
-                kCFAllocatorDefault,
-                0
-            )?.takeRetainedValue() as? NSNumber {
-                properties[key] = value
+            var entries: [[String: Any]] = []
+            while case let service = IOIteratorNext(iterator), service != 0 {
+                defer { IOObjectRelease(service) }
+                var properties: [String: Any] = [:]
+                for key in HardwareSensorNormalizer.batteryTemperatureKeys + ["BatteryData"] {
+                    if let value = IORegistryEntryCreateCFProperty(
+                        service,
+                        key as CFString,
+                        kCFAllocatorDefault,
+                        0
+                    )?.takeRetainedValue() {
+                        properties[key] = value
+                    }
+                }
+                entries.append(properties)
             }
+            return entries
         }
-        return HardwareSensorNormalizer.batteryTemperatureCelsius(from: properties)
     }
 }
