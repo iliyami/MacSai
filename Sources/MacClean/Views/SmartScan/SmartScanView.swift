@@ -11,6 +11,7 @@ struct SmartScanView: View {
     @State private var cleanResults: [ScanResult] = []
     @State private var askForSupport = false
     @State private var showCleanConfirm = false
+    @State private var showActivityLog = false
     @State private var cleanTask: Task<Void, Never>?
     /// Watches `ScanCoordinator` while a Smart Scan runs. Cancelled by
     /// `cancelScan()` so we stop polling and return to idle promptly (#3).
@@ -35,7 +36,7 @@ struct SmartScanView: View {
         case results(cleanup: UInt64, protection: Int, performance: Int, totalSize: UInt64, moduleResults: [ModuleScanResult])
         case empty
         case cleaning(progress: Double)
-        case done(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow])
+        case done(summary: CleanSummary, breakdown: [SmartScanCleanup.RecentlyCleanedRow])
     }
 
     private static var moduleOrder: [(id: String, name: String, icon: String, group: String)] {
@@ -66,11 +67,13 @@ struct SmartScanView: View {
                 emptyView
             case .cleaning(let progress):
                 cleaningView(progress: progress)
-            case .done(let freedSize, let breakdown):
-                doneView(freedSize: freedSize, breakdown: breakdown)
+            case .done(let summary, let breakdown):
+                doneView(summary: summary, breakdown: breakdown)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .toolbar { ToolbarItem { CleanupPermissionsButton() } }
+        .sheet(isPresented: $showActivityLog) { LogViewerView() }
         // Recompute the selected-size total only when the results or selection
         // actually change, NOT on every body pass. The footer reads
         // `selectedCleanSize`, and SwiftUI re-evaluates this body during the
@@ -388,26 +391,33 @@ struct SmartScanView: View {
                 .buttonStyle(.bordered)
                 .tint(.primary)
                 .controlSize(.large)
+            Text(L10n.tr("取消后会先完成当前一组。", "Cancelling finishes the current group first.", "При отмене текущая группа сначала завершится."))
+                .font(.caption)
+                .foregroundStyle(.secondary)
             Spacer()
         }
     }
 
     /// Scrolls when taller than the window (support card on a small window)
     /// instead of overflowing the pane.
-    private func doneView(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
-        FitOrScroll { doneContent(freedSize: freedSize, breakdown: breakdown) }
+    private func doneView(summary: CleanSummary, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
+        FitOrScroll { doneContent(summary: summary, breakdown: breakdown) }
     }
 
-    private func doneContent(freedSize: UInt64, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
+    private func doneContent(summary: CleanSummary, breakdown: [SmartScanCleanup.RecentlyCleanedRow]) -> some View {
         VStack(spacing: 20) {
             Spacer()
-            Image(systemName: "checkmark.circle.fill")
+            Image(systemName: summary.wasCancelled ? "pause.circle.fill" : (summary.errorCount > 0 ? "exclamationmark.triangle.fill" : "checkmark.circle.fill"))
                 .font(.system(size: 52))
-                .foregroundStyle(.primary)
-            Text(L10n.tr("已移到废纸篓", "Moved to the Trash", "Перемещено в Корзину"))
+                .foregroundStyle(summary.errorCount > 0 || summary.wasCancelled ? Color.orange : Color.primary)
+            Text(summary.wasCancelled
+                 ? L10n.tr("清理已停止", "Cleanup stopped", "Очистка остановлена")
+                 : (summary.errorCount > 0
+                    ? L10n.tr("部分项目未能清理", "Some items could not be cleaned", "Часть объектов не удалось очистить")
+                    : L10n.tr("清理完成", "Cleanup finished", "Очистка завершена")))
                 .font(.system(size: 22, weight: .bold))
                 .foregroundStyle(.primary)
-            SizeDisplay(size: freedSize, label: L10n.tr("可回收", "ready to reclaim", "можно освободить"))
+            SizeDisplay(size: summary.freedBytes, label: L10n.tr("可回收", "ready to reclaim", "можно освободить"))
                 .foregroundStyle(.primary)
 
             if !breakdown.isEmpty {
@@ -439,9 +449,24 @@ struct SmartScanView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
 
-            Text(L10n.tr("你选择的项目已在废纸篓中——需要时可以恢复。若要彻底删除，请打开“废纸篓”模块并清空。", "Your selected items are in the Trash — recover anything you need. To erase them for good, open Trash Bins and empty it.", "Выбранные объекты находятся в Корзине — при необходимости их можно восстановить. Чтобы удалить их окончательно, откройте раздел «Корзины» и очистите корзины."))
+            if summary.errorCount > 0 {
+                VStack(alignment: .leading, spacing: 6) {
+                    ForEach(summary.topErrorGroups, id: \.message) { group in
+                        Text("\(group.count)× \(group.message)")
+                            .font(.callout)
+                            .textSelection(.enabled)
+                    }
+                    Button(L10n.tr("查看日志", "View Log", "Журнал")) { showActivityLog = true }
+                        .buttonStyle(.bordered)
+                }
+                .frame(maxWidth: 420, alignment: .leading)
+            }
+            Text(L10n.tr(
+                "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。",
+                "Only completed operations are shown above. Items moved to Trash can be restored from cleanup history. Scan again to review remaining or regenerated files.",
+                "Выше показаны только выполненные операции. Объекты в Корзине можно восстановить из истории очистки. Повторите сканирование, чтобы проверить оставшиеся или заново созданные файлы."))
                 .font(.system(size: 13))
-                .foregroundStyle(.primary.opacity(0.65))
+                .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 420)
             if askForSupport { SupportCard() }
@@ -623,13 +648,15 @@ struct SmartScanView: View {
                 from: modules,
                 selectedItems: result.removedURLs
             )
-            askForSupport = SupportAskLedger.shared.shouldAsk(for: CleanSummary(
+            let summary = CleanSummary(
                 selectedCount: selection.count,
                 removedCount: result.removedCount,
                 freedBytes: result.freedBytes,
-                errorMessages: []
-            ))
-            scanState = .done(freedSize: result.freedBytes, breakdown: breakdown)
+                errorMessages: result.errors.map(\.error),
+                wasCancelled: result.wasCancelled
+            )
+            askForSupport = !summary.wasCancelled && SupportAskLedger.shared.shouldAsk(for: summary)
+            scanState = .done(summary: summary, breakdown: breakdown)
         }
     }
 }

@@ -61,11 +61,8 @@ struct OnboardingView: View {
             }
             .padding(24)
         }
-        // Was 600x450; the FDA step's full content (icon + title + body
-        // + 4 numbered steps + "Open System Settings" button) exceeded
-        // that and clipped the Back/Next buttons at the bottom of the
-        // sheet on real installs. 620 height gives every step room
-        // without becoming an empty-looking sheet on shorter steps.
+        // Keep the navigation visible; the permissions step scrolls inside
+        // the available space for longer translations and smaller displays.
         .frame(width: 600, height: 620)
     }
 
@@ -87,35 +84,7 @@ struct OnboardingView: View {
     }
 
     private var fdaStep: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "lock.shield")
-                .font(.system(size: 50))
-                .foregroundStyle(.blue)
-
-            Text(L10n.tr("完全磁盘访问权限", "Full Disk Access", "Полный доступ к диску"))
-                .font(.system(size: 24, weight: .bold))
-
-            Text(L10n.tr("\(MCConstants.appName) 需要完全磁盘访问权限，才能扫描邮件、Safari 和其他受保护区域。未授予时，部分功能会受限。", "\(MCConstants.appName) needs Full Disk Access to scan Mail, Safari, and other protected areas. Without it, some features will be limited.", "\(MCConstants.appName) требуется полный доступ к диску для сканирования Почты, Safari и других защищённых областей. Без него некоторые функции будут ограничены."))
-                .font(.system(size: 14))
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .frame(maxWidth: 420)
-
-            VStack(alignment: .leading, spacing: 8) {
-                step("1", L10n.tr("打开系统设置", "Open System Settings", "Откройте Системные настройки"))
-                step("2", L10n.tr("前往“隐私与安全性 → 完全磁盘访问权限”", "Go to Privacy & Security → Full Disk Access", "Перейдите в «Конфиденциальность и безопасность → Полный доступ к диску»"))
-                step("3", L10n.tr("点击 + 按钮并添加 \(MCConstants.appName)", "Click the + button and add \(MCConstants.appName)", "Нажмите + и добавьте \(MCConstants.appName)"))
-                step("4", L10n.tr("重新启动 \(MCConstants.appName)", "Restart \(MCConstants.appName)", "Перезапустите \(MCConstants.appName)"))
-            }
-            .padding()
-            .background(Color.secondary.opacity(0.08))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-
-            Button(L10n.tr("打开系统设置", "Open System Settings", "Открыть Системные настройки")) {
-                PermissionManager.shared.openFullDiskAccessSettings()
-            }
-            .buttonStyle(.bordered)
-        }
+        CleanupPermissionsView()
     }
 
     private var featuresStep: some View {

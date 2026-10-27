@@ -44,6 +44,12 @@ public actor MaintenanceExecutor {
     }
 
     public func execute(_ task: MaintenanceTask) async -> TaskResult {
+        let activity = await AppOperationActivity.shared.begin()
+        defer { AppOperationActivity.shared.end(activity) }
+        guard !Task.isCancelled else {
+            return TaskResult(task: task, success: false, output: "",
+                              error: L10n.tr("已取消", "Cancelled", "Отменено"))
+        }
         if case .speedUpMail = task { return await reindexMail() }
         if case .pruneDocker = task { return await pruneDocker() }
 

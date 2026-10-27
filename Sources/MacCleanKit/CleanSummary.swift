@@ -29,6 +29,7 @@ public struct CleanSummary: Sendable, Equatable, Identifiable {
     /// downstream into top-N groups for the UI; kept raw so a future
     /// "Show All Errors" inspector can list every individual failure.
     public let errorMessages: [String]
+    public let wasCancelled: Bool
 
     public var errorCount: Int { errorMessages.count }
 
@@ -37,6 +38,7 @@ public struct CleanSummary: Sendable, Equatable, Identifiable {
             && lhs.removedCount == rhs.removedCount
             && lhs.freedBytes == rhs.freedBytes
             && lhs.errorMessages == rhs.errorMessages
+            && lhs.wasCancelled == rhs.wasCancelled
     }
 
     /// First raw error message, if any. Used for the single-error
@@ -55,12 +57,14 @@ public struct CleanSummary: Sendable, Equatable, Identifiable {
         selectedCount: Int,
         removedCount: Int,
         freedBytes: UInt64,
-        errorMessages: [String]
+        errorMessages: [String],
+        wasCancelled: Bool = false
     ) {
         self.selectedCount = selectedCount
         self.removedCount = removedCount
         self.freedBytes = freedBytes
         self.errorMessages = errorMessages
+        self.wasCancelled = wasCancelled
     }
 
     public struct ErrorGroup: Sendable, Equatable, Hashable {

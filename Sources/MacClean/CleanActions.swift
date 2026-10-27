@@ -40,6 +40,8 @@ public enum CleanActions {
         engine: CleaningEngine,
         onProgress: (@Sendable (CleaningEngine.Progress) -> Void)? = nil
     ) async -> CleaningEngine.CleanResult {
+        let activity = await AppOperationActivity.shared.begin()
+        defer { AppOperationActivity.shared.end(activity) }
         var trashItems: [FileItem] = []
         var permanentItems: [FileItem] = []
         var thinItems: [FileItem] = []
@@ -76,20 +78,21 @@ public enum CleanActions {
         let trashResult = await engine.clean(items: dedupedTrashItems, mode: .trash,
                                              onProgress: onProgress)
         CleanHistoryRecorder.record(trashedItems: trashResult.trashedItems)
-        if Task.isCancelled {
+        if Task.isCancelled || trashResult.wasCancelled {
             return trashResult
         }
 
         let permanentResult = await engine.clean(items: dedupedPermanentItems, mode: .permanent,
                                                  onProgress: onProgress)
-        if Task.isCancelled {
+        if Task.isCancelled || permanentResult.wasCancelled {
             return CleaningEngine.CleanResult(
                 removedCount: trashResult.removedCount + permanentResult.removedCount,
                 freedBytes: trashResult.freedBytes + permanentResult.freedBytes,
                 removedURLs: trashResult.removedURLs.union(permanentResult.removedURLs),
                 errors: trashResult.errors + permanentResult.errors,
                 skippedCount: trashResult.skippedCount + permanentResult.skippedCount,
-                trashedItems: trashResult.trashedItems
+                trashedItems: trashResult.trashedItems,
+                wasCancelled: true
             )
         }
 
@@ -102,7 +105,8 @@ public enum CleanActions {
                 .union(thinResult.removedURLs),
             errors: trashResult.errors + permanentResult.errors + thinResult.errors,
             skippedCount: trashResult.skippedCount + permanentResult.skippedCount + thinResult.skippedCount,
-            trashedItems: trashResult.trashedItems
+            trashedItems: trashResult.trashedItems,
+            wasCancelled: Task.isCancelled
         )
     }
 
@@ -166,6 +170,8 @@ public enum CleanActions {
         engine: CleaningEngine,
         onProgress: (@Sendable (CleaningEngine.Progress) -> Void)? = nil
     ) async -> CleaningEngine.CleanResult {
+        let activity = await AppOperationActivity.shared.begin()
+        defer { AppOperationActivity.shared.end(activity) }
         let filtered = items.filter { selectedItems.contains($0.url) }
         let deduped = Self.prunedToParents(filtered)
         let result = await engine.clean(items: deduped, mode: .trash,

@@ -26,6 +26,7 @@ struct SystemJunkView: View {
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .toolbar { ToolbarItem { CleanupPermissionsButton() } }
         .onAppear {
             if let e = appState.scanResultsStore.entry(for: .systemJunk) {
                 viewModel.restore(results: e.results, selection: e.selection, scanComplete: e.scanComplete)
@@ -204,6 +205,9 @@ struct SystemJunkView: View {
                 .buttonStyle(.bordered)
                 .tint(.primary)
                 .controlSize(.large)
+            Text(L10n.tr("取消后会先完成当前一组。", "Cancelling finishes the current group first.", "При отмене текущая группа сначала завершится."))
+                .font(.caption)
+                .foregroundStyle(.secondary)
 
             Spacer()
         }
@@ -281,7 +285,15 @@ struct SystemJunkView: View {
             // categories (most commonly Universal Binaries) so nothing was
             // checked when Clean was clicked. Saying "0 bytes" looked broken;
             // saying "Nothing was selected" tells the user what to do next.
-            if summary.selectedCount == 0 {
+            if summary.wasCancelled {
+                Image(systemName: "pause.circle.fill")
+                    .font(.system(size: 52))
+                    .foregroundStyle(.orange)
+                Text(L10n.tr("清理已停止", "Cleanup stopped", "Очистка остановлена"))
+                    .font(.system(size: 22, weight: .bold))
+                SizeDisplay(size: summary.freedBytes, label: L10n.tr("已处理", "processed", "обработано"))
+                cleanErrorDetail(for: summary)
+            } else if summary.selectedCount == 0 {
                 Image(systemName: "checklist.unchecked")
                     .font(.system(size: 52))
                     .foregroundStyle(.primary.opacity(0.85))
@@ -313,7 +325,16 @@ struct SystemJunkView: View {
                          (summary.errorCount > 0 ? L10n.tr(" — \(summary.errorCount) 个错误", " — \(summary.errorCount) error\(summary.errorCount == 1 ? "" : "s")", " — \(summary.errorCount) \(L10n.russianPlural(summary.errorCount, one: "ошибка", few: "ошибки", many: "ошибок"))") : ""))
                         .font(.system(size: 12))
                         .foregroundStyle(.primary.opacity(0.65))
+                    Text(L10n.tr(
+                        "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。",
+                        "Selected folders count as one item together with their contents. Files already gone are skipped.",
+                        "Выбранная папка учитывается как один объект вместе с содержимым. Уже исчезнувшие файлы пропускаются."))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 420)
                 }
+                cleanErrorDetail(for: summary)
                 if SupportAskLedger.shared.shouldAsk(for: summary) {
                     SupportCard()
                         .padding(.horizontal, 40)

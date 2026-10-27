@@ -1,9 +1,10 @@
 import Foundation
+import Darwin
 import MacCleanKit
 import OSLog
 
 public actor CleaningEngine {
-    public enum CleanMode: Sendable {
+    public enum CleanMode: Sendable, Equatable {
         case trash
         case permanent
         case dryRun
@@ -29,6 +30,8 @@ public actor CleaningEngine {
         public let skippedCount: Int
         /// Items actually moved to the Trash (empty for dry-run / permanent).
         public let trashedItems: [TrashedItem]
+        /// Cancellation in MacSai or in the system's authorization dialog.
+        public let wasCancelled: Bool
 
         public init(
             removedCount: Int,
@@ -36,7 +39,8 @@ public actor CleaningEngine {
             removedURLs: Set<URL>,
             errors: [CleanError],
             skippedCount: Int,
-            trashedItems: [TrashedItem] = []
+            trashedItems: [TrashedItem] = [],
+            wasCancelled: Bool = false
         ) {
             self.removedCount = removedCount
             self.freedBytes = freedBytes
@@ -44,6 +48,7 @@ public actor CleaningEngine {
             self.errors = errors
             self.skippedCount = skippedCount
             self.trashedItems = trashedItems
+            self.wasCancelled = wasCancelled
         }
     }
 
@@ -72,14 +77,39 @@ public actor CleaningEngine {
 
     private let safetyGuard = SafetyGuard()
     private let logger = Logger(subsystem: MCConstants.bundleIdentifier, category: "CleaningEngine")
+    private let trashService: BatchTrashService
+    private let trashRoot: String
+    private let readIdentity: @Sendable (URL) throws -> TrashItemIdentity
+    private let isMissing: @Sendable (URL) -> Bool
+    private let trashBatchSize: Int
+    private var isCleaning = false
 
-    public init() {}
+    public init() {
+        self.init(trashService: .live)
+    }
+
+    init(
+        trashService: BatchTrashService,
+        trashRoot: String = MCConstants.userTrash.path(percentEncoded: false),
+        batchSize: Int = 500,
+        readIdentity: @escaping @Sendable (URL) throws -> TrashItemIdentity = TrashItemIdentity.read,
+        isMissing: @escaping @Sendable (URL) -> Bool = { url in
+            var info = stat()
+            return lstat(url.path(percentEncoded: false), &info) != 0 && errno == ENOENT
+        }
+    ) {
+        self.trashService = trashService
+        self.trashRoot = trashRoot
+        self.trashBatchSize = min(max(1, batchSize), MCConstants.maxFilesPerOperation)
+        self.readIdentity = readIdentity
+        self.isMissing = isMissing
+    }
 
     /// Trash / permanently delete / dry-run the given items.
     ///
-    /// Large selections (chrome cache alone often has 20k+ entries) are
-    /// processed in chunks of `MCConstants.cleanChunkSize` so the per-chunk
-    /// SafetyGuard batch validation never trips on legitimate cleanups.
+    /// Large selections are processed in bounded batches. Trash batches are
+    /// smaller to keep cancellation responsive while the system owns a move;
+    /// permanent deletion and dry runs retain `MCConstants.cleanChunkSize`.
     /// Selections beyond `MCConstants.maxTotalItemsPerCleanOperation`
     /// (500k) are refused entirely as a runaway-protection — that's
     /// orders of magnitude above any realistic user scenario and signals
@@ -95,6 +125,14 @@ public actor CleaningEngine {
         mode: CleanMode = .trash,
         onProgress: (@Sendable (Progress) -> Void)? = nil
     ) async -> CleanResult {
+        guard !isCleaning else {
+            return CleanResult(removedCount: 0, freedBytes: 0, removedURLs: [],
+                               errors: [CleanError(path: "cleanup", error: L10n.tr(
+                                "另一项清理仍在进行中。", "Another cleanup is still running.", "Другая очистка ещё выполняется."))],
+                               skippedCount: items.count)
+        }
+        isCleaning = true
+        defer { isCleaning = false }
         // Upper bound: refuse genuinely runaway selections cleanly.
         if items.count > MCConstants.maxTotalItemsPerCleanOperation {
             let msg = L10n.tr("操作超过 \(MCConstants.maxTotalItemsPerCleanOperation) 项上限（尝试处理：\(items.count) 项）。这通常表示扫描器存在异常。", "Operation exceeds limit of \(MCConstants.maxTotalItemsPerCleanOperation) items (attempted: \(items.count)). This usually indicates a scanner bug.", "Операция превышает лимит в \(MCConstants.maxTotalItemsPerCleanOperation) \(L10n.russianPlural(MCConstants.maxTotalItemsPerCleanOperation, one: "объект", few: "объекта", many: "объектов")) (запрошено: \(items.count)). Обычно это указывает на ошибку сканера.")
@@ -114,14 +152,17 @@ public actor CleaningEngine {
         var errors: [CleanError] = []
         var skippedCount = 0
         var trashedItems: [TrashedItem] = []
+        var wasCancelled = false
 
-        // Internal chunking: SafetyGuard.validateDeletion runs per chunk
-        // (capped at MCConstants.maxFilesPerOperation), so even arbitrary-
-        // size total selections never blow past the per-batch cap. Yield
-        // between chunks so the UI runloop can repaint during long runs
-        // (a real fix for the UI freezing on 50k+ cleanups will come
-        // when we add a progress channel in a follow-up release).
-        let chunkSize = MCConstants.cleanChunkSize
+        // Direct engine callers get the same no-double-move guarantee as
+        // CleanActions. Keep the first URL's metadata.
+        var seen = Set<URL>()
+        let items = mode == .trash ? items.filter { seen.insert($0.url).inserted } : items
+
+        // Bounded batches reduce per-file system prompts while allowing
+        // cancellation between batches. AppKit controls authentication UI;
+        // it does not promise a single prompt for an entire cleanup.
+        let chunkSize = mode == .trash ? trashBatchSize : MCConstants.cleanChunkSize
         var startIndex = 0
         var processedSoFar = 0
         while startIndex < items.count {
@@ -130,15 +171,25 @@ public actor CleaningEngine {
             let chunk = Array(items[startIndex..<endIndex])
             startIndex = endIndex
 
-            processChunk(
-                chunk, mode: mode,
-                removedCount: &removedCount,
-                freedBytes: &freedBytes,
-                removedURLs: &removedURLs,
-                errors: &errors,
-                skippedCount: &skippedCount,
-                trashedItems: &trashedItems
-            )
+            if mode == .trash {
+                let result = await processTrashChunk(chunk)
+                removedCount += result.removedCount
+                freedBytes += result.freedBytes
+                removedURLs.formUnion(result.removedURLs)
+                errors.append(contentsOf: result.errors)
+                skippedCount += result.skippedCount
+                trashedItems.append(contentsOf: result.trashedItems)
+                wasCancelled = result.wasCancelled
+            } else {
+                processChunk(
+                    chunk, mode: mode,
+                    removedCount: &removedCount,
+                    freedBytes: &freedBytes,
+                    removedURLs: &removedURLs,
+                    errors: &errors,
+                    skippedCount: &skippedCount
+                )
+            }
             processedSoFar += chunk.count
 
             // Emit per-chunk progress so the UI can render an honest
@@ -150,6 +201,9 @@ public actor CleaningEngine {
                 removedSoFar: removedCount,
                 freedBytesSoFar: freedBytes
             ))
+            // A declined system prompt must not be immediately retried by
+            // the next batch (nor by a later CleanActions stage).
+            if wasCancelled { break }
 
             // Give the runloop room to breathe between chunks.
             await Task.yield()
@@ -163,8 +217,100 @@ public actor CleaningEngine {
             removedURLs: removedURLs,
             errors: errors,
             skippedCount: skippedCount,
-            trashedItems: trashedItems
+            trashedItems: trashedItems,
+            wasCancelled: wasCancelled || Task.isCancelled
         )
+    }
+
+    private func processTrashChunk(_ items: [FileItem]) async -> CleanResult {
+        var prepared: [(item: FileItem, bytes: UInt64, identity: TrashItemIdentity)] = []
+        var errors: [CleanError] = []
+        var skippedCount = 0
+        for item in items {
+            if Task.isCancelled { break }
+            do {
+                try safetyGuard.validatePath(item.url)
+                let identity = try readIdentity(item.url)
+                let bytes = item.isDirectory ? Self.recursiveAllocatedSize(of: item.url) : item.size
+                prepared.append((item, bytes, identity))
+            } catch {
+                if Self.isBenignMissingFile(error as NSError) {
+                    skippedCount += 1
+                    logSkip(path: item.url, reason: L10n.tr("已不存在", "already gone", "уже удалён"))
+                } else {
+                    skippedCount += 1
+                    errors.append(CleanError(path: item.url.path(percentEncoded: false), error: error.localizedDescription))
+                    logError(path: item.url, reason: error.localizedDescription)
+                }
+            }
+        }
+
+        var ready: [(item: FileItem, bytes: UInt64)] = []
+        // Revalidate after size enumeration and immediately before handing
+        // this bounded selection to the system. Changed entries are skipped.
+        for entry in prepared {
+            if Task.isCancelled { break }
+            do {
+                try safetyGuard.validatePath(entry.item.url)
+                guard try readIdentity(entry.item.url) == entry.identity else {
+                    throw CocoaError(.fileWriteUnknown, userInfo: [NSLocalizedDescriptionKey: L10n.tr(
+                        "准备清理时文件已更改，请重新扫描。",
+                        "The item changed while cleanup was being prepared. Scan again.",
+                        "Объект изменился во время подготовки очистки. Повторите сканирование.")])
+                }
+                ready.append((entry.item, entry.bytes))
+            } catch {
+                if Self.isBenignMissingFile(error as NSError) {
+                    skippedCount += 1
+                    logSkip(path: entry.item.url, reason: L10n.tr("已不存在", "already gone", "уже удалён"))
+                } else {
+                    skippedCount += 1
+                    errors.append(CleanError(path: entry.item.url.path(percentEncoded: false), error: error.localizedDescription))
+                    logError(path: entry.item.url, reason: error.localizedDescription)
+                }
+            }
+        }
+        guard !ready.isEmpty, !Task.isCancelled else {
+            return CleanResult(removedCount: 0, freedBytes: 0, removedURLs: [], errors: errors,
+                               skippedCount: skippedCount, wasCancelled: Task.isCancelled)
+        }
+
+        let urls = ready.map { $0.item.url }
+        let receipt = await trashService.recycle(urls)
+        let missing = Set(urls.filter { receipt.relocated[$0] == nil && isMissing($0) })
+        let outcomes = BatchTrashPolicy.outcomes(requested: urls, relocated: receipt.relocated,
+                                               missing: missing, trashRoot: trashRoot, uid: getuid())
+        var trashedItems: [TrashedItem] = []
+        var bytes: UInt64 = 0
+        for entry in ready {
+            let url = entry.item.url
+            switch outcomes[url] {
+            case .moved(let destination):
+                trashedItems.append(TrashedItem(originalURL: url, trashURL: destination, bytes: entry.bytes))
+                bytes += entry.bytes
+                logOperation(path: url, size: entry.bytes, dryRun: false)
+            case .missing:
+                skippedCount += 1
+                logSkip(path: url, reason: L10n.tr("已不存在", "already gone", "уже удалён"))
+            case .invalidReceipt:
+                let message = L10n.tr("无法确认项目在废纸篓中的位置，请检查访达。",
+                                      "The item's Trash location could not be verified. Check Finder.",
+                                      "Не удалось подтвердить расположение объекта в Корзине. Проверьте Finder.")
+                errors.append(CleanError(path: url.path(percentEncoded: false), error: message))
+                logError(path: url, reason: message)
+            case .failed, .none:
+                let message = receipt.errorMessage ?? L10n.tr(
+                    "macOS 未将此项目移到废纸篓。请检查权限并重新扫描。",
+                    "macOS did not move this item to the Trash. Check permissions and scan again.",
+                    "macOS не переместила объект в Корзину. Проверьте разрешения и повторите сканирование.")
+                errors.append(CleanError(path: url.path(percentEncoded: false), error: message))
+                logError(path: url, reason: message)
+            }
+        }
+        return CleanResult(removedCount: trashedItems.count, freedBytes: bytes,
+                           removedURLs: Set(trashedItems.map(\.originalURL)), errors: errors,
+                           skippedCount: skippedCount, trashedItems: trashedItems,
+                           wasCancelled: receipt.wasCancelled || Task.isCancelled)
     }
 
     /// One chunk's worth of cleanup. Batch-validates the chunk's paths,
@@ -179,8 +325,7 @@ public actor CleaningEngine {
         freedBytes: inout UInt64,
         removedURLs: inout Set<URL>,
         errors: inout [CleanError],
-        skippedCount: inout Int,
-        trashedItems: inout [TrashedItem]
+        skippedCount: inout Int
     ) {
         let urls = chunk.map(\.url)
         do {
@@ -215,6 +360,7 @@ public actor CleaningEngine {
                     path: item.url.path(percentEncoded: false),
                     error: error.localizedDescription
                 ))
+                logError(path: item.url, reason: error.localizedDescription)
                 continue
             }
 
@@ -236,31 +382,8 @@ public actor CleaningEngine {
                 logOperation(path: item.url, size: realSize, dryRun: true)
 
             case .trash:
-                do {
-                    var resulting: NSURL?
-                    try FileManager.default.trashItem(at: item.url, resultingItemURL: &resulting)
-                    removedCount += 1
-                    freedBytes += realSize
-                    removedURLs.insert(item.url)
-                    if let trashURL = resulting as URL? {
-                        trashedItems.append(
-                            TrashedItem(originalURL: item.url, trashURL: trashURL, bytes: realSize)
-                        )
-                    }
-                    logOperation(path: item.url, size: realSize, dryRun: false)
-                } catch let nsError as NSError where Self.isBenignMissingFile(nsError) {
-                    // Cache churn: scanner saw the file, but a daemon
-                    // (or our own earlier processing) removed it before
-                    // we got here. Not a failure to surface to the user.
-                    skippedCount += 1
-                    logSkip(path: item.url, reason: L10n.tr("已不存在", "already gone", "уже удалён"))
-                } catch {
-                    let msg = error.localizedDescription
-                    errors.append(CleanError(
-                        path: item.url.path(percentEncoded: false), error: msg
-                    ))
-                    logError(path: item.url, reason: msg)
-                }
+                // Routed to processTrashChunk before reaching this method.
+                break
 
             case .permanent:
                 do {

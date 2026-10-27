@@ -147,7 +147,8 @@ final class SystemJunkViewModel {
                 selectedCount: preCleanSelectedCount,
                 removedCount: result.removedCount,
                 freedBytes: result.freedBytes,
-                errorMessages: result.errors.map(\.error)
+                errorMessages: result.errors.map(\.error),
+                wasCancelled: result.wasCancelled
             ))
         }
     }
