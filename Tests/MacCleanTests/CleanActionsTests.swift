@@ -476,10 +476,23 @@ final class CleanActionsTests: XCTestCase {
                 FileItem(url: child2, name: "child2.txt", size: 2, allocatedSize: 2, isDirectory: false),
                 FileItem(url: standalone, name: "standalone.txt", size: 2, allocatedSize: 2, isDirectory: false),
             ]
+            let diagnosticTrashService = BatchTrashService { urls in
+                print("TRASH_RECEIPT_DIAGNOSTIC root=\(MCConstants.userTrash.absoluteString) uid=\(getuid())")
+                for url in urls {
+                    print("TRASH_RECEIPT_DIAGNOSTIC requested \(Self.receiptDiagnostics(url))")
+                }
+                let receipt = await BatchTrashService.live.recycle(urls)
+                print("TRASH_RECEIPT_DIAGNOSTIC error=\(receipt.errorMessage ?? "none")")
+                for (source, destination) in receipt.relocated.sorted(by: { $0.key.absoluteString < $1.key.absoluteString }) {
+                    print("TRASH_RECEIPT_DIAGNOSTIC source \(Self.receiptDiagnostics(source))")
+                    print("TRASH_RECEIPT_DIAGNOSTIC destination \(Self.receiptDiagnostics(destination))")
+                }
+                return receipt
+            }
             let result = await CleanActions.executeUserClean(
                 results: [ScanResult(category: .userCaches, items: items)],
                 selectedItems: Set(items.map(\.url)),
-                engine: CleaningEngine()
+                engine: CleaningEngine(trashService: diagnosticTrashService)
             )
 
             // SPEC: zero errors. The descendants of `parent` and `sub`
@@ -502,5 +515,20 @@ final class CleanActionsTests: XCTestCase {
             XCTAssertEqual(result.removedCount, 2,
                 "expected 2 trash operations (parent + standalone); descendants ride along with parent")
         }
+    }
+
+    private static func receiptDiagnostics(_ url: URL) -> String {
+        let path = url.path(percentEncoded: false)
+        let withoutMarker = path.count > 1 && path.hasSuffix("/") ? String(path.dropLast()) : path
+        let identity = (try? TrashItemIdentity.read(url)).map { String(describing: $0) } ?? "unavailable"
+        let insideTrash = CleanHistoryRestore.isInsideTrash(
+            withoutMarker, trashRoot: MCConstants.userTrash.path(percentEncoded: false), uid: getuid())
+        return "absolute=\(url.absoluteString) base=\(url.baseURL?.absoluteString ?? "none") "
+            + "relative=\(url.relativeString) modernPath=\(path) legacyPath=\(url.path) "
+            + "absolutePath=\(url.absoluteURL.path(percentEncoded: false)) "
+            + "standardizedURL=\(url.standardizedFileURL.absoluteString) "
+            + "inferredNormalized=\(URL(filePath: withoutMarker).standardizedFileURL.path(percentEncoded: false)) "
+            + "nonDirectoryNormalized=\(URL(filePath: withoutMarker, directoryHint: .notDirectory).standardizedFileURL.path(percentEncoded: false)) "
+            + "fileReference=\((url as NSURL).isFileReferenceURL()) insideTrash=\(insideTrash) identity=\(identity)"
     }
 }
