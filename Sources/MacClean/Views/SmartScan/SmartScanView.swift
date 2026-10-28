@@ -311,7 +311,7 @@ struct SmartScanView: View {
                 gradient: ModuleTheme.smartScan.buttonGradient,
                 action: { showCleanConfirm = true }
             )
-                .alert(L10n.tr("清理 \(selectedItems.count) 项？", "Clean \(selectedItems.count) item\(selectedItems.count == 1 ? "" : "s")?", "Очистить \(selectedItems.count) \(L10n.russianPlural(selectedItems.count, one: "объект", few: "объекта", many: "объектов"))?"), isPresented: $showCleanConfirm) {
+                .alert(CleanupStrings.confirmationTitle(count: selectedItems.count), isPresented: $showCleanConfirm) {
                     Button(L10n.tr("取消", "Cancel", "Отмена"), role: .cancel) { }
                     Button(L10n.tr("清理", "Clean", "Очистить"), role: .destructive) { runCleanup() }
                 } message: {
@@ -478,11 +478,7 @@ struct SmartScanView: View {
         // scan metadata may contain only the directory entry's size. Keep the
         // factual total above; don't present stale per-module scan estimates
         // as a breakdown of that total.
-        return L10n.tr(
-            "\(row.itemCount.formatted()) 项",
-            "\(row.itemCount.formatted()) items",
-            "\(row.itemCount.formatted()) \(L10n.russianPlural(row.itemCount, one: "объект", few: "объекта", many: "объектов"))"
-        )
+        return CleanupStrings.itemCount(row.itemCount)
     }
 
     private func resetScan() {

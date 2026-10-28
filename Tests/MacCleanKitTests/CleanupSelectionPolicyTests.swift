@@ -23,17 +23,95 @@ final class CleanupSelectionPolicyTests: XCTestCase {
         XCTAssertTrue(CleanupSelectionPolicy.safeURLs(in: [result(.userCaches, autoSelect: false)]).isEmpty)
     }
 
-    func testSelectAllIncludesReviewItemsOnlyThroughExplicitActionAndDeduplicatesURLs() {
+    func testSelectAllHonorsBothOptOutsAndDeduplicatesEligibleURLs() {
+        let cache = result(.userCaches)
+        let resultOptOut = result(.userLogs, autoSelect: false)
+        let categoryOptOut = result(.universalBinaries)
+        let all = CleanupSelectionPolicy.allURLs(in: [cache, cache, resultOptOut, categoryOptOut])
+        XCTAssertEqual(all, [cache.items[0].url])
+    }
+
+    func testPossibleAndCommunityReportedThreatsNeverEnterGlobalSelection() {
+        // MalwareBazaar/community reports and blocklist detections share
+        // possibleThreats on main. Even a mistaken scanner opt-in stays out.
+        let possible = result(.possibleThreats)
+        let reported = ScanResult(category: .possibleThreats, items: [
+            FileItem(url: URL(filePath: "/fixture/community-report"), name: "report",
+                     size: 1, allocatedSize: 1, isDirectory: false)
+        ], autoSelect: false)
+        let confirmed = result(.malware)
+        let results = [possible, reported, confirmed]
+        XCTAssertEqual(CleanupSelectionPolicy.allURLs(in: results), [confirmed.items[0].url])
+        XCTAssertTrue(CleanupSelectionPolicy.safeURLs(in: results).isEmpty)
+    }
+
+    func testOptOutCannotBeBypassedByDuplicateURLInAnEligibleResult() {
+        let cache = result(.userCaches)
+        for reviewOnly in [
+            ScanResult(category: .userLogs, items: cache.items, autoSelect: false),
+            ScanResult(category: .possibleThreats, items: cache.items),
+            ScanResult(category: .deletedUsers, items: cache.items),
+        ] {
+            let results = [cache, reviewOnly]
+            XCTAssertTrue(CleanupSelectionPolicy.allURLs(in: results).isEmpty)
+            XCTAssertTrue(CleanupSelectionPolicy.safeURLs(in: results).isEmpty)
+        }
+    }
+
+    func testInitialSelectionPreservesAllScannerAndCategoryOptIns() {
+        let results = ScanCategory.allCases.map { result($0) }
+        let expected = Set(results.filter { $0.autoSelect && $0.category.autoSelect }
+            .flatMap { $0.items.map(\.url) })
+        let initial = CleanupSelectionPolicy.initialURLs(in: results)
+        XCTAssertEqual(initial, expected)
+        // These categories request review but historically start selected.
+        // Their initial state must not inherit the explicit Safe Items filter.
+        for category in [ScanCategory.malware, .trashBins, .iosDeviceBackups, .languageFiles] {
+            XCTAssertTrue(initial.contains(URL(filePath: "/fixture/\(category.rawValue)")))
+        }
+        XCTAssertTrue(CleanupSelectionPolicy.initialURLs(in: [result(.malware, autoSelect: false)]).isEmpty)
+        XCTAssertTrue(CleanupSelectionPolicy.initialURLs(in: [result(.deletedUsers)]).isEmpty)
+    }
+
+    func testManualCategorySelectionStillAllowsReviewOnlyResults() {
+        for category in [ScanCategory.possibleThreats, .deletedUsers, .universalBinaries] {
+            let review = result(category, autoSelect: false)
+            let selection = CleanupSelectionPolicy.togglingCategory(category, in: [review], selection: [])
+            XCTAssertEqual(selection, [review.items[0].url])
+            XCTAssertTrue(CleanupSelectionPolicy.requiresReview(in: [review], selection: selection))
+            XCTAssertTrue(CleanupSelectionPolicy.togglingCategory(category, in: [review], selection: selection).isEmpty)
+        }
+    }
+
+    func testCollapsedReviewCategoriesRemainUncheckedAfterSelectAll() {
+        let results = [result(.userCaches), result(.deletedUsers), result(.possibleThreats)]
+        let selected = CleanupSelectionPolicy.allURLs(in: results)
+        let rows = FileListRows.flatten(results: results, isExpanded: { _ in false }, selectedItems: selected)
+        XCTAssertEqual(rows.count, 3)
+        for row in rows {
+            guard case .header(let header) = row else { return XCTFail("collapsed categories show headers only") }
+            XCTAssertFalse(header.isExpanded)
+            XCTAssertEqual(header.selection, header.category == .userCaches ? .all : .none)
+        }
+        let expanded = FileListRows.flatten(results: results, isExpanded: { _ in true }, selectedItems: selected)
+        let selectedURLs = expanded.compactMap { row -> URL? in
+            guard case .item(let item, let selected, _) = row, selected else { return nil }
+            return item.url
+        }
+        XCTAssertEqual(Set(selectedURLs), [results[0].items[0].url])
+    }
+
+    func testExplicitSafeSelectionRemovesReviewFirstDefaults() {
         let cache = result(.userCaches)
         let trash = result(.trashBins)
-        let binary = result(.universalBinaries, autoSelect: false)
-        let results = [cache, cache, trash, binary]
-        let all = CleanupSelectionPolicy.allURLs(in: results)
-        XCTAssertEqual(all.count, 3)
-        XCTAssertTrue(all.contains(trash.items[0].url))
-        XCTAssertTrue(all.contains(binary.items[0].url))
-        XCTAssertTrue(CleanupSelectionPolicy.requiresReview(in: results, selection: all))
-        XCTAssertFalse(CleanupSelectionPolicy.requiresReview(in: results, selection: CleanupSelectionPolicy.safeURLs(in: results)))
+        let confirmed = result(.malware)
+        let results = [cache, trash, confirmed]
+        let initial = CleanupSelectionPolicy.initialURLs(in: results)
+        XCTAssertEqual(initial.count, 3)
+        XCTAssertTrue(CleanupSelectionPolicy.requiresReview(in: results, selection: initial))
+        let safe = CleanupSelectionPolicy.safeURLs(in: results)
+        XCTAssertEqual(safe, [cache.items[0].url])
+        XCTAssertFalse(CleanupSelectionPolicy.requiresReview(in: results, selection: safe))
     }
 
     func testSelectingSafeItemsReplacesAnEqualCountRiskySelectionAndUpdatesItsSize() {

@@ -45,6 +45,27 @@ final class SmartScanCleanupTests: XCTestCase {
         XCTAssertEqual(urls, Set([URL(filePath: "/c/a"), URL(filePath: "/c/b")]))
     }
 
+    func testDefaultSelectionPreservesConfirmedXProtectAndOtherReviewFirstOptIns() {
+        let confirmed = item("/confirmed-xprotect", 10)
+        let trash = item("/trash", 20)
+        let backup = item("/backup", 30)
+        let possible = item("/possible", 40)
+        let reported = item("/community-report", 50)
+        let optedOut = item("/scanner-opt-out", 60)
+        let categoryOptOut = item("/manual-home-folder", 70)
+        let modules = [ModuleScanResult(moduleID: "fixtures", moduleName: "Fixtures", categories: [
+            ScanResult(category: .malware, items: [confirmed]),
+            ScanResult(category: .trashBins, items: [trash]),
+            ScanResult(category: .iosDeviceBackups, items: [backup]),
+            ScanResult(category: .possibleThreats, items: [possible]),
+            ScanResult(category: .possibleThreats, items: [reported], autoSelect: false),
+            ScanResult(category: .userCaches, items: [optedOut], autoSelect: false),
+            ScanResult(category: .deletedUsers, items: [categoryOptOut]),
+        ], scanDuration: 0)]
+        XCTAssertEqual(SmartScanCleanup.defaultSelection(from: modules), [confirmed.url, trash.url, backup.url])
+        XCTAssertTrue(CleanupSelectionPolicy.safeURLs(in: SmartScanCleanup.allResults(from: modules)).isEmpty)
+    }
+
     func testRecentlyCleanedBreakdownGroupsSelectedItemsByModule() {
         let modules = [
             ModuleScanResult(

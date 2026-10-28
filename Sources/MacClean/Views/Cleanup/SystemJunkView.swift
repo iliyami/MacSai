@@ -130,7 +130,7 @@ struct SystemJunkView: View {
                 action: { requestCleanup() }
             )
             .alert(
-                L10n.tr("清理 \(viewModel.selectedCount.formatted()) 项？", "Clean \(viewModel.selectedCount.formatted()) items?", "Очистить \(viewModel.selectedCount.formatted()) \(L10n.russianPlural(viewModel.selectedCount, one: "объект", few: "объекта", many: "объектов"))?"),
+                CleanupStrings.confirmationTitle(count: viewModel.selectedCount),
                 isPresented: $showLargeSelectionConfirm
             ) {
                 Button(L10n.tr("取消", "Cancel", "Отмена"), role: .cancel) { }

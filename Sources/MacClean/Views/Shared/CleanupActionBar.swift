@@ -30,10 +30,7 @@ struct CleanupActionBar: View {
     }
 
     private var selectionSummary: some View {
-        Text(L10n.tr(
-            "已选择 \(selectedCount.formatted()) / \(totalCount.formatted()) 项",
-            "\(selectedCount.formatted()) of \(totalCount.formatted()) items selected",
-            "Выбрано \(selectedCount.formatted()) из \(totalCount.formatted()) объектов"))
+        Text(CleanupStrings.selectionSummary(selected: selectedCount, total: totalCount))
             .font(.system(size: 12, weight: .medium))
             .foregroundStyle(.secondary)
     }

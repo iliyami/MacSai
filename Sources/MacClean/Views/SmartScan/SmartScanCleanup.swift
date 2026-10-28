@@ -16,10 +16,10 @@ enum SmartScanCleanup {
         modules.flatMap(\.categories).filter { !$0.items.isEmpty }
     }
 
-    /// Start with categories approved for automatic cleanup; personal data and
-    /// irreversible actions still need an explicit selection.
+    /// Preserve both scanner and category opt-ins, including confirmed XProtect
+    /// matches. The explicit Safe Items action has a stricter review filter.
     static func defaultSelection(from modules: [ModuleScanResult]) -> Set<URL> {
-        CleanupSelectionPolicy.safeURLs(in: allResults(from: modules))
+        CleanupSelectionPolicy.initialURLs(in: allResults(from: modules))
     }
 
     /// Per-module size/count of the user's selection, in module scan order.

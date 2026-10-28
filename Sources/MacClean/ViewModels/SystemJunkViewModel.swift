@@ -103,7 +103,7 @@ final class SystemJunkViewModel {
             // Build the auto-selection locally and assign once, so the
             // selectedItems observer (and its size recompute) fires a single
             // time instead of once per inserted URL.
-            selectedItems = CleanupSelectionPolicy.safeURLs(in: scanResults)
+            selectedItems = CleanupSelectionPolicy.initialURLs(in: scanResults)
 
             let elapsed = Date().timeIntervalSince(scanStart)
             if elapsed < 2.0 {

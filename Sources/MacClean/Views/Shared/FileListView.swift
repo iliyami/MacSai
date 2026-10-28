@@ -162,6 +162,10 @@ public struct FileListView: View {
         Button(L10n.tr("全选", "Select All", "Выбрать всё")) {
             selectedItems = CleanupSelectionPolicy.allURLs(in: results)
         }
+        .help(L10n.tr(
+            "选择所有允许自动勾选的项目。需要手动检查的类别和可能的威胁保持不选。",
+            "Selects all items eligible for automatic selection. Manual-review categories and Possible Threats stay unchecked.",
+            "Выбирает все объекты, для которых разрешён автоматический выбор. Категории для ручной проверки и возможные угрозы остаются неотмеченными."))
     }
 
     private var selectSafeButton: some View {
@@ -215,12 +219,6 @@ public struct FileListView: View {
     /// Select-all / deselect-all for a category: if every item is already
     /// selected, deselect them; otherwise select them all.
     private func toggleAll(_ category: ScanCategory) {
-        guard let result = results.first(where: { $0.category == category }) else { return }
-        let urls = Set(result.items.map(\.url))
-        if urls.isSubset(of: selectedItems) {
-            selectedItems.subtract(urls)
-        } else {
-            selectedItems.formUnion(urls)
-        }
+        selectedItems = CleanupSelectionPolicy.togglingCategory(category, in: results, selection: selectedItems)
     }
 }
