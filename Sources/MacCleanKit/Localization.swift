@@ -283,9 +283,9 @@ public enum L10n {
         "取消全选": "取消全選",
         "选择安全项目": "選擇安全項目",
         "选择所有允许自动勾选的项目。需要手动检查的类别和可能的威胁保持不选。": "選擇所有允許自動勾選的項目。需要手動檢查的類別和可能的威脅保持不選。",
-        "仅保留安全的临时文件、缓存、日志和残留文件。不选择个人数据、废纸篓或应用修改。": "僅保留安全的暫存檔案、快取、記錄和殘留檔案。不選擇個人資料、垃圾桶或應用程式修改。",
-        "选中的文件会移到废纸篓，如有需要仍可恢复。": "選取的檔案會移到垃圾桶，如有需要仍可還原。",
-        "废纸篓中选中的项目将永久删除，无法恢复。": "垃圾桶中選取的項目將永久刪除，無法還原。",
+        "仅保留安全的临时文件、缓存、日志和残留文件。不选择个人数据、废纸篓或应用修改。": "僅保留安全的暫存檔案、快取、記錄和殘留檔案。不選擇個人資料、廢紙簍或應用程式修改。",
+        "选中的文件会移到废纸篓，如有需要仍可恢复。": "選取的檔案會移到廢紙簍，如有需要仍可還原。",
+        "废纸篓中选中的项目将永久删除，无法恢复。": "廢紙簍中選取的項目將永久刪除，無法還原。",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "應用程式中未使用的架構將被移除。還原可能需要重新安裝應用程式。",
 
         "无法开启登录时启动：{message}": "無法開啟登入時啟動：{message}",
@@ -919,7 +919,6 @@ public enum L10n {
         "选中的文件会移到废纸篓，如有需要仍可恢复。": "Les fichiers sélectionnés seront placés dans la corbeille et pourront être restaurés si nécessaire.",
         "废纸篓中选中的项目将永久删除，无法恢复。": "Les éléments sélectionnés dans la corbeille seront supprimés définitivement et ne pourront pas être restaurés.",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "Les architectures inutilisées seront retirées des applications. Leur restauration peut nécessiter la réinstallation des applications.",
-        "已处理": "traités",
 
         "无法开启登录时启动：{message}": "Impossible d'activer le lancement au démarrage : {message}",
         "无法关闭登录时启动：{message}": "Impossible de désactiver le lancement au démarrage : {message}",
