@@ -6,7 +6,8 @@
 
 <p align="center">
   <strong>开源的 Mac 清理、优化与恶意软件扫描工具。</strong><br>
-  免费、经 Apple 公证的 CleanMyMac 替代品，使用 Swift 6 和 SwiftUI 构建。
+  免费、经 Apple 公证的 CleanMyMac 替代品，使用 Swift 6 和 SwiftUI 构建。<br>
+  <sub>下载量已超过 100,000 次。永久免费，零遥测。</sub>
 </p>
 
 <p align="center">
@@ -14,15 +15,18 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
-  <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="最新版本" /></a>
+  <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
+  <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="Latest release" /></a>
+  <a href="https://github.com/iliyami/MacSai/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/iliyami/MacSai?style=flat-square&label=commits" alt="Commit activity" /></a>
+  <br>
+  <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="Notarized" />
+  <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
   <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
-  <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="测试" />
-  <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="无遥测" />
-  <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="已公证" />
-  <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="许可证" />
-  <img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="欢迎 PR" />
+  <img src="https://img.shields.io/badge/swift-6-orange?style=flat-square" alt="Swift 6" />
+  <a href="https://github.com/iliyami/MacSai/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/iliyami/MacSai/ci.yml?branch=main&style=flat-square&label=tests" alt="Tests" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" /></a>
 </p>
 
 <p align="center">
@@ -39,6 +43,10 @@ brew install --cask mac-sai
 
 <p align="center">
   或下载<a href="https://github.com/iliyami/MacSai/releases/latest">最新的 DMG</a>。它已经过 Apple 公证，双击即可打开，无需右键、无警告、无需终端命令。
+</p>
+
+<p align="center">
+  <sub>应用内永远没有广告。本页面只有<a href="SPONSORS.md">一个经过筛选的赞助位</a>，目前空缺。</sub>
 </p>
 
 ---
@@ -425,14 +433,28 @@ Mac Sai 免费，并且会一直免费：没有付费版，没有广告，没有
 
 ### 赞助位
 
-Mac Sai 只有**一个**赞助位，就展示在这里。每月约有 9,000 人访问这个仓库，应用下载量已超过 76,000 次，用户以开发者和 Mac 重度用户为主。
+Mac Sai 只有**一个**赞助位，展示在这里和本页顶部，覆盖本 README 的所有语言版本。
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center" width="25%"><h3>100,000+</h3><sub>次下载</sub></td>
+    <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub Star</sub></td>
+    <td align="center" width="25%"><h3>17,000</h3><sub>每月页面浏览量</sub></td>
+    <td align="center" width="25%"><h3>6</h3><sub>种 README 语言</sub></td>
+  </tr>
+</table>
+</div>
+
+访客以开发者和 Mac 重度用户为主，主要来自 Google 搜索，其次是 YouTube、GitHub 和 Reddit。
 
 - **同一时间只有一位赞助者**，你的名字不会淹没在一堆 logo 里。
 - **经过筛选。** 开发者工具、隐私与安全产品，以及尊重用户的 Mac 应用。不接受清理或"优化"类软件、加密货币、VPN 推广分成，以及任何追踪用户的产品。
 - **绝不进入应用内。** Mac Sai 没有广告、没有遥测，任何赞助都不会改变这一点。
 
 <p align="center">
-  <strong>这个位置目前空缺。</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">成为赞助者 →</a>
+  <strong>这个位置目前空缺。</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">成为赞助者 →</a><br>
+  <sub>价格、受众详情和申请方式：<a href="SPONSORS.md">SPONSORS.md</a>（英文）</sub>
 </p>
 
 ## Star 历史

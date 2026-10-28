@@ -6,7 +6,8 @@
 
 <p align="center">
   <strong>Le nettoyeur, optimiseur et scanner de logiciels malveillants open source pour Mac.</strong><br>
-  Une alternative gratuite et notariée par Apple à CleanMyMac, conçue avec Swift 6 et SwiftUI.
+  Une alternative gratuite et notariée par Apple à CleanMyMac, conçue avec Swift 6 et SwiftUI.<br>
+  <sub>Téléchargé plus de 100 000 fois. Gratuit pour toujours, sans télémétrie.</sub>
 </p>
 
 <p align="center">
@@ -14,15 +15,18 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
+  <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/v/release/iliyami/MacSai?style=flat-square&color=blue" alt="Latest release" /></a>
-  <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
-  <img src="https://img.shields.io/badge/swift-6.0-orange?style=flat-square" alt="Swift 6" />
-  <img src="https://img.shields.io/badge/tests-1048%20passing-brightgreen?style=flat-square" alt="Tests" />
-  <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
+  <a href="https://github.com/iliyami/MacSai/graphs/commit-activity"><img src="https://img.shields.io/github/commit-activity/m/iliyami/MacSai?style=flat-square&label=commits" alt="Commit activity" /></a>
+  <br>
   <img src="https://img.shields.io/badge/Apple-notarized-black?style=flat-square&logo=apple" alt="Notarized" />
-  <img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" />
-  <img src="https://img.shields.io/badge/PRs-welcome-ff69b4?style=flat-square" alt="PRs Welcome" />
+  <img src="https://img.shields.io/badge/telemetry-none-brightgreen?style=flat-square" alt="No telemetry" />
+  <img src="https://img.shields.io/badge/platform-macOS%2014%2B-lightgrey?style=flat-square" alt="macOS 14+" />
+  <img src="https://img.shields.io/badge/swift-6-orange?style=flat-square" alt="Swift 6" />
+  <a href="https://github.com/iliyami/MacSai/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/iliyami/MacSai/ci.yml?branch=main&style=flat-square&label=tests" alt="Tests" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause-green?style=flat-square" alt="License" /></a>
 </p>
 
 <p align="center">
@@ -39,6 +43,10 @@ brew install --cask mac-sai
 
 <p align="center">
   Ou récupérez le <a href="https://github.com/iliyami/MacSai/releases/latest">dernier DMG</a>. Il est notarié par Apple, il s'ouvre donc directement, sans clic droit, sans avertissement, sans Terminal.
+</p>
+
+<p align="center">
+  <sub>Jamais de pub dans l'application. Cette page propose <a href="SPONSORS.md">un seul emplacement sponsor sélectionné</a>, et il est libre.</sub>
 </p>
 
 ---
@@ -429,14 +437,28 @@ Mac Sai est gratuit et le restera : pas de version payante, pas de pub, pas de p
 
 ### Emplacement sponsor
 
-Mac Sai propose **un seul** emplacement sponsor, ici même. Environ 9 000 personnes visitent ce dépôt chaque mois, et l'application a été téléchargée plus de 76 000 fois, surtout par des développeurs et des utilisateurs avancés de Mac.
+Mac Sai propose **un seul** emplacement sponsor, affiché ici et en haut de cette page, dans toutes les langues de ce README.
+
+<div align="center">
+<table>
+  <tr>
+    <td align="center" width="25%"><h3>100 000+</h3><sub>téléchargements</sub></td>
+    <td align="center" width="25%"><h3>2 000+</h3><sub>étoiles GitHub</sub></td>
+    <td align="center" width="25%"><h3>17 000</h3><sub>pages vues par mois</sub></td>
+    <td align="center" width="25%"><h3>6</h3><sub>langues du README</sub></td>
+  </tr>
+</table>
+</div>
+
+La plupart des visiteurs sont des développeurs et des utilisateurs avancés de Mac, venus surtout de la recherche Google, puis de YouTube, GitHub et Reddit.
 
 - **Un seul sponsor à la fois**, pour que votre nom ne se perde pas dans un mur de logos.
 - **Sélectionné.** Outils pour développeurs, produits de confidentialité et de sécurité, et apps Mac qui respectent leurs utilisateurs. Pas de nettoyeurs ni d'« optimiseurs », pas de crypto, pas d'affiliation VPN, rien qui piste les gens.
 - **Jamais dans l'application.** Mac Sai n'a ni pub ni télémétrie, et aucun sponsor n'y changera rien.
 
 <p align="center">
-  <strong>Cet emplacement est libre.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Devenir sponsor →</a>
+  <strong>Cet emplacement est libre.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Devenir sponsor →</a><br>
+  <sub>Tarifs, audience et candidature : <a href="SPONSORS.md">SPONSORS.md</a> (en anglais)</sub>
 </p>
 
 ## Historique des étoiles
