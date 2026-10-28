@@ -48,7 +48,9 @@ public actor SecureEraser {
     public init() {}
 
     public func erase(urls: [URL], mode: EraseMode) async -> EraseResult {
-        let activity = await AppOperationActivity.shared.begin()
+        guard let activity = try? await AppOperationActivity.shared.begin() else {
+            return EraseResult(erasedCount: 0, totalSize: 0, errors: [])
+        }
         defer { AppOperationActivity.shared.end(activity) }
         // Preserve the batch-size safety cap, but let the per-item validation
         // below identify and skip individual unsafe paths.

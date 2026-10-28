@@ -320,12 +320,13 @@ Glaub uns nicht einfach. Sowohl der Quellcode als auch der laufende Prozess sind
 **1. Durchsuche den Quellcode nach Netzwerk-APIs**
 
 ```bash
-rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
+rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.swift'
 ```
 
-Du solltest nur je drei Netzwerkpfade sehen, alle optional und alle nur lesend:
+Die optionalen Netzwerkzugriffe sind unten aufgeführt. Die lokale Bereinigung überträgt weder Scanergebnisse noch Dateilisten:
 
-- `Sources/MacCleanKit/UpdateChecker.swift`: die optionale Update-Prüfung von Mac Sai (in den Einstellungen abschaltbar)
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle prüft den im signierten Programm hinterlegten HTTPS-Feed und lädt signierte Versionshinweise und Update-Archive. Automatische Prüfungen und automatisches Laden/Installieren sind getrennte Einstellungen; Systemprofiling und JavaScript in Versionshinweisen sind deaktiviert. Siehe [Update-Einrichtung](docs/IN_APP_UPDATES.md).
+- `Sources/MacCleanKit/UpdateChecker.swift`: Homebrew-Update-Prüfungen und die Release-Seite als Rückfall für Builds ohne eingerichteten signierten Feed
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`: die vom Benutzer ausgelöste Prüfung der Sparkle-Feeds *anderer Apps*, wenn du den Updater öffnest
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift`: der optionale Download von MalwareBazaar-Hashes. Er läuft nur, wenn du deinen eigenen abuse.ch-Auth-Key hinterlegst und unter Einstellungen > Malware-Datenbanken auf Jetzt aktualisieren klickst. Jede Anfrage sendet nur deinen Auth-Key und die Abfrage, niemals Datei-Hashes oder Pfade. Passt ein heruntergeladener Hash zu einer signierten Datei, fragt macOS bei Apple nach, ob ihr Signaturzertifikat widerrufen wurde, dieselbe Prüfung wie bei Gatekeeper; die Anfrage betrifft das Zertifikat, nicht deine Dateien
 
@@ -334,28 +335,23 @@ Es gibt nirgends im Code Analytik, einen Crash-Reporter oder ein Tracker-SDK.
 **2. Beobachte den laufenden Prozess**
 
 ```bash
-lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
+pgrep -fl '/Mac Sai.app/'
+lsof -i -P -n | grep -iE 'MacClean|Mac Sai|Autoupdat|Updater|Downloader|Installer' || echo "no network sockets"
 ```
 
-Erwartet: keine aufgebauten Verbindungen, solange du nur lokal bereinigst. Little Snitch oder LuLu machen dieselbe Prüfung sichtbar.
+Wenn keine Update-Prüfung, kein Download und keine optionale Malware-Verifikation laufen, öffnet die lokale Bereinigung keine Netzwerkverbindung. Beobachte bei Updates auch die Sparkle-Unterprozesse; Apple-Zertifikatsprüfungen laufen über die Vertrauensdienste von macOS. Little Snitch oder LuLu zeigen diese Verbindungen ebenfalls.
 
 **3. Untersuche die Binärdatei, die du tatsächlich installiert hast**
 
-Der Quellcode und die signierte Binärdatei sind verschiedene Artefakte, die stärkste Prüfung läuft also gegen die App auf deiner Festplatte, nicht gegen dieses Repo. Nach `brew install --cask mac-sai`:
+Führe die Prüfung aus einem Quellcode-Checkout aus, der zur installierten Version passt. Sie untersucht das tatsächlich installierte App-Bundle: Hauptprogramm, Menüleistenhelfer, `Sparkle.framework`, `Autoupdate`, `Updater.app`, `Downloader.xpc` und `Installer.xpc`:
 
 ```bash
-APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
-
-# Netzwerk-Klassen, die die Binärdatei importiert (nur URLSession erscheint):
-nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
-
-# Jede in die Binärdatei kompilierte URL (nur die drei offengelegten Endpunkte werden abgerufen):
-strings -a "$APP" | grep -iE 'https?://' | sort -u
+bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"
 ```
 
-Erwartet: die einzige Netzwerk-Klasse ist `_OBJC_CLASS_$_NSURLSession`, und die einzigen abgerufenen Endpunkte sind `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json` und `mb-api.abuse.ch/api/v1/` (nur nachdem du einen MalwareBazaar-Schlüssel hinterlegt und auf Jetzt aktualisieren geklickt hast). Die anderen `github.com/iliyami/MacSai`-Links, der Registrierungslink `auth.abuse.ch` und der Unterstützungslink `buymeacoffee.com/iliyami` öffnen nur deinen Browser. Keine Tracker, keine Analytik-Hosts, sonst nichts. Führe es nach jedem Update erneut aus; es beschreibt immer genau den Build, den du gerade betreibst.
+Erwartet: sieben geprüfte Mach-O-Dateien. Fehlende oder unerwartete Binärdateien, nicht freigegebene Netzwerkimporte oder statische URLs sowie Tracker-Merkmale lassen die Prüfung fehlschlagen. URLSession-Importe sind in Mac Sai, seinem Menüleistenhelfer, Sparkle und Downloader erlaubt; die übrigen Sparkle-Helfer dürfen keine Netzwerkimporte haben. Sparkles Dokumentationslinks und XML-Namensraum sind ausdrücklich aufgeführt und gelten nicht als Download-Endpunkte.
 
-Hinweis: Bei einer nicht-sandboxed Developer-ID-App wie dieser wird der Netzwerkzugriff nicht durch ein Entitlement geregelt, diese Symbol- und String-Prüfung, nicht `codesign --entitlements`, ist also die echte Prüfung. Dieselbe Absicherung läuft bei jeder Änderung in der CI ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
+Das Skript zeigt außerdem die hinterlegte `SUFeedURL` und prüft Signaturpflicht, Prüfung vor dem Entpacken und Datenschutzeinstellungen. Vergleiche die Archiv-/Versionshinweis-Adressen dieses Feeds und die von dir angefragten Feeds anderer Apps mit den beobachteten Verbindungen. Die Rückfall-Endpunkte sind `api.github.com/repos/iliyami/MacSai/releases/latest` und `formulae.brew.sh/api/cask/mac-sai.json`; der optionale Malware-Endpunkt ist `mb-api.abuse.ch/api/v1/`. Projekt-, Support- und Browsereinstellungslinks öffnen sich nur auf Anfrage. Dieselbe vollständige Bundle-Prüfung läuft beim Paketbau; CI prüft beide gebauten Programme und alle fünf Binärdateien der festgelegten Sparkle-Version. [Implementierung und Freigabelisten](scripts/check-network-surface.py).
 
 ---
 
