@@ -40,8 +40,6 @@ public enum CleanActions {
         engine: CleaningEngine,
         onProgress: (@Sendable (CleaningEngine.Progress) -> Void)? = nil
     ) async -> CleaningEngine.CleanResult {
-        let activity = await AppOperationActivity.shared.begin()
-        defer { AppOperationActivity.shared.end(activity) }
         var trashItems: [FileItem] = []
         var permanentItems: [FileItem] = []
         var thinItems: [FileItem] = []
@@ -170,8 +168,6 @@ public enum CleanActions {
         engine: CleaningEngine,
         onProgress: (@Sendable (CleaningEngine.Progress) -> Void)? = nil
     ) async -> CleaningEngine.CleanResult {
-        let activity = await AppOperationActivity.shared.begin()
-        defer { AppOperationActivity.shared.end(activity) }
         let filtered = items.filter { selectedItems.contains($0.url) }
         let deduped = Self.prunedToParents(filtered)
         let result = await engine.clean(items: deduped, mode: .trash,

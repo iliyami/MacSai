@@ -234,7 +234,11 @@ public actor CleaningEngine {
                 let bytes = item.isDirectory ? Self.recursiveAllocatedSize(of: item.url) : item.size
                 prepared.append((item, bytes, identity))
             } catch {
-                if Self.isBenignMissingFile(error as NSError) {
+                if TrashItemIdentity.isDirectSymbolicLink(item.url) {
+                    skippedCount += 1
+                    logSkip(path: item.url, reason: L10n.tr(
+                        "符号链接已跳过。", "Symbolic link skipped.", "Символическая ссылка пропущена."))
+                } else if Self.isBenignMissingFile(error as NSError) {
                     skippedCount += 1
                     logSkip(path: item.url, reason: L10n.tr("已不存在", "already gone", "уже удалён"))
                 } else {

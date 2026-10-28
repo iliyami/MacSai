@@ -254,6 +254,29 @@ public enum L10n {
     /// back to the Simplified string, which is still readable Chinese. Native
     /// review is welcome to refine wording.
     private static let traditionalChineseFallbacks: [String: String] = [
+        // Batch cleanup and shared permissions
+        "清理权限": "清理權限",
+        "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "允許 Mac Sai 掃描郵件、瀏覽器資料和其他受保護的資料夾。在系統設定中加入 Mac Sai 並開啟權限，然後重新啟動應用程式並重新掃描。",
+        "打开完全磁盘访问设置": "開啟完全磁碟訪問權限設定",
+        "管理员确认": "管理員確認",
+        "移动受保护的项目时，macOS 可能仍会要求密码或触控 ID。完全磁盘访问权限不能代替管理员确认。Mac Sai 不保存您的密码，也不能提前批准所有操作。": "移動受保護的項目時，macOS 可能仍會要求密碼或 Touch ID。完全磁碟訪問權限不能取代管理員確認。Mac Sai 不會儲存您的密碼，也無法預先核准所有操作。",
+        "批量移到废纸篓": "分批移到廢紙簍",
+        "清理会将选中的项目分组交给 macOS，减少逐项请求。系统决定是否需要再次确认。取消后，当前组会先完成；已移动的项目仍会显示在清理历史中。": "清理會將選取的項目分組交給 macOS，以減少逐項請求。系統會決定是否需要再次確認。取消後會先完成目前這一組；已移動的項目仍會保留在清理歷史中。",
+        "权限": "權限",
+        "另一项清理仍在进行中。": "另一項清理仍在進行中。",
+        "准备清理时文件已更改，请重新扫描。": "準備清理時檔案已變更，請重新掃描。",
+        "无法确认项目在废纸篓中的位置，请检查访达。": "無法確認項目在廢紙簍中的位置，請在 Finder 中檢查。",
+        "macOS 未将此项目移到废纸篓。请检查权限并重新扫描。": "macOS 未將此項目移到廢紙簍。請檢查權限並重新掃描。",
+        "符号链接改变了清理路径。请在访达中检查。": "符號連結改變了清理路徑。請在 Finder 中檢查。",
+        "符号链接已跳过。": "已略過符號連結。",
+        "取消后会先完成当前一组。": "取消後會先完成目前這一組。",
+        "清理已停止": "清理已停止",
+        "已处理": "已處理",
+        "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "選取的資料夾及其內容會計為一個項目。已不存在的檔案會被略過。",
+        "部分项目未能清理": "部分項目未能清理",
+        "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "以上僅顯示已完成的操作。移到廢紙簍的項目可從清理歷史還原。請重新掃描以檢查剩餘或重新產生的檔案。",
+        "完成": "完成",
+        "清理完成": "清理完成",
         "无法开启登录时启动：{message}": "無法開啟登入時啟動：{message}",
         "无法关闭登录时启动：{message}": "無法關閉登入時啟動：{message}",
         // Post-clean support card and Settings link
@@ -854,6 +877,27 @@ public enum L10n {
 
     
     private static let frenchFallbacks: [String: String] = [
+        // Batch cleanup and shared permissions
+        "清理权限": "Autorisations de nettoyage",
+        "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Permet à Mac Sai d'analyser Mail, les données des navigateurs et d'autres dossiers protégés. Ajoutez Mac Sai dans Réglages Système et activez son accès, puis redémarrez l'app et relancez l'analyse.",
+        "打开完全磁盘访问设置": "Ouvrir les réglages d'accès complet au disque",
+        "管理员确认": "Autorisation de l'administrateur",
+        "移动受保护的项目时，macOS 可能仍会要求密码或触控 ID。完全磁盘访问权限不能代替管理员确认。Mac Sai 不保存您的密码，也不能提前批准所有操作。": "macOS peut encore demander un mot de passe ou Touch ID pour déplacer des éléments protégés. L'accès complet au disque ne remplace pas l'autorisation d'un administrateur. Mac Sai ne conserve pas votre mot de passe et ne peut pas autoriser toutes les opérations à l'avance.",
+        "批量移到废纸篓": "Déplacer dans la corbeille par groupes",
+        "清理会将选中的项目分组交给 macOS，减少逐项请求。系统决定是否需要再次确认。取消后，当前组会先完成；已移动的项目仍会显示在清理历史中。": "Le nettoyage transmet les éléments sélectionnés à macOS par groupes pour réduire le nombre de demandes individuelles. Le système décide quand une nouvelle autorisation est nécessaire. En cas d'annulation, le groupe en cours est d'abord terminé ; les éléments déjà déplacés restent dans l'historique de nettoyage.",
+        "权限": "Autorisations",
+        "另一项清理仍在进行中。": "Un autre nettoyage est encore en cours.",
+        "准备清理时文件已更改，请重新扫描。": "L'élément a changé pendant la préparation du nettoyage. Relancez l'analyse.",
+        "无法确认项目在废纸篓中的位置，请检查访达。": "L'emplacement de l'élément dans la corbeille n'a pas pu être vérifié. Vérifiez dans le Finder.",
+        "macOS 未将此项目移到废纸篓。请检查权限并重新扫描。": "macOS n'a pas déplacé cet élément dans la corbeille. Vérifiez les autorisations et relancez l'analyse.",
+        "符号链接改变了清理路径。请在访达中检查。": "Un lien symbolique a redirigé le chemin de nettoyage. Vérifiez l'élément dans le Finder.",
+        "符号链接已跳过。": "Lien symbolique ignoré.",
+        "取消后会先完成当前一组。": "En cas d'annulation, le groupe en cours est d'abord terminé.",
+        "清理已停止": "Nettoyage arrêté",
+        "已处理": "traités",
+        "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "Les dossiers sélectionnés et leur contenu comptent comme un seul élément. Les fichiers déjà absents sont ignorés.",
+        "部分项目未能清理": "Certains éléments n'ont pas pu être nettoyés",
+        "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "Seules les opérations terminées sont affichées ci-dessus. Les éléments déplacés dans la corbeille peuvent être restaurés depuis l'historique de nettoyage. Relancez l'analyse pour vérifier les fichiers restants ou recréés.",
         "无法开启登录时启动：{message}": "Impossible d'activer le lancement au démarrage : {message}",
         "无法关闭登录时启动：{message}": "Impossible de désactiver le lancement au démarrage : {message}",
         // Post-clean support card and Settings link
@@ -1478,6 +1522,27 @@ public enum L10n {
     ]
 
     private static let germanFallbacks: [String: String] = [
+        // Batch cleanup and shared permissions
+        "清理权限": "Berechtigungen für die Bereinigung",
+        "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Lässt Mac Sai Mail, Browserdaten und andere geschützte Ordner scannen. Füge Mac Sai in den Systemeinstellungen hinzu und aktiviere den Zugriff. Starte die App danach neu und scanne erneut.",
+        "打开完全磁盘访问设置": "Einstellungen für Festplattenvollzugriff öffnen",
+        "管理员确认": "Administratorfreigabe",
+        "移动受保护的项目时，macOS 可能仍会要求密码或触控 ID。完全磁盘访问权限不能代替管理员确认。Mac Sai 不保存您的密码，也不能提前批准所有操作。": "Beim Verschieben geschützter Objekte kann macOS weiterhin ein Passwort oder Touch ID verlangen. Festplattenvollzugriff ersetzt keine Administratorfreigabe. Mac Sai speichert dein Passwort nicht und kann nicht alle Vorgänge im Voraus genehmigen.",
+        "批量移到废纸篓": "Gruppenweise in den Papierkorb verschieben",
+        "清理会将选中的项目分组交给 macOS，减少逐项请求。系统决定是否需要再次确认。取消后，当前组会先完成；已移动的项目仍会显示在清理历史中。": "Die Bereinigung übergibt die ausgewählten Objekte gruppenweise an macOS, um einzelne Anfragen zu reduzieren. Das System entscheidet, wann eine weitere Bestätigung nötig ist. Beim Abbrechen wird die aktuelle Gruppe zuerst abgeschlossen; bereits verschobene Objekte bleiben im Bereinigungsverlauf.",
+        "权限": "Berechtigungen",
+        "另一项清理仍在进行中。": "Eine andere Bereinigung läuft noch.",
+        "准备清理时文件已更改，请重新扫描。": "Das Objekt wurde während der Vorbereitung der Bereinigung geändert. Starte einen neuen Scan.",
+        "无法确认项目在废纸篓中的位置，请检查访达。": "Der Speicherort des Objekts im Papierkorb konnte nicht bestätigt werden. Prüfe ihn im Finder.",
+        "macOS 未将此项目移到废纸篓。请检查权限并重新扫描。": "macOS hat dieses Objekt nicht in den Papierkorb verschoben. Prüfe die Berechtigungen und starte einen neuen Scan.",
+        "符号链接改变了清理路径。请在访达中检查。": "Ein symbolischer Link hat den Bereinigungspfad geändert. Prüfe das Objekt im Finder.",
+        "符号链接已跳过。": "Symbolischer Link übersprungen.",
+        "取消后会先完成当前一组。": "Beim Abbrechen wird die aktuelle Gruppe zuerst abgeschlossen.",
+        "清理已停止": "Bereinigung gestoppt",
+        "已处理": "verarbeitet",
+        "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "Ausgewählte Ordner zählen zusammen mit ihrem Inhalt als ein Objekt. Bereits verschwundene Dateien werden übersprungen.",
+        "部分项目未能清理": "Einige Objekte konnten nicht bereinigt werden",
+        "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "Oben werden nur abgeschlossene Vorgänge angezeigt. In den Papierkorb verschobene Objekte lassen sich über den Bereinigungsverlauf wiederherstellen. Scanne erneut, um verbliebene oder neu erstellte Dateien zu prüfen.",
         "无法开启登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht aktiviert werden: {message}",
         "无法关闭登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht deaktiviert werden: {message}",
         // Post-clean support card and Settings link
@@ -2135,6 +2200,27 @@ public enum L10n {
     ]
 
     private static let italianFallbacks: [String: String] = [
+        // Batch cleanup and shared permissions
+        "清理权限": "Permessi per la pulizia",
+        "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Consente a Mac Sai di scansionare Mail, i dati dei browser e altre cartelle protette. Aggiungi Mac Sai e abilita l'accesso in Impostazioni di Sistema, poi riavvia l'app e ripeti la scansione.",
+        "打开完全磁盘访问设置": "Apri le impostazioni di accesso completo al disco",
+        "管理员确认": "Autorizzazione dell'amministratore",
+        "移动受保护的项目时，macOS 可能仍会要求密码或触控 ID。完全磁盘访问权限不能代替管理员确认。Mac Sai 不保存您的密码，也不能提前批准所有操作。": "macOS può comunque richiedere una password o Touch ID quando sposta elementi protetti. L'accesso completo al disco non sostituisce l'autorizzazione dell'amministratore. Mac Sai non salva la password e non può autorizzare tutte le operazioni in anticipo.",
+        "批量移到废纸篓": "Sposta nel Cestino in gruppi",
+        "清理会将选中的项目分组交给 macOS，减少逐项请求。系统决定是否需要再次确认。取消后，当前组会先完成；已移动的项目仍会显示在清理历史中。": "La pulizia invia gli elementi selezionati a macOS in gruppi per ridurre le singole richieste. Il sistema decide quando è necessaria un'ulteriore autorizzazione. In caso di annullamento, viene prima completato il gruppo in corso; gli elementi già spostati restano nella cronologia di pulizia.",
+        "权限": "Permessi",
+        "另一项清理仍在进行中。": "È ancora in corso un'altra pulizia.",
+        "准备清理时文件已更改，请重新扫描。": "L'elemento è cambiato durante la preparazione della pulizia. Ripeti la scansione.",
+        "无法确认项目在废纸篓中的位置，请检查访达。": "Non è stato possibile verificare la posizione dell'elemento nel Cestino. Controlla nel Finder.",
+        "macOS 未将此项目移到废纸篓。请检查权限并重新扫描。": "macOS non ha spostato questo elemento nel Cestino. Controlla i permessi e ripeti la scansione.",
+        "符号链接改变了清理路径。请在访达中检查。": "Un collegamento simbolico ha modificato il percorso di pulizia. Controlla l'elemento nel Finder.",
+        "符号链接已跳过。": "Collegamento simbolico saltato.",
+        "取消后会先完成当前一组。": "In caso di annullamento, viene prima completato il gruppo in corso.",
+        "清理已停止": "Pulizia interrotta",
+        "已处理": "elaborati",
+        "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "Le cartelle selezionate e il loro contenuto contano come un unico elemento. I file già scomparsi vengono saltati.",
+        "部分项目未能清理": "Non è stato possibile pulire alcuni elementi",
+        "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "Sopra sono mostrate solo le operazioni completate. Gli elementi spostati nel Cestino possono essere ripristinati dalla cronologia di pulizia. Ripeti la scansione per controllare i file rimasti o ricreati.",
         "无法开启登录时启动：{message}": "Impossibile attivare l'apertura al login: {message}",
         "无法关闭登录时启动：{message}": "Impossibile disattivare l'apertura al login: {message}",
         "查找并移除系统缓存、日志、\n语言文件和其他垃圾": "Trova e rimuovi cache di sistema, registri,\nfile di localizzazione e altri file non necessari",

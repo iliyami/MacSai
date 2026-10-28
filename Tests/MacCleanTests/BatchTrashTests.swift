@@ -116,9 +116,139 @@ final class BatchTrashTests: XCTestCase {
             let calls = await recorder.calls
             XCTAssertTrue(calls.isEmpty)
             XCTAssertEqual(result.removedCount, 0)
-            XCTAssertEqual(result.errors.count, 4)
+            XCTAssertEqual(result.errors.count, 3, "The link itself is skipped; unsafe paths remain errors")
             XCTAssertEqual(result.skippedCount, 4)
             XCTAssertTrue(FileManager.default.fileExists(atPath: target.path))
+        }
+    }
+
+    func testLeafSymbolicLinksAreSkippedWithoutFollowingTargets() async throws {
+        try await TestFixtures.withTempDir { root in
+            let target = root.appending(path: "target")
+            try TestFixtures.writeFile(at: target, size: 17)
+            let regular = root.appending(path: "link")
+            let dangling = root.appending(path: "dangling")
+            let circular = root.appending(path: "circular")
+            let protected = root.appending(path: "protected")
+            try FileManager.default.createSymbolicLink(at: regular, withDestinationURL: target)
+            try FileManager.default.createSymbolicLink(at: dangling, withDestinationURL: root.appending(path: "missing"))
+            try FileManager.default.createSymbolicLink(at: circular, withDestinationURL: circular)
+            try FileManager.default.createSymbolicLink(at: protected, withDestinationURL: URL(filePath: "/System"))
+            let links = [regular, dangling, circular, protected]
+            let recorder = RecyclerRecorder(trash: root.appending(path: "trash"))
+            let result = await CleaningEngine(trashService: .init(recycle: { await recorder.move($0) }))
+                .clean(items: links.map { item($0) })
+
+            XCTAssertTrue(result.errors.isEmpty)
+            XCTAssertEqual(result.skippedCount, links.count)
+            XCTAssertEqual(result.removedCount, 0)
+            XCTAssertEqual(result.freedBytes, 0)
+            let calls = await recorder.calls
+            XCTAssertTrue(calls.isEmpty)
+            XCTAssertEqual(try Data(contentsOf: target).count, 17)
+            for link in links {
+                XCTAssertNoThrow(try FileManager.default.destinationOfSymbolicLink(atPath: link.path))
+            }
+        }
+    }
+
+    func testLeafLinkUnderRedirectedParentRemainsAnError() async throws {
+        try await TestFixtures.withTempDir { root in
+            let realParent = root.appending(path: "real")
+            let aliasParent = root.appending(path: "redirected")
+            let target = realParent.appending(path: "target")
+            try FileManager.default.createDirectory(at: realParent, withIntermediateDirectories: true)
+            try TestFixtures.writeFile(at: target, size: 17)
+            let leaf = realParent.appending(path: "link")
+            try FileManager.default.createSymbolicLink(at: leaf, withDestinationURL: target)
+            try FileManager.default.createSymbolicLink(at: aliasParent, withDestinationURL: realParent)
+            let recorder = RecyclerRecorder(trash: root.appending(path: "trash"))
+            let result = await CleaningEngine(trashService: .init(recycle: { await recorder.move($0) }))
+                .clean(items: [item(aliasParent.appending(path: "link"))])
+
+            XCTAssertEqual(result.errors.count, 1)
+            XCTAssertEqual(result.skippedCount, 1)
+            XCTAssertEqual(result.removedCount, 0)
+            let calls = await recorder.calls
+            XCTAssertTrue(calls.isEmpty)
+            XCTAssertNoThrow(try FileManager.default.destinationOfSymbolicLink(atPath: leaf.path))
+            XCTAssertEqual(try Data(contentsOf: target).count, 17)
+        }
+    }
+
+    func testLeafLinkSkipDoesNotHideTraversalOrRemoteURLs() async throws {
+        try await TestFixtures.withTempDir { root in
+            let target = root.appending(path: "target")
+            let link = root.appending(path: "link")
+            try TestFixtures.writeFile(at: target, size: 17)
+            try FileManager.default.createSymbolicLink(at: link, withDestinationURL: target)
+            try FileManager.default.createDirectory(at: root.appending(path: "nested"), withIntermediateDirectories: true)
+            let traversal = root.appending(path: "nested/../link")
+            var remoteParts = try XCTUnwrap(URLComponents(url: link, resolvingAgainstBaseURL: false))
+            remoteParts.host = "example.com"
+            let remote = try XCTUnwrap(remoteParts.url)
+            XCTAssertFalse(TrashItemIdentity.isDirectSymbolicLink(traversal))
+            XCTAssertFalse(TrashItemIdentity.isDirectSymbolicLink(remote))
+            let recorder = RecyclerRecorder(trash: root.appending(path: "trash"))
+            let result = await CleaningEngine(trashService: .init(recycle: { await recorder.move($0) }))
+                .clean(items: [item(traversal), item(remote)])
+
+            XCTAssertEqual(result.errors.count, 2)
+            XCTAssertEqual(result.removedCount, 0)
+            let calls = await recorder.calls
+            XCTAssertTrue(calls.isEmpty)
+            XCTAssertNoThrow(try FileManager.default.destinationOfSymbolicLink(atPath: link.path))
+            XCTAssertEqual(try Data(contentsOf: target).count, 17)
+        }
+    }
+
+    func testRegularFileReplacedByLinkDuringPreparationRemainsAnError() async throws {
+        try await TestFixtures.withTempDir { root in
+            let selected = root.appending(path: "selected")
+            let target = root.appending(path: "unselected")
+            for file in [selected, target] { try TestFixtures.writeFile(at: file, size: 17) }
+            let reader = SymlinkReplacingIdentityReader(target: target)
+            let recorder = RecyclerRecorder(trash: root.appending(path: "trash"))
+            let engine = CleaningEngine(trashService: .init(recycle: { await recorder.move($0) }),
+                                        readIdentity: { try reader.read($0) })
+            let result = await engine.clean(items: [item(selected)])
+
+            XCTAssertEqual(result.errors.count, 1)
+            XCTAssertEqual(result.removedCount, 0)
+            let calls = await recorder.calls
+            XCTAssertTrue(calls.isEmpty)
+            XCTAssertEqual(try Data(contentsOf: target).count, 17)
+            XCTAssertNoThrow(try FileManager.default.destinationOfSymbolicLink(atPath: selected.path))
+        }
+    }
+
+    func testSharedEngineRefusesConcurrentCleanupWithoutDispatchingSecondSelection() async throws {
+        try await TestFixtures.withTempDir { root in
+            let first = root.appending(path: "first")
+            let second = root.appending(path: "second")
+            for file in [first, second] { try TestFixtures.writeFile(at: file, size: 17) }
+            let trash = root.appending(path: "trash")
+            try FileManager.default.createDirectory(at: trash, withIntermediateDirectories: true)
+            let controlled = ControlledRecycler()
+            let engine = CleaningEngine(trashService: .init(recycle: { await controlled.recycle($0) }),
+                                        trashRoot: trash.path)
+            let firstItem = item(first)
+            let firstTask = Task { await engine.clean(items: [firstItem]) }
+            await controlled.waitForCall()
+
+            let rejected = await engine.clean(items: [item(second)])
+            XCTAssertEqual(rejected.removedCount, 0)
+            XCTAssertEqual(rejected.errors.map(\.path), ["cleanup"])
+            XCTAssertEqual(rejected.skippedCount, 1)
+            XCTAssertTrue(FileManager.default.fileExists(atPath: second.path))
+
+            let destination = trash.appending(path: "first")
+            try FileManager.default.moveItem(at: first, to: destination)
+            await controlled.finish(BatchTrashReceipt(relocated: [first: destination], errorMessage: nil))
+            let completed = await firstTask.value
+            XCTAssertEqual(completed.removedCount, 1)
+            let calls = await controlled.calls
+            XCTAssertEqual(calls, [[first]])
         }
     }
 
@@ -281,6 +411,24 @@ private final class ReplacingIdentityReader: @unchecked Sendable {
             return TrashItemIdentity(device: identity.device, inode: identity.inode + 1,
                                      parentDevice: identity.parentDevice, parentInode: identity.parentInode,
                                      resolvedPath: identity.resolvedPath)
+        }
+    }
+}
+
+private final class SymlinkReplacingIdentityReader: @unchecked Sendable {
+    private let lock = NSLock()
+    private let target: URL
+    private var calls = 0
+    init(target: URL) { self.target = target }
+
+    func read(_ url: URL) throws -> TrashItemIdentity {
+        try lock.withLock {
+            calls += 1
+            if calls == 2 {
+                try FileManager.default.removeItem(at: url)
+                try FileManager.default.createSymbolicLink(at: url, withDestinationURL: target)
+            }
+            return try TrashItemIdentity.read(url)
         }
     }
 }
