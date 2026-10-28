@@ -278,6 +278,10 @@ struct SettingsPageView: View {
 
     // MARK: - Interface Language
 
+    private var interfaceLanguageHelp: String {
+        L10n.tr("切换后会立即应用到主界面和菜单栏小组件。", "Changes apply immediately to the main window and menu-bar widget.", "Язык сразу меняется в главном окне и виджете в строке меню.")
+    }
+
     private var interfaceLanguageSection: some View {
         Section(L10n.tr("界面语言", "Interface Language", "Язык интерфейса")) {
             Picker(L10n.tr("语言", "Language", "Язык"), selection: $appLanguageRaw) {
@@ -285,13 +289,16 @@ struct SettingsPageView: View {
                     Text(language.pickerLabel).tag(language.rawValue)
                 }
             }
-            .pickerStyle(.segmented)
+            .pickerStyle(.menu)
+            .accessibilityLabel(Text(L10n.tr("语言", "Language", "Язык")))
+            .accessibilityHint(Text(interfaceLanguageHelp))
+            .help(interfaceLanguageHelp)
             .onChange(of: appLanguageRaw) { _, newValue in
                 AppLanguage.current = AppLanguage(rawValue: newValue) ?? .fallback
                 selectable = LanguagePreferences.selectableLanguages()
             }
 
-            Text(L10n.tr("切换后会立即应用到主界面和菜单栏小组件。", "Changes apply immediately to the main window and menu-bar widget.", "Язык сразу меняется в главном окне и виджете в строке меню."))
+            Text(interfaceLanguageHelp)
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
