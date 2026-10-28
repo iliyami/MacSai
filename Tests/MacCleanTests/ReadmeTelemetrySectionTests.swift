@@ -70,4 +70,25 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             headingNeedle: "Vérifiez l'absence de télémétrie vous-même"
         )
     }
+
+    /// A MalwareBazaar hit on a signed file makes macOS check the signing
+    /// certificate's revocation status with Apple (OCSP). That request comes
+    /// from macOS, so check-network-surface.sh can't see it; every README
+    /// lists it next to the MalwareBazaar download.
+    func testEveryReadmeDisclosesTheRevocationLookup() throws {
+        let needles = [
+            "README.md": "signing certificate was revoked",
+            "README.fr.md": "certificat de signature a été révoqué",
+            "README.de.md": "Signaturzertifikat widerrufen wurde",
+            "README.ru.md": "не отозван ли его сертификат подписи",
+            "README.zh-CN.md": "签名证书是否已被吊销",
+            "README.zh-Hant.md": "簽署憑證是否已被撤銷",
+        ]
+        for (file, needle) in needles {
+            let src = try String(contentsOf: readmeURL(file), encoding: .utf8)
+            XCTAssertTrue(src.contains(needle), "\(file) must disclose the OCSP revocation lookup")
+        }
+        let security = try String(contentsOf: readmeURL("SECURITY.md"), encoding: .utf8)
+        XCTAssertTrue(security.contains("signing certificate was revoked"), "SECURITY.md must disclose it too")
+    }
 }

@@ -315,7 +315,7 @@ rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 
 - `Sources/MacCleanKit/UpdateChecker.swift`：可選的 Mac Sai 更新檢查（可在設定中關閉）
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`：開啟“應用更新”模組時，由使用者觸發的對其它應用 Sparkle 源的檢查
-- `Sources/MacCleanKit/MalwareBazaarFeed.swift`：可選的 MalwareBazaar 雜湊下載。只有在你加入自己的 abuse.ch Auth-Key 並在「設定 > 惡意軟體資料庫」中點按「立即更新」時才會執行。每次請求只傳送你的 Auth-Key 和查詢內容，絕不傳送檔案雜湊值或路徑
+- `Sources/MacCleanKit/MalwareBazaarFeed.swift`：可選的 MalwareBazaar 雜湊下載。只有在你加入自己的 abuse.ch Auth-Key 並在「設定 > 惡意軟體資料庫」中點按「立即更新」時才會執行。每次請求只傳送你的 Auth-Key 和查詢內容，絕不傳送檔案雜湊值或路徑。如果下載的雜湊與某個已簽署的檔案相符，macOS 會向 Apple 查詢其簽署憑證是否已被撤銷（與 Gatekeeper 的檢查相同）；該請求只涉及憑證，不涉及你的檔案
 
 程式碼庫中沒有任何分析、崩潰上報或追蹤 SDK。
 

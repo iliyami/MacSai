@@ -319,7 +319,7 @@ Vous ne devriez jamais voir que trois chemins réseau, tous optionnels et en lec
 
 - `Sources/MacCleanKit/UpdateChecker.swift` : la vérification optionnelle des mises à jour de Mac Sai (désactivable dans les Réglages)
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift` : la vérification, déclenchée par l'utilisateur, des flux Sparkle *d'autres apps* lorsque vous ouvrez l'Updater
-- `Sources/MacCleanKit/MalwareBazaarFeed.swift` : le téléchargement optionnel des hachages MalwareBazaar. Il ne s'exécute que si vous ajoutez votre propre Auth-Key abuse.ch et cliquez sur Mettre à jour maintenant dans Réglages > Bases de logiciels malveillants. Chaque requête n'envoie que votre Auth-Key et la requête, jamais de hachages ni de chemins de fichiers
+- `Sources/MacCleanKit/MalwareBazaarFeed.swift` : le téléchargement optionnel des hachages MalwareBazaar. Il ne s'exécute que si vous ajoutez votre propre Auth-Key abuse.ch et cliquez sur Mettre à jour maintenant dans Réglages > Bases de logiciels malveillants. Chaque requête n'envoie que votre Auth-Key et la requête, jamais de hachages ni de chemins de fichiers. Lorsqu'un hachage téléchargé correspond à un fichier signé, macOS demande à Apple si son certificat de signature a été révoqué, la même vérification que celle de Gatekeeper ; cette requête porte sur le certificat, pas sur vos fichiers
 
 Il n'y a aucun SDK d'analytique, de rapport de plantage ou de traqueur nulle part dans le code.
 

@@ -31,7 +31,7 @@ Reports about the following areas get priority:
 - **`Sources/MacClean/Core/Cleaner/CleaningEngine.swift`**: anything that causes data loss outside the intended scan results
 - **`Sources/MacClean/Modules/Maintenance/MaintenanceModule.swift`**: anything that turns the administrator-prompt maintenance commands into arbitrary command execution
 - **Update checks**: a tampered third-party update feed steering the user to a malicious download
-- **Network exfiltration**: Mac Sai's only outbound calls are its own update check (the GitHub releases API), reading third-party apps' update feeds, and the opt-in MalwareBazaar hash download (`mb-api.abuse.ch`, only after you add an abuse.ch Auth-Key and press Update Now; each request sends only your Auth-Key and the query, never file hashes or paths, and redirects are refused so the key can't be forwarded); report any other network activity you observe
+- **Network exfiltration**: Mac Sai's only outbound calls are its own update check (the GitHub releases API), reading third-party apps' update feeds, and the opt-in MalwareBazaar hash download (`mb-api.abuse.ch`, only after you add an abuse.ch Auth-Key and press Update Now; each request sends only your Auth-Key and the query, never file hashes or paths, and redirects are refused so the key can't be forwarded; when a downloaded hash matches a signed file, macOS also asks Apple whether its signing certificate was revoked, the same OCSP check Gatekeeper makes); report any other network activity you observe
 - **TCC / Full Disk Access**: any path to silently gain or abuse FDA
 
 ## Out of scope

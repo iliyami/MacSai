@@ -315,7 +315,7 @@ rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 
 - `Sources/MacCleanKit/UpdateChecker.swift`：可选的 Mac Sai 更新检查（可在设置中关闭）
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`：打开“应用更新”模块时，由用户触发的对其它应用 Sparkle 源的检查
-- `Sources/MacCleanKit/MalwareBazaarFeed.swift`：可选的 MalwareBazaar 哈希下载。只有在你添加自己的 abuse.ch Auth-Key 并在“设置 > 恶意软件数据库”中点击“立即更新”时才会运行。每次请求只发送你的 Auth-Key 和查询内容，绝不发送文件哈希值或路径
+- `Sources/MacCleanKit/MalwareBazaarFeed.swift`：可选的 MalwareBazaar 哈希下载。只有在你添加自己的 abuse.ch Auth-Key 并在“设置 > 恶意软件数据库”中点击“立即更新”时才会运行。每次请求只发送你的 Auth-Key 和查询内容，绝不发送文件哈希值或路径。如果下载的哈希与某个已签名的文件匹配，macOS 会向 Apple 查询其签名证书是否已被吊销（与 Gatekeeper 的检查相同）；该请求只涉及证书，不涉及你的文件
 
 代码库中没有任何分析、崩溃上报或追踪 SDK。
 
