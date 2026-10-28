@@ -101,6 +101,8 @@ jobs:
         run: |
           swift test
           python3 scripts/test-update-feed.py
+          python3 scripts/test-publish-update-feed.py
+          python3 scripts/test-network-surface.py
 
       # --- Signing & notarization ---------------------------------------------
       # All secrets live in GitHub repo settings; nothing sensitive is committed.
@@ -161,28 +163,6 @@ jobs:
           ls -la .build/MacSai-${VERSION}.dmg
           # build-dmg.sh already staples and validates the DMG (with retries).
 
-      - name: Generate signed stable update feed
-        if: steps.version.outputs.prerelease == 'false' && vars.SPARKLE_FEED_URL != ''
-        env:
-          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
-          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_VERSION: ${{ steps.version.outputs.version }}
-          RELEASE_TAG: ${{ steps.version.outputs.tag }}
-        run: |
-          if [ -z "$SPARKLE_PRIVATE_KEY" ]; then
-            echo "::error::Configured in-app updates require SPARKLE_PRIVATE_KEY. Refusing an unsigned feed."
-            exit 1
-          fi
-          rm -rf .build/update-feed
-          mkdir -p .build/update-feed
-          cp ".build/MacSai-${RELEASE_VERSION}.dmg" .build/update-feed/
-          gh api "repos/${GITHUB_REPOSITORY}/releases/generate-notes" \
-            -f tag_name="$RELEASE_TAG" --jq .body \
-            > ".build/update-feed/MacSai-${RELEASE_VERSION}.md"
-          bash scripts/generate-update-feed.sh .build/update-feed \
-            "https://github.com/${GITHUB_REPOSITORY}/releases/download/${RELEASE_TAG}/"
-
       - name: Clean up signing keychain
         if: always()
         run: security delete-keychain "$RUNNER_TEMP/app-signing.keychain-db" || true
@@ -198,9 +178,6 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           TAG="${{ steps.version.outputs.tag }}"
           ASSETS=(".build/MacSai-${VERSION}.dmg")
-          if [ -n "$SPARKLE_FEED_URL" ] && [ -f .build/update-feed/appcast.xml ] && [ "${{ steps.version.outputs.prerelease }}" = "false" ]; then
-            ASSETS+=(.build/update-feed/appcast.xml ".build/update-feed/MacSai-${VERSION}.md")
-          fi
 
           if [ "${{ steps.version.outputs.prerelease }}" = "true" ]; then
             gh release create "$TAG" \
@@ -259,7 +236,12 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SPARKLE_FEED_URL: ${{ vars.SPARKLE_FEED_URL }}
+
+      - name: Publish curated appcast reminder
+        if: steps.version.outputs.prerelease == 'false' && vars.SPARKLE_FEED_URL != ''
+        run: |
+          echo "Curate the published release notes, then run Publish curated update feed for this stable tag." >> "$GITHUB_STEP_SUMMARY"
+          echo "The new latest release has no appcast until that required step succeeds. Do not rerun Release to edit the feed." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Update Homebrew cask in tap repo
         if: steps.version.outputs.prerelease != 'true'

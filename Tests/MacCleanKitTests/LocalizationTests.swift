@@ -3,6 +3,22 @@ import XCTest
 @testable import MacCleanKit
 
 final class LocalizationTests: AppLanguageTestCase {
+    func testUpdaterStringsResolveInEveryDictionaryAddedByTheFeature() {
+        let keys = ["自动下载并安装更新", "更新会在退出时安装，也可以选择立即重启应用。",
+                    "更新频道：", "重试安装", "此版本尚未配置应用内安装。",
+                    "清理完成后将检查更新。", "请关闭菜单栏监视器后重试更新。", "已取消"]
+        for language in [AppLanguage.de, .fr, .it, .zhHant] {
+            AppLanguage.current = language
+            for key in keys {
+                let translated = L10n.tr(key, "MISSING", "MISSING")
+                XCTAssertNotEqual(translated, "MISSING", "\(language): \(key)")
+                if language == .zhHant && key != "已取消" {
+                    XCTAssertNotEqual(translated, key, "Traditional Chinese must not fall back to Simplified Chinese")
+                }
+            }
+        }
+    }
+
     func testGermanLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.de))
         XCTAssertEqual(AppLanguage.de.pickerLabel, "Deutsch")

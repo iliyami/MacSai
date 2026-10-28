@@ -20,13 +20,16 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             "\(fileName) must include heading «\(headingNeedle)» (issue #1)"
         )
         XCTAssertTrue(
-            src.contains("lsof") || src.contains("URLSession"),
-            "\(fileName) telemetry section must include a copy-pasteable verification command"
+            src.contains("lsof -i -P -n") && src.contains("pgrep -fl"),
+            "\(fileName) must include live checks covering updater child processes"
         )
         XCTAssertTrue(
-            src.contains("nm -u"),
-            "\(fileName) must include the binary-inspection step (nm -u) so verification covers the shipped artifact, not just the source"
+            src.contains("bash scripts/check-network-surface.sh \"/Applications/Mac Sai.app\""),
+            "\(fileName) must check the installed bundle, not only the main executable or source"
         )
+        for component in ["Sparkle.framework", "Autoupdate", "Updater.app", "Downloader.xpc", "Installer.xpc"] {
+            XCTAssertTrue(src.contains(component), "\(fileName) must disclose the checked component \(component)")
+        }
     }
 
     func testEnglishReadmeHasVerifyNoTelemetrySection() throws {

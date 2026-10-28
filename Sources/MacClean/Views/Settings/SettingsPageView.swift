@@ -106,7 +106,7 @@ struct SettingsPageView: View {
                 Text(L10n.tr("更新会在退出时安装，也可以选择立即重启应用。", "Updates install when you quit, or you can choose to restart the app now.", "Обновления устанавливаются при выходе. Можно также выбрать немедленный перезапуск приложения."))
                     .font(.caption).foregroundStyle(.secondary)
                 if let channel = Bundle.main.object(forInfoDictionaryKey: "MacSaiUpdateChannelName") as? String {
-                    Text(L10n.tr("更新频道：\(channel)", "Update channel: \(channel)", "Канал обновлений: \(channel)"))
+                    Text(L10n.tr("更新频道：", "Update channel: ", "Канал обновлений: ") + channel)
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 if let message = selfUpdater.lastError {

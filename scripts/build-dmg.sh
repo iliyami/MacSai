@@ -296,6 +296,9 @@ codesign "${SIGN_OPTIONS[@]}" --entitlements "${ENTITLEMENTS_FILE}" "${APP_BUNDL
 
 # Verify signature
 codesign --verify --deep --strict --verbose=1 "${APP_BUNDLE}" 2>&1 | head -3
+# Inspect the packaged app and every nested Sparkle/menu executable, rather
+# than trusting a scan of the main SwiftPM product alone.
+bash scripts/check-network-surface.sh "${APP_BUNDLE}"
 
 # --app-only: stop here with the signed bundle (dev-install path).
 if [[ "$APP_ONLY" == "true" ]]; then

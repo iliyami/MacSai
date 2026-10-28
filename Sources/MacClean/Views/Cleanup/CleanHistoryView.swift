@@ -99,13 +99,13 @@ struct CleanHistoryView: View {
                 isRestoring = true
                 // File moves and stats stay off the main thread.
                 Task {
-                    let activity = await AppOperationActivity.shared.begin()
+                    defer { isRestoring = false }
+                    guard let activity = try? await AppOperationActivity.shared.begin() else { return }
                     defer { AppOperationActivity.shared.end(activity) }
                     let summary = await Task.detached { CleanHistoryRecorder.restore(target) }.value
                     let reloaded = await Task.detached { CleanHistoryRecorder.load() }.value
                     lastSummary = summary
                     sessions = reloaded
-                    isRestoring = false
                 }
             }
         } message: { session in

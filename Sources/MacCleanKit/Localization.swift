@@ -288,6 +288,14 @@ public enum L10n {
         "废纸篓中选中的项目将永久删除，无法恢复。": "廢紙簍中選取的項目將永久刪除，無法還原。",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "應用程式中未使用的架構將被移除。還原可能需要重新安裝應用程式。",
 
+        "自动下载并安装更新": "自動下載並安裝更新",
+        "更新会在退出时安装，也可以选择立即重启应用。": "更新會在結束時安裝，也可以選擇立即重新啟動應用程式。",
+        "更新频道：": "更新頻道：",
+        "重试安装": "重試安裝",
+        "此版本尚未配置应用内安装。": "此版本尚未設定應用程式內安裝。",
+        "清理完成后将检查更新。": "清理完成後將檢查更新。",
+        "请关闭菜单栏监视器后重试更新。": "請結束選單列監視器後重試更新。",
+        "已取消": "已取消",
         "无法开启登录时启动：{message}": "無法開啟登入時啟動：{message}",
         "无法关闭登录时启动：{message}": "無法關閉登入時啟動：{message}",
         // Swap and memory alerts
@@ -931,6 +939,14 @@ public enum L10n {
         "废纸篓中选中的项目将永久删除，无法恢复。": "Les éléments sélectionnés dans la corbeille seront supprimés définitivement et ne pourront pas être restaurés.",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "Les architectures inutilisées seront retirées des applications. Leur restauration peut nécessiter la réinstallation des applications.",
 
+        "自动下载并安装更新": "Télécharger et installer les mises à jour automatiquement",
+        "更新会在退出时安装，也可以选择立即重启应用。": "Les mises à jour s’installent à la fermeture. Vous pouvez aussi redémarrer l’application maintenant.",
+        "更新频道：": "Canal de mise à jour : ",
+        "重试安装": "Réessayer l’installation",
+        "此版本尚未配置应用内安装。": "L’installation des mises à jour dans l’application n’est pas configurée pour cette version.",
+        "清理完成后将检查更新。": "Les mises à jour seront recherchées après le nettoyage.",
+        "请关闭菜单栏监视器后重试更新。": "Quittez le moniteur de la barre des menus, puis réessayez la mise à jour.",
+        "已取消": "Annulé",
         "无法开启登录时启动：{message}": "Impossible d'activer le lancement au démarrage : {message}",
         "无法关闭登录时启动：{message}": "Impossible de désactiver le lancement au démarrage : {message}",
         // Swap and memory alerts
@@ -1598,6 +1614,14 @@ public enum L10n {
         "废纸篓中选中的项目将永久删除，无法恢复。": "Ausgewählte Objekte im Papierkorb werden dauerhaft gelöscht und können nicht wiederhergestellt werden.",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "Nicht verwendete Architekturen werden aus Apps entfernt. Zur Wiederherstellung müssen die Apps möglicherweise neu installiert werden.",
 
+        "自动下载并安装更新": "Updates automatisch laden und installieren",
+        "更新会在退出时安装，也可以选择立即重启应用。": "Updates werden beim Beenden installiert. Du kannst die App auch sofort neu starten.",
+        "更新频道：": "Update-Kanal: ",
+        "重试安装": "Installation erneut versuchen",
+        "此版本尚未配置应用内安装。": "Die Installation von Updates in der App ist in diesem Build nicht eingerichtet.",
+        "清理完成后将检查更新。": "Nach Abschluss der Bereinigung wird nach Updates gesucht.",
+        "请关闭菜单栏监视器后重试更新。": "Beende den Menüleistenmonitor und versuche das Update erneut.",
+        "已取消": "Abgebrochen",
         "无法开启登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht aktiviert werden: {message}",
         "无法关闭登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht deaktiviert werden: {message}",
         // Swap and memory alerts
@@ -2298,6 +2322,14 @@ public enum L10n {
         "废纸篓中选中的项目将永久删除，无法恢复。": "Gli elementi selezionati già nel Cestino verranno eliminati definitivamente e non potranno essere ripristinati.",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "Le architetture inutilizzate verranno rimosse dalle app. Per ripristinarle potrebbe essere necessario reinstallare le app.",
 
+        "自动下载并安装更新": "Scarica e installa automaticamente gli aggiornamenti",
+        "更新会在退出时安装，也可以选择立即重启应用。": "Gli aggiornamenti vengono installati alla chiusura. Puoi anche riavviare subito l’app.",
+        "更新频道：": "Canale di aggiornamento: ",
+        "重试安装": "Riprova l’installazione",
+        "此版本尚未配置应用内安装。": "L’installazione degli aggiornamenti nell’app non è configurata per questa versione.",
+        "清理完成后将检查更新。": "Gli aggiornamenti verranno cercati al termine della pulizia.",
+        "请关闭菜单栏监视器后重试更新。": "Chiudi il monitor della barra dei menu e riprova l’aggiornamento.",
+        "已取消": "Annullato",
         "无法开启登录时启动：{message}": "Impossibile attivare l'apertura al login: {message}",
         "无法关闭登录时启动：{message}": "Impossibile disattivare l'apertura al login: {message}",
         // Swap and memory alerts
