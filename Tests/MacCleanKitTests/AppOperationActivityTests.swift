@@ -164,4 +164,3 @@ final class AppOperationActivityTests: XCTestCase {
         XCTAssertTrue(condition(), file: file, line: line)
     }
 }
-
