@@ -298,6 +298,10 @@ private final class HeaderCellView: NSTableCellView {
         case .mixed: checkbox.state = .mixed
         case .none: checkbox.state = .off
         }
+        let requiresIndividualSelection = header.category == .possibleThreats
+        checkbox.isEnabled = !requiresIndividualSelection || header.selectedCount > 0
+        checkbox.toolTip = requiresIndividualSelection ? CleanupStrings.individualThreatSelectionHelp : nil
+        checkbox.setAccessibilityHelp(checkbox.toolTip)
         icon.image = NSImage(
             systemSymbolName: header.category.systemImage, accessibilityDescription: nil
         )

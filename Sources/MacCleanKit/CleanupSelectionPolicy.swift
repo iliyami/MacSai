@@ -25,12 +25,16 @@ public enum CleanupSelectionPolicy {
         return initialURLs(in: results).subtracting(reviewOnlyURLs)
     }
 
-    /// An explicit checkbox on a named category may select review-only items.
+    /// Named category checkboxes may select ordinary review-only items, but
+    /// possible/community-reported threats require individual selection.
     public static func togglingCategory(
         _ category: ScanCategory, in results: [ScanResult], selection: Set<URL>
     ) -> Set<URL> {
         let urls = Set(results.filter { $0.category == category }.flatMap { $0.items.map(\.url) })
-        return urls.isSubset(of: selection) ? selection.subtracting(urls) : selection.union(urls)
+        if category == .possibleThreats { return selection.subtracting(urls) }
+        let threatURLs = Set(results.filter { $0.category == .possibleThreats }.flatMap { $0.items.map(\.url) })
+        let selectableURLs = urls.subtracting(threatURLs)
+        return selectableURLs.isSubset(of: selection) ? selection.subtracting(urls) : selection.union(selectableURLs)
     }
 
     public static func selectedSize(_ selection: Set<URL>, sizesByURL: [URL: UInt64]) -> UInt64 {

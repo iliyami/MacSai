@@ -216,8 +216,8 @@ public struct FileListView: View {
         }
     }
 
-    /// Select-all / deselect-all for a category: if every item is already
-    /// selected, deselect them; otherwise select them all.
+    /// Explicit category selection keeps review-only items available. Possible
+    /// threats can only be cleared here; adding one requires its own checkbox.
     private func toggleAll(_ category: ScanCategory) {
         selectedItems = CleanupSelectionPolicy.togglingCategory(category, in: results, selection: selectedItems)
     }

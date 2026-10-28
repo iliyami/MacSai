@@ -109,6 +109,54 @@ final class FileTableViewTests: XCTestCase {
         XCTAssertEqual(badge?.accessibilityLabel(), ScanCategory.CleanupSafety.regenerates.label)
     }
 
+    func testThreatGroupCheckboxIsDisabledUntilAnItemIsSelected() throws {
+        let coordinator = FileTableView.Coordinator()
+        coordinator.rows = [.header(FileListHeader(
+            category: .possibleThreats, totalSize: 2, fileCount: 2,
+            selectedSize: 0, selectedCount: 0, isExpanded: true
+        ))]
+        let table = makeTable(coordinator: coordinator)
+        table.reloadData()
+        let cell = try XCTUnwrap(table.view(atColumn: 0, row: 0, makeIfNecessary: true))
+        let checkbox = try XCTUnwrap(cell.subviews.compactMap { $0 as? NSButton }
+            .first { $0.allowsMixedState })
+        XCTAssertFalse(checkbox.isEnabled)
+        XCTAssertEqual(checkbox.toolTip, CleanupStrings.individualThreatSelectionHelp)
+        XCTAssertEqual(checkbox.accessibilityHelp(), CleanupStrings.individualThreatSelectionHelp)
+    }
+
+    func testThreatGroupCheckboxClearsPartialSelectionAndIndividualCheckboxStillSelects() throws {
+        let first = FileItem(url: URL(filePath: "/fixture/threat-a"), name: "a", size: 1,
+                             allocatedSize: 1, isDirectory: false)
+        let second = FileItem(url: URL(filePath: "/fixture/threat-b"), name: "b", size: 1,
+                              allocatedSize: 1, isDirectory: false)
+        let results = [ScanResult(category: .possibleThreats, items: [first, second], autoSelect: false)]
+        var selection: Set<URL> = [first.url]
+        let coordinator = FileTableView.Coordinator()
+        coordinator.rows = FileListRows.flatten(results: results, isExpanded: { _ in true },
+                                               selectedItems: selection)
+        coordinator.onToggleAll = { category in
+            selection = CleanupSelectionPolicy.togglingCategory(category, in: results, selection: selection)
+        }
+        coordinator.onToggleItem = { url in selection.insert(url) }
+        let table = makeTable(coordinator: coordinator)
+        table.reloadData()
+        let header = try XCTUnwrap(table.view(atColumn: 0, row: 0, makeIfNecessary: true))
+        let groupCheckbox = try XCTUnwrap(header.subviews.compactMap { $0 as? NSButton }
+            .first { $0.allowsMixedState })
+        XCTAssertTrue(groupCheckbox.isEnabled)
+        XCTAssertEqual(groupCheckbox.state, .mixed)
+        groupCheckbox.performClick(nil)
+        XCTAssertTrue(selection.isEmpty, "group action must clear the partial selection, never select all threats")
+
+        let item = try XCTUnwrap(table.view(atColumn: 0, row: 2, makeIfNecessary: true))
+        let itemCheckbox = try XCTUnwrap(item.subviews.compactMap { $0 as? NSButton }
+            .first { $0.action == NSSelectorFromString("checkboxClicked") })
+        XCTAssertTrue(itemCheckbox.isEnabled)
+        itemCheckbox.performClick(nil)
+        XCTAssertEqual(selection, [second.url], "reviewed threats remain individually selectable")
+    }
+
     func testRowHeightsAreFixedPerKind() {
         let coordinator = FileTableView.Coordinator()
         coordinator.rows = makeRows(2)

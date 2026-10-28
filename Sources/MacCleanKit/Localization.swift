@@ -277,6 +277,7 @@ public enum L10n {
         "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "以上僅顯示已完成的操作。移到廢紙簍的項目可從清理歷史還原。請重新掃描以檢查剩餘或重新產生的檔案。",
         "完成": "完成",
         "清理完成": "清理完成",
+        "请逐项检查并选择可能的威胁和社区报告的文件。此复选框只能取消该类别中已选中的项目。": "請逐項檢查並選擇可能的威脅和社群回報的檔案。此核取方塊只能取消該類別中已選取的項目。",
         // Cleanup selection controls and confirmation copy.
         "全选": "全選",
         "取消全选": "取消全選",
@@ -908,6 +909,7 @@ public enum L10n {
         "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "Les dossiers sélectionnés et leur contenu comptent comme un seul élément. Les fichiers déjà absents sont ignorés.",
         "部分项目未能清理": "Certains éléments n'ont pas pu être nettoyés",
         "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "Seules les opérations terminées sont affichées ci-dessus. Les éléments déplacés dans la corbeille peuvent être restaurés depuis l'historique de nettoyage. Relancez l'analyse pour vérifier les fichiers restants ou recréés.",
+        "请逐项检查并选择可能的威胁和社区报告的文件。此复选框只能取消该类别中已选中的项目。": "Vérifiez et sélectionnez individuellement les menaces potentielles et les fichiers signalés par la communauté. Cette case permet uniquement de désélectionner les éléments de cette catégorie.",
         // Cleanup selection controls and confirmation copy.
         "全选": "Tout sélectionner",
         "取消全选": "Tout désélectionner",
@@ -917,6 +919,7 @@ public enum L10n {
         "选中的文件会移到废纸篓，如有需要仍可恢复。": "Les fichiers sélectionnés seront placés dans la corbeille et pourront être restaurés si nécessaire.",
         "废纸篓中选中的项目将永久删除，无法恢复。": "Les éléments sélectionnés dans la corbeille seront supprimés définitivement et ne pourront pas être restaurés.",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。": "Les architectures inutilisées seront retirées des applications. Leur restauration peut nécessiter la réinstallation des applications.",
+        "已处理": "traités",
 
         "无法开启登录时启动：{message}": "Impossible d'activer le lancement au démarrage : {message}",
         "无法关闭登录时启动：{message}": "Impossible de désactiver le lancement au démarrage : {message}",
@@ -1563,6 +1566,7 @@ public enum L10n {
         "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "Ausgewählte Ordner zählen zusammen mit ihrem Inhalt als ein Objekt. Bereits verschwundene Dateien werden übersprungen.",
         "部分项目未能清理": "Einige Objekte konnten nicht bereinigt werden",
         "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "Oben werden nur abgeschlossene Vorgänge angezeigt. In den Papierkorb verschobene Objekte lassen sich über den Bereinigungsverlauf wiederherstellen. Scanne erneut, um verbliebene oder neu erstellte Dateien zu prüfen.",
+        "请逐项检查并选择可能的威胁和社区报告的文件。此复选框只能取消该类别中已选中的项目。": "Prüfe und wähle mögliche Bedrohungen und von der Community gemeldete Dateien einzeln aus. Dieses Kontrollkästchen kann nur die Auswahl in dieser Kategorie aufheben.",
         // Cleanup selection controls and confirmation copy.
         "全选": "Alle auswählen",
         "取消全选": "Auswahl aufheben",
@@ -2251,6 +2255,7 @@ public enum L10n {
         "选中的文件夹与其内容计为一项。已经消失的文件会被跳过。": "Le cartelle selezionate e il loro contenuto contano come un unico elemento. I file già scomparsi vengono saltati.",
         "部分项目未能清理": "Non è stato possibile pulire alcuni elementi",
         "以上仅显示已完成的操作。移到废纸篓的项目可从清理历史恢复。请重新扫描以查看剩余或重新生成的文件。": "Sopra sono mostrate solo le operazioni completate. Gli elementi spostati nel Cestino possono essere ripristinati dalla cronologia di pulizia. Ripeti la scansione per controllare i file rimasti o ricreati.",
+        "请逐项检查并选择可能的威胁和社区报告的文件。此复选框只能取消该类别中已选中的项目。": "Verifica e seleziona singolarmente le possibili minacce e i file segnalati dalla community. Questa casella può solo deselezionare gli elementi di questa categoria.",
         // Cleanup selection controls and confirmation copy.
         "全选": "Seleziona tutto",
         "取消全选": "Deseleziona tutto",

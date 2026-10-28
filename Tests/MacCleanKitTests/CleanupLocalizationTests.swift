@@ -10,6 +10,7 @@ final class CleanupLocalizationTests: AppLanguageTestCase {
         "选中的文件会移到废纸篓，如有需要仍可恢复。",
         "废纸篓中选中的项目将永久删除，无法恢复。",
         "应用中未使用的架构将被移除。恢复可能需要重新安装应用。",
+        "请逐项检查并选择可能的威胁和社区报告的文件。此复选框只能取消该类别中已选中的项目。",
     ]
 
     func testStaticCleanupCopyIsTranslatedForEveryDictionaryBackedLanguage() {

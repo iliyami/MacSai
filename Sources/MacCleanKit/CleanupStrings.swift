@@ -3,6 +3,13 @@ import Foundation
 /// Dynamic cleanup copy uses every supported language instead of looking up
 /// already-interpolated strings in the static localization dictionaries.
 public enum CleanupStrings {
+    public static var individualThreatSelectionHelp: String {
+        L10n.tr(
+            "请逐项检查并选择可能的威胁和社区报告的文件。此复选框只能取消该类别中已选中的项目。",
+            "Review and select possible threats and community-reported files individually. This checkbox can only clear selected items in this category.",
+            "Проверяйте и выбирайте возможные угрозы и файлы, отмеченные сообществом, по одному. Этот флажок может только снять выбор объектов в данной категории.")
+    }
+
     public static func selectionSummary(selected: Int, total: Int) -> String {
         let selectedText = selected.formatted()
         let totalText = total.formatted()

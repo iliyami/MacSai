@@ -74,13 +74,39 @@ final class CleanupSelectionPolicyTests: XCTestCase {
     }
 
     func testManualCategorySelectionStillAllowsReviewOnlyResults() {
-        for category in [ScanCategory.possibleThreats, .deletedUsers, .universalBinaries] {
+        for category in [ScanCategory.deletedUsers, .universalBinaries] {
             let review = result(category, autoSelect: false)
             let selection = CleanupSelectionPolicy.togglingCategory(category, in: [review], selection: [])
             XCTAssertEqual(selection, [review.items[0].url])
             XCTAssertTrue(CleanupSelectionPolicy.requiresReview(in: [review], selection: selection))
             XCTAssertTrue(CleanupSelectionPolicy.togglingCategory(category, in: [review], selection: selection).isEmpty)
         }
+    }
+
+    func testThreatCategoryCheckboxCanOnlyClearIndividuallySelectedItems() {
+        let first = result(.possibleThreats, autoSelect: false)
+        let second = FileItem(url: URL(filePath: "/fixture/community-report"), name: "report",
+                              size: 1, allocatedSize: 1, isDirectory: false)
+        let threats = ScanResult(category: .possibleThreats, items: first.items + [second], autoSelect: false)
+        let cache = result(.userCaches)
+        let results = [threats, cache]
+        let unrelated: Set<URL> = [cache.items[0].url]
+        let selections: [Set<URL>] = [[], [first.items[0].url], [first.items[0].url, second.url]]
+        for selectedThreats in selections {
+            let selection = unrelated.union(selectedThreats)
+            XCTAssertEqual(CleanupSelectionPolicy.togglingCategory(.possibleThreats, in: results,
+                                                                  selection: selection), unrelated)
+        }
+    }
+
+    func testAnotherCategoryCheckboxCannotBulkSelectADuplicateThreatURL() {
+        let threat = result(.possibleThreats, autoSelect: false)
+        let cache = result(.userCaches)
+        let mixed = ScanResult(category: .userCaches, items: cache.items + threat.items)
+        let results = [mixed, threat]
+        let selected = CleanupSelectionPolicy.togglingCategory(.userCaches, in: results, selection: [])
+        XCTAssertEqual(selected, [cache.items[0].url])
+        XCTAssertTrue(CleanupSelectionPolicy.togglingCategory(.userCaches, in: results, selection: selected).isEmpty)
     }
 
     func testCollapsedReviewCategoriesRemainUncheckedAfterSelectAll() {
