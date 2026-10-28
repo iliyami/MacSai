@@ -454,7 +454,7 @@ Mac Sai 只有**一个**赞助位，展示在这里和本页顶部，覆盖本 R
 
 <p align="center">
   <strong>这个位置目前空缺。</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">成为赞助者 →</a><br>
-  <sub>价格、受众详情和申请方式：<a href="SPONSORS.md">SPONSORS.md</a>（英文）</sub>
+  <sub>受众详情和申请方式：<a href="SPONSORS.md">SPONSORS.md</a>（英文）</sub>
 </p>
 
 ## Star 历史

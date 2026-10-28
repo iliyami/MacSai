@@ -454,7 +454,7 @@ Mac Sai бесплатен и останется бесплатным: без п
 
 <p align="center">
   <strong>Это место свободно.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Стать спонсором →</a><br>
-  <sub>Цены, аудитория и как подать заявку: <a href="SPONSORS.md">SPONSORS.md</a> (на английском)</sub>
+  <sub>Аудитория и как подать заявку: <a href="SPONSORS.md">SPONSORS.md</a> (на английском)</sub>
 </p>
 
 ## История звёзд

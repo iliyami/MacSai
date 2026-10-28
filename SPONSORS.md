@@ -64,15 +64,6 @@ Not accepted: cleaners or "optimizers", crypto, affiliate VPN deals, and anythin
 - **No tracking.** Links go straight to your site, with no tracking pixels or redirect services. A plain landing page such as `example.com/macsai` is welcome.
 - **No influence on the project.** Sponsorship does not change what Mac Sai detects, recommends or removes.
 
-## Rates
-
-| Term | Price |
-| --- | --- |
-| 3 months (minimum) | $300 a month, $900 paid upfront |
-| 12 months | $3,000, paid upfront (two months free) |
-
-After the first term, the slot continues month to month and you can stop at any time.
-
 ## How to apply
 
 Email [iliya.mi78@gmail.com](mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor) with:
@@ -80,6 +71,6 @@ Email [iliya.mi78@gmail.com](mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20spo
 1. Your product and a link to it
 2. Your logo (SVG preferred, or PNG at least 400 px wide), with a dark-mode version if you have one
 3. A one-line tagline
-4. The term you'd like and a preferred start date
+4. How long you'd like to sponsor and a preferred start date
 
-Your logo goes live within a day of payment.
+I'll reply with rates and availability. Your logo goes live within a day of payment.

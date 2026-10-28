@@ -458,7 +458,7 @@ La plupart des visiteurs sont des développeurs et des utilisateurs avancés de 
 
 <p align="center">
   <strong>Cet emplacement est libre.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Devenir sponsor →</a><br>
-  <sub>Tarifs, audience et candidature : <a href="SPONSORS.md">SPONSORS.md</a> (en anglais)</sub>
+  <sub>Audience et candidature : <a href="SPONSORS.md">SPONSORS.md</a> (en anglais)</sub>
 </p>
 
 ## Historique des étoiles
