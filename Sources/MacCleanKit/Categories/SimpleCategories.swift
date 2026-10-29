@@ -16,7 +16,7 @@ public struct UserCacheCategory: JunkCategory {
                 recursive: true,
                 excludePatterns: ["com.spotify.client", "org.gradle"],
                 // Listed (opt-in) under Package Manager Caches instead.
-                excludedPaths: [MCConstants.homebrewCache, MCConstants.pipCache]
+                excludedPaths: [MCConstants.homebrewCache, MCConstants.pipCache, MCConstants.uvLegacyCache]
             ),
         ]
     }

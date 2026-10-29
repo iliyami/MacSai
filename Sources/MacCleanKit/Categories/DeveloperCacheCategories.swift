@@ -7,7 +7,7 @@ import Foundation
 // The matching history/memory/sessions/extensions are never targeted (see
 // DeveloperCacheCategoriesTests.testNeverTargetsUserData).
 
-/// npm, Cargo, pip, Homebrew, Gradle download/build caches.
+/// npm, Cargo, pip, uv, Homebrew, Gradle download/build caches.
 public struct PackageManagerCachesCategory: JunkCategory {
     public init() {}
     public let scanCategory = ScanCategory.packageManagerCaches
@@ -21,6 +21,8 @@ public struct PackageManagerCachesCategory: JunkCategory {
             MCConstants.gradleWrapperDists,
             MCConstants.homebrewCache,
             MCConstants.pipCache,
+            MCConstants.uvCache,
+            MCConstants.uvLegacyCache,
         ].map { ScanTarget(path: $0, recursive: true) }
     }
 }

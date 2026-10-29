@@ -155,6 +155,10 @@ public enum MCConstants {
     public static let homebrewCache = userCaches.appending(path: "Homebrew")
     public static let npmCache = userCaches.appending(path: "npm")
     public static let pipCache = userCaches.appending(path: "pip")
+    // uv (Python) uses the XDG-style ~/.cache/uv on macOS; older releases used
+    // ~/Library/Caches/uv. Both are fully regenerable (`uv cache clean`).
+    public static let uvCache = home.appending(path: ".cache/uv")
+    public static let uvLegacyCache = userCaches.appending(path: "uv")
     public static let cargoRegistry = home.appending(path: ".cargo/registry")
 
     // MARK: - Developer & AI Tool Caches
