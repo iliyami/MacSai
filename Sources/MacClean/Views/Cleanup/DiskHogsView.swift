@@ -4,6 +4,7 @@ import MacCleanKit
 struct DiskHogsView: View {
     @AppStorage("removeBackgroundColors") private var removeBackgroundColors = false
     @State private var dockerState: DiskHogsClient.DockerState = .notInstalled
+    @State private var dockerDiskImageSize: UInt64?
     @State private var selectedDocker: Set<DockerDiskCategory> = DockerPrune.defaultSelection
     @State private var devices: [SimulatorDevice] = []
     @State private var runtimes: [SimulatorRuntime] = []
@@ -58,7 +59,7 @@ struct DiskHogsView: View {
                         dockerSection
                         simulatorSection
 
-                        if dockerState == .notInstalled && devices.isEmpty && runtimes.isEmpty {
+                        if dockerState == .notInstalled && dockerDiskImageSize == nil && devices.isEmpty && runtimes.isEmpty {
                             Text(DiskHogsText.nothingFound)
                                 .foregroundStyle(.secondary)
                         }
@@ -115,43 +116,43 @@ struct DiskHogsView: View {
     // MARK: - Sections
 
     @ViewBuilder private var dockerSection: some View {
-        switch dockerState {
-        case .notInstalled:
-            EmptyView()
-        case .notResponding:
+        if dockerState != .notInstalled || dockerDiskImageSize != nil {
             Section {
-                Text(DiskHogsText.dockerNotResponding)
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            } header: {
-                Text(verbatim: "Docker")
-            }
-        case .rows(let rows):
-            Section {
-                ForEach(rows) { row in
-                    if row.category.isPrunable {
-                        Toggle(isOn: Binding(
-                            get: { selectedDocker.contains(row.category) },
-                            set: { on in
-                                if on { selectedDocker.insert(row.category) }
-                                else { selectedDocker.remove(row.category) }
+                // The disk image itself: information only, never selectable.
+                if let bytes = dockerDiskImageSize {
+                    lockedRow(infoLabel(
+                        title: DiskHogsText.dockerDiskImage + "  ·  " + DiskHogsText.size + " "
+                            + ByteCountFormatter.string(fromByteCount: Int64(bytes), countStyle: .file),
+                        note: DiskHogsText.dockerDiskImageNote
+                    ))
+                }
+                switch dockerState {
+                case .notInstalled:
+                    EmptyView()
+                case .notResponding:
+                    Text(DiskHogsText.dockerNotResponding)
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                case .rows(let rows):
+                    ForEach(rows) { row in
+                        if row.category.isPrunable {
+                            Toggle(isOn: Binding(
+                                get: { selectedDocker.contains(row.category) },
+                                set: { on in
+                                    if on { selectedDocker.insert(row.category) }
+                                    else { selectedDocker.remove(row.category) }
+                                }
+                            )) {
+                                dockerRowLabel(row)
                             }
-                        )) {
-                            dockerRowLabel(row)
-                        }
-                    } else {
-                        // Volumes: information only, never selectable.
-                        HStack(alignment: .top, spacing: 8) {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 11))
-                                .foregroundStyle(.secondary)
-                                .padding(.top, 2)
-                            dockerRowLabel(row)
+                        } else {
+                            // Volumes: information only, never selectable.
+                            lockedRow(dockerRowLabel(row))
                         }
                     }
+                    Button(DiskHogsText.pruneButton) { confirmingPrune = true }
+                        .disabled(selectedDocker.isEmpty || isWorking)
                 }
-                Button(DiskHogsText.pruneButton) { confirmingPrune = true }
-                    .disabled(selectedDocker.isEmpty || isWorking)
             } header: {
                 Text(verbatim: "Docker")
             }
@@ -159,13 +160,28 @@ struct DiskHogsView: View {
     }
 
     private func dockerRowLabel(_ row: DockerDiskRow) -> some View {
+        infoLabel(title: row.category.label + "  ·  " + DiskHogsText.size + " " + row.size,
+                  note: row.category.pruneNote)
+    }
+
+    private func infoLabel(title: String, note: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(row.category.label + "  ·  " + DiskHogsText.size + " " + row.size)
+            Text(title)
                 .font(.system(size: 13, weight: .medium))
-            Text(row.category.pruneNote)
+            Text(note)
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func lockedRow(_ label: some View) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "lock.fill")
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .padding(.top, 2)
+            label
         }
     }
 
@@ -237,6 +253,7 @@ struct DiskHogsView: View {
         let (state, simulators) = await (docker, sims)
         if Task.isCancelled { return }
         dockerState = state
+        dockerDiskImageSize = client.dockerDiskImageSize()
         devices = simulators.devices
         runtimes = simulators.runtimes
         selectedDocker = DockerPrune.defaultSelection
@@ -252,6 +269,7 @@ struct DiskHogsView: View {
         selectedDocker = []
         if Task.isCancelled { return }
         dockerState = await client.dockerState()
+        dockerDiskImageSize = client.dockerDiskImageSize()
     }
 
     private func deleteSims(devices: [SimulatorDevice], runtimes: [SimulatorRuntime]) async {

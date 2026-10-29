@@ -20,6 +20,8 @@ final class DeveloperCacheCategoriesTests: XCTestCase {
         XCTAssertTrue(has("/Library/Caches/pip"))
         XCTAssertTrue(has("/.cache/uv"))
         XCTAssertTrue(has("/Library/Caches/uv"))
+        XCTAssertTrue(has("/Library/Caches/pnpm"))
+        XCTAssertTrue(has("/.cache/pnpm"))
     }
 
     func testIDECachesIncludeEditors() {
