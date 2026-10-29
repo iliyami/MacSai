@@ -44,6 +44,19 @@ public struct UserLogCategory: JunkCategory {
                 // with the entry recording its removal.
                 excludedPaths: [MCConstants.operationLogDir]
             ),
+            // OpenClaw keeps its logs outside ~/Library (see
+            // MCConstants.openClawHome). Its logs folder is taken whole so
+            // rotated files (gateway.log.1, …) are included.
+            ScanTarget(path: MCConstants.openClawLogs, recursive: true),
+            // Stray *.log files anywhere else in ~/.openclaw. The logs folder
+            // is excluded so its files aren't listed twice, and the agent
+            // workspace holds the user's own files.
+            ScanTarget(
+                path: MCConstants.openClawHome,
+                recursive: true,
+                fileExtensions: ["log"],
+                excludedPaths: [MCConstants.openClawLogs, MCConstants.openClawWorkspace]
+            ),
         ]
     }
 }

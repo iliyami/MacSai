@@ -176,6 +176,15 @@ public enum MCConstants {
     public static let codexTmp = home.appending(path: ".codex/.tmp")
     public static let codexCache = home.appending(path: ".codex/cache")
 
+    /// OpenClaw's data folder. Its gateway keeps writing connection-retry
+    /// logs here, and the folder survives uninstalling the app, so it can grow
+    /// to tens of GB. Only `*.log` files and the `logs/` folder are targeted;
+    /// config, credentials, and workspace data are left alone.
+    public static let openClawHome = home.appending(path: ".openclaw")
+    public static let openClawLogs = openClawHome.appending(path: "logs")
+    /// The agent's working folder: user files, so never scanned for logs.
+    public static let openClawWorkspace = openClawHome.appending(path: "workspace")
+
     /// Standard VS Code-family Electron cache dirs under Application Support.
     /// `User/` and installed `extensions` are excluded (user data / software).
     public static func electronEditorCaches(_ appSupportName: String) -> [URL] {
