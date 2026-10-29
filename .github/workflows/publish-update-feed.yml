@@ -21,6 +21,7 @@ concurrency:
 jobs:
   publish:
     runs-on: macos-15
+    environment: sparkle-release
     steps:
       - uses: actions/checkout@v6
 

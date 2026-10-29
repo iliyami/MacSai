@@ -20,6 +20,8 @@ class ConfigurationTests(unittest.TestCase):
         self.assertTrue(config["SURequireSignedFeed"])
         self.assertTrue(config["SUVerifyUpdateBeforeExtraction"])
         self.assertEqual(config["SUSignedFeedFailureExpirationInterval"], 0)
+        self.assertTrue(config["SUEnableAutomaticChecks"])
+        self.assertEqual(config["SUScheduledCheckInterval"], 86400)
         self.assertFalse(config["SUAutomaticallyUpdate"])
         self.assertFalse(config["SUEnableSystemProfiling"])
 

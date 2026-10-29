@@ -321,7 +321,7 @@ rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.sw
 
 可選的網路存取列於下方。本機清理不會上傳掃描結果或檔案清單：
 
-- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle 檢查簽署應用程式中固定的 HTTPS 來源，並下載已簽署的版本說明和更新封存檔。自動檢查與自動下載/安裝分別設定；系統資訊回報及版本說明中的 JavaScript 均已停用。參見[更新設定](docs/IN_APP_UPDATES.md)。
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle 檢查簽署應用程式中固定的 HTTPS 來源，並下載已簽署的版本說明和更新封存檔。自動檢查與自動下載/安裝分別設定；系統資訊回報及版本說明中的 JavaScript 均已停用。參見[更新設定](docs/IN_APP_UPDATES.md)。 對於已設定的直接安裝版本，自動檢查更新預設開啟，每天執行一次；每個請求都會在 User-Agent 中包含應用程式和 Sparkle 的版本，可在「設定」中關閉自動檢查。
 - `Sources/MacCleanKit/UpdateChecker.swift`: Homebrew 更新檢查，以及未設定簽署來源時使用的版本發佈頁面
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`：開啟“應用更新”模組時，由使用者觸發的對其它應用 Sparkle 源的檢查
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift`：可選的 MalwareBazaar 雜湊下載。只有在你加入自己的 abuse.ch Auth-Key 並在「設定 > 惡意軟體資料庫」中點按「立即更新」時才會執行。每次請求只傳送你的 Auth-Key 和查詢內容，絕不傳送檔案雜湊值或路徑。如果下載的雜湊與某個已簽署的檔案相符，macOS 會向 Apple 查詢其簽署憑證是否已被撤銷（與 Gatekeeper 的檢查相同）；該請求只涉及憑證，不涉及你的檔案
@@ -331,13 +331,52 @@ rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.sw
 **2. 觀察即時程序**
 
 ```bash
-pgrep -fl '/Mac Sai.app/'
-lsof -i -P -n | grep -iE 'MacClean|Mac Sai|Autoupdat|Updater|Downloader|Installer' || echo "no network sockets"
+(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)
 ```
+
+此快照依所選應用程式套件內的可執行檔路徑選取 PID，因此不會包含無關的 Installer/Updater 程序。複製到其他位置的 Sparkle 輔助程式和 macOS 信任服務不在此範圍內；請使用可識別程序的防火牆觀察它們。在檢查或下載更新時重複執行此命令，以觀察短暫的連線。
 
 沒有進行更新檢查、下載或可選的惡意軟體驗證時，本機清理不會建立網路連線。觀察更新時也要包含 Sparkle 子程序；Apple 憑證檢查由 macOS 信任服務執行。也可以使用 Little Snitch 或 LuLu 查看這些連線。
 
 **3. 檢查你實際安裝的二進位制檔案**
+
+對於 DMG 或 Homebrew 安裝，此迴圈只需要 macOS 命令列工具，無需原始碼或 Python。它讀取全部七個內建二進位檔案，並列出常見網路匯入、靜態 URL 和追蹤器字串，供手動檢查：
+
+```bash
+(
+MACSAI_APP="/Applications/Mac Sai.app"
+MACSAI_SPARKLE="$MACSAI_APP/Contents/Frameworks/Sparkle.framework/Versions/B"
+for MACSAI_BINARY in \
+  "$MACSAI_APP/Contents/MacOS/MacClean" \
+  "$MACSAI_APP/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu" \
+  "$MACSAI_SPARKLE/Sparkle" "$MACSAI_SPARKLE/Autoupdate" \
+  "$MACSAI_SPARKLE/Updater.app/Contents/MacOS/Updater" \
+  "$MACSAI_SPARKLE/XPCServices/Downloader.xpc/Contents/MacOS/Downloader" \
+  "$MACSAI_SPARKLE/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+do
+  printf '\n%s\n' "$MACSAI_BINARY"
+  MACSAI_IMPORTS=$(nm -uj "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_IMPORTS" | grep -Ei \
+    'URLSession|URLConnection|CFNetwork|Network|nw_|DNSService|NetService|curl_|^_(socket|connect|connectx|send|recv)([$]|$)' || true
+  MACSAI_STRINGS=$(strings -a "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_STRINGS" | grep -Ei \
+    '://|sentry|firebase|mixpanel|amplitude|bugsnag|crashlytics|posthog|appsflyer' || true
+done
+)
+```
+
+這些清單並非自動通過或失敗的結論，也不能證明所有執行階段的目標位址均可見。要核對完整元件清單、明確的允許清單和內建隱私設定，請使用下面的自動檢查。
 
 請從與安裝版本對應的原始碼目錄執行檢查。它分析實際安裝的應用程式套件，包括主程式、選單列輔助程式、`Sparkle.framework`、`Autoupdate`、`Updater.app`、`Downloader.xpc` 和 `Installer.xpc`：
 

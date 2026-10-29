@@ -4,12 +4,18 @@
 The signing/generator boundary is covered with real Sparkle signatures by
 test-update-feed.py. These fixtures exercise ordering, release identity, exact
 curated notes, downloaded bytes and recovery with a deterministic GitHub double.
+Archive inspection uses real fixture plists and a mocked hdiutil boundary, so
+these unit tests neither mount images nor inspect the installed application.
 """
 import base64
 import copy
 import hashlib
 import importlib.util
 from pathlib import Path
+import plistlib
+import shutil
+import subprocess
+import tempfile
 import unittest
 
 SPEC = importlib.util.spec_from_file_location("publish_update_feed", Path(__file__).with_name("publish-update-feed.py"))
@@ -92,9 +98,15 @@ class PublicationTests(unittest.TestCase):
         self.notes_seen = (directory / "MacSai-1.28.0.md").read_bytes()
         (directory / "appcast.xml").write_bytes(b"verified signed feed: " + self.notes_seen)
 
-    def publish(self, generator=None, environment=None, tag=TAG):
+    def archive_verifier(self, archive_path, version, environment):
+        self.assertEqual(archive_path.read_bytes(), ARCHIVE)
+        self.assertEqual(version, TAG[1:])
+        self.github.events.append(("archive-validated",))
+
+    def publish(self, generator=None, environment=None, tag=TAG, archive_verifier=None):
         PUBLISH.publish(REPOSITORY, tag, environment or ENVIRONMENT,
-                        github=self.github, generator=generator or self.generator)
+                        github=self.github, generator=generator or self.generator,
+                        archive_verifier=archive_verifier or self.archive_verifier)
 
     def assertOldFeedUntouched(self):
         self.assertEqual(self.github.data[2], OLD_FEED)
@@ -106,7 +118,7 @@ class PublicationTests(unittest.TestCase):
         self.publish()
         self.assertEqual(self.notes_seen, self.github.record["body"].encode())
         kinds = [event[0] for event in self.github.events]
-        self.assertEqual(kinds, ["download", "validated", "upload", "download", "rename", "rename"])
+        self.assertEqual(kinds, ["download", "archive-validated", "validated", "upload", "download", "rename", "rename"])
         self.assertEqual(self.github.events[-1], ("rename", 3, "appcast.xml"))
         self.assertEqual(self.github.data[2], OLD_FEED, "Previous signed bytes remain recoverable")
 
@@ -162,6 +174,16 @@ class PublicationTests(unittest.TestCase):
             self.publish(generator=fail)
         self.assertOldFeedUntouched()
 
+    def testArchiveConfigurationOrMountFailureStopsBeforeSigningAndUpload(self):
+        for error in (ValueError("published feed URL drift"), RuntimeError("archive mount failed")):
+            self.github = FakeGitHub()
+            def fail(archive_path, version, environment):
+                raise error
+            with self.subTest(error=error), self.assertRaises(type(error)):
+                self.publish(archive_verifier=fail)
+            self.assertOldFeedUntouched()
+            self.assertEqual(self.github.events, [("download", 1)])
+
     def testEditedNotesOrNewStableDuringSigningStopsBeforeUpload(self):
         for change in ("notes", "latest"):
             self.github = FakeGitHub()
@@ -208,6 +230,134 @@ class PublicationTests(unittest.TestCase):
             self.publish()
         self.assertEqual(self.github.data[2], OLD_FEED)
         self.assertIn(3, self.github.data)
+
+
+class ArchiveConfigurationTests(unittest.TestCase):
+    def setUp(self):
+        self.info = {"CFBundleIdentifier": "com.macclean.app", "CFBundleShortVersionString": TAG[1:],
+                     "SUFeedURL": ENVIRONMENT["SPARKLE_FEED_URL"],
+                     "SUPublicEDKey": ENVIRONMENT["SPARKLE_PUBLIC_ED_KEY"],
+                     "SURequireSignedFeed": True, "SUVerifyUpdateBeforeExtraction": True,
+                     "SUSignedFeedFailureExpirationInterval": 0,
+                     "SUEnableSystemProfiling": False, "SUEnableJavaScript": False}
+        self.events = []
+        self.mode = "valid"
+        self.detach_failure = False
+        self.mount = None
+        self.outside = tempfile.TemporaryDirectory(prefix="macsai-mount-fixture-")
+        self.addCleanup(self.outside.cleanup)
+
+    def runner(self, command, **options):
+        self.events.append(command[1])
+        if command[1] == "attach":
+            self.assertIn("-readonly", command)
+            self.assertIn("-nobrowse", command)
+            self.assertIn("-noautoopen", command)
+            self.assertEqual(options["stdin"], subprocess.DEVNULL)
+            self.mount = Path(command[command.index("-mountpoint") + 1])
+            self.addCleanup(shutil.rmtree, self.mount, True)
+            if self.mode == "attach-failure":
+                raise subprocess.CalledProcessError(1, command)
+            if self.mode == "attach-timeout":
+                raise subprocess.TimeoutExpired(command, 60)
+            app = self.mount / ("Other.app" if self.mode == "wrong-app" else "Mac Sai.app")
+            contents = app / "Contents"
+            if self.mode != "missing-app":
+                contents.mkdir(parents=True)
+                (contents / "Info.plist").write_bytes(plistlib.dumps(self.info))
+            if self.mode == "extra-app":
+                (self.mount / "Other.app").mkdir()
+            if self.mode in {"app-symlink", "contents-symlink", "plist-symlink"}:
+                outside = Path(self.outside.name)
+                (outside / "Info.plist").write_bytes(plistlib.dumps(self.info))
+                if self.mode == "app-symlink":
+                    shutil.rmtree(app)
+                    app.symlink_to(outside, target_is_directory=True)
+                elif self.mode == "contents-symlink":
+                    shutil.rmtree(contents)
+                    contents.symlink_to(outside, target_is_directory=True)
+                else:
+                    (contents / "Info.plist").unlink()
+                    (contents / "Info.plist").symlink_to(outside / "Info.plist")
+            if self.mode == "invalid-plist":
+                (contents / "Info.plist").write_bytes(b"not a plist")
+            if self.mode == "plist-array":
+                (contents / "Info.plist").write_bytes(plistlib.dumps([]))
+            # A normal DMG's Applications shortcut must not be traversed.
+            (self.mount / "Applications").symlink_to(Path(self.outside.name), target_is_directory=True)
+            entities = [{"mount-point": str(self.mount)}]
+            if self.mode == "wrong-mount":
+                entities = [{"mount-point": self.outside.name}]
+            if self.mode == "extra-mount":
+                entities.append({"mount-point": self.outside.name})
+            if self.mode == "invalid-metadata":
+                entities = "not a volume list"
+            return subprocess.CompletedProcess(command, 0, stdout=plistlib.dumps({"system-entities": entities}))
+        if self.detach_failure:
+            raise subprocess.CalledProcessError(1, command)
+        shutil.rmtree(command[2])
+        return subprocess.CompletedProcess(command, 0, stdout=b"")
+
+    def verify(self):
+        PUBLISH.verify_archive_configuration(Path("fixture.dmg"), TAG[1:], ENVIRONMENT, runner=self.runner)
+
+    def testMatchingPublishedAppPassesAndDetaches(self):
+        self.verify()
+        self.assertEqual(self.events, ["attach", "detach"])
+        self.assertFalse(self.mount.exists())
+
+    def testFeedKeyVersionAndIdentityDriftFailAndDetach(self):
+        for key, value in (("SUFeedURL", "https://other.example.org/appcast.xml"),
+                           ("SUPublicEDKey", base64.b64encode(b"x" * 32).decode()),
+                           ("CFBundleShortVersionString", "1.27.1"),
+                           ("CFBundleIdentifier", "org.example.other")):
+            previous = self.info[key]
+            self.info[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.verify()
+            self.assertEqual(self.events[-2:], ["attach", "detach"])
+            self.info[key] = previous
+
+    def testMissingOrWeakenedTrustAndPrivacySettingsFail(self):
+        for key in ("SURequireSignedFeed", "SUVerifyUpdateBeforeExtraction", "SUSignedFeedFailureExpirationInterval",
+                    "SUEnableSystemProfiling", "SUEnableJavaScript"):
+            previous = self.info[key]
+            for value in (None, not previous):
+                self.info[key] = value
+                if value is None:
+                    del self.info[key]
+                with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                    self.verify()
+                self.assertEqual(self.events[-2:], ["attach", "detach"])
+            self.info[key] = previous
+
+    def testAmbiguousAppsAndEscapingSymlinksFailWithoutFollowingApplicationsShortcut(self):
+        for mode in ("missing-app", "wrong-app", "extra-app", "app-symlink", "contents-symlink", "plist-symlink"):
+            self.mode = mode
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                self.verify()
+            self.assertEqual(self.events[-2:], ["attach", "detach"])
+
+    def testInvalidPlistsAndUnexpectedMountsFailAndDetach(self):
+        for mode in ("invalid-plist", "plist-array", "wrong-mount", "extra-mount", "invalid-metadata"):
+            self.mode = mode
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                self.verify()
+            self.assertEqual(self.events[-2:], ["attach", "detach"])
+
+    def testFailedOrTimedOutMountStillAttemptsDetach(self):
+        for mode in ("attach-failure", "attach-timeout"):
+            self.mode = mode
+            with self.subTest(mode=mode), self.assertRaisesRegex(RuntimeError, "Cannot mount published archive"):
+                self.verify()
+            self.assertEqual(self.events[-2:], ["attach", "detach"])
+
+    def testDetachFailurePreventsPublicationAndRetainsMountForRecovery(self):
+        self.detach_failure = True
+        with self.assertRaisesRegex(RuntimeError, "Could not detach published archive"):
+            self.verify()
+        self.assertEqual(self.events, ["attach", "detach"])
+        self.assertTrue(self.mount.exists())
 
 
 if __name__ == "__main__":

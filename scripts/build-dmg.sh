@@ -12,13 +12,13 @@
 #                         Override with "--arch $(uname -m)" for a fast native-only dev build.
 #
 # Optional update configuration:
-#   BUILD_NUMBER          — monotonically increasing CFBundleVersion (defaults to VERSION's numeric part)
-#   SPARKLE_FEED_URL      — HTTPS appcast URL; requires SPARKLE_PUBLIC_ED_KEY
-#   SPARKLE_PUBLIC_ED_KEY — base64 Ed25519 PUBLIC key (never the private key)
-#   UPDATE_CHANNEL_NAME   — optional visible channel label for test/distribution builds
-#   SWIFT_BUILD_SYSTEM    — optional SwiftPM build system (e.g. native)
-#   LOCAL_SIGNING_IDENTITY — optional stable local identity for non-notarized test builds
-#   DMG_STAGING_ROOT      — existing parent for a fresh staging dir (e.g. /private/tmp)
+#   BUILD_NUMBER:           monotonically increasing CFBundleVersion (defaults to VERSION's numeric part)
+#   SPARKLE_FEED_URL:       HTTPS appcast URL; requires SPARKLE_PUBLIC_ED_KEY
+#   SPARKLE_PUBLIC_ED_KEY:  base64 Ed25519 PUBLIC key (never the private key)
+#   UPDATE_CHANNEL_NAME:   optional visible channel label for test/distribution builds
+#   SWIFT_BUILD_SYSTEM:     optional SwiftPM build system (e.g. native)
+#   LOCAL_SIGNING_IDENTITY: optional stable local identity for non-notarized test builds
+#   DMG_STAGING_ROOT:       existing parent for a fresh staging dir (e.g. /private/tmp)
 #                           to avoid file-provider FinderInfo stamping in synced folders
 #
 # Environment variables for proper signing/notarization:

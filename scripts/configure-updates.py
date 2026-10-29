@@ -31,6 +31,7 @@ def configuration(environment):
         "SUEnableSystemProfiling": False,
         "SUEnableJavaScript": False,
         "SUEnableAutomaticChecks": True,
+        "SUScheduledCheckInterval": 86400,
         "SUAutomaticallyUpdate": False,
         "SUShowReleaseNotes": True,
     }

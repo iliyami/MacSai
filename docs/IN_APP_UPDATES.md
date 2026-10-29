@@ -1,11 +1,13 @@
 # Signed in-app updates
 
 Configured direct-install builds use Sparkle 2.10.1 for release notes, download
-progress, signature validation, installation and relaunch. Automatic checking
-and automatic downloading/installing are separate settings. Automatic
-installation starts disabled. Existing `automaticUpdateChecks` choices migrate
-on the first launch; later choices made in Sparkle's window are respected.
-Homebrew installations retain their Homebrew route.
+progress, signature validation, installation and relaunch. Automatic checks are
+on by default and run once a day (86,400 seconds). Each request includes the app
+and Sparkle versions in the User-Agent; checks can be turned off in Settings.
+Automatic downloading/installing is a separate setting and starts disabled.
+Existing `automaticUpdateChecks` choices migrate on the first launch; later
+choices made in Sparkle's window are respected. Homebrew installations retain
+their Homebrew route.
 
 The first version containing Sparkle must be installed normally. Earlier Mac Sai
 versions only open a release page and cannot install their own bootstrap update.
@@ -44,25 +46,41 @@ into command arguments, or distribute it with an archive.
    `SPARKLE_PUBLIC_ED_KEY`. For the existing GitHub release workflow the feed can
    be `https://github.com/iliyami/MacSai/releases/latest/download/appcast.xml`.
    This is a suggested deployment location, not a claim that it is already live.
-2. The release owner generates and retains their own EdDSA key pair, with the
-   private key in their login Keychain and an offline backup. They add the
-   matching private key as the Actions secret `SPARKLE_PRIVATE_KEY`; nobody
-   needs to share a private key with contributors. Existing Developer ID and
-   notarization secrets remain required for building official releases.
+2. The release owner creates the GitHub Actions environment `sparkle-release`,
+   restricts its deployment branches to `main`, and enables a required reviewer.
+   They generate and retain their own EdDSA key pair, with the private key in
+   their login Keychain and an offline backup, then add the matching
+   `SPARKLE_PRIVATE_KEY` secret to that environment. Do not keep a second copy as
+   a repository or organization secret. The publication job names this
+   environment; GitHub releases its secret to the job only after its configured
+   protection rules pass. The owner configures these rules in GitHub, not in the
+   workflow file, and reviews the selected workflow revision before approving.
+   Nobody needs to share a private key with contributors. The ordinary Release
+   workflow uses the two public repository variables, not this private key.
+   Existing Developer ID and notarization secrets remain required for building
+   official releases.
 3. Build/publish the stable release through the existing **Release** workflow,
    then finish editing its GitHub release notes. The app/DMG is already signed,
    notarized and publicly downloadable at this point. **A new latest stable
    release has no appcast until the next required step succeeds.** If using
    `/releases/latest/download/appcast.xml`, clients may temporarily find no feed;
    they fail closed and can retry. Plan the release/curation/publication window.
-4. Run **Publish curated update feed** (`publish-update-feed.yml`) manually,
-   selecting the current published stable `vX.Y.Z` tag. This is required for
+4. Run **Publish curated update feed** (`publish-update-feed.yml`) manually from
+   `main`, enter the current published stable `vX.Y.Z` tag, and have the required
+   reviewer approve the `sparkle-release` deployment. This is required for
    the first official feed and every later stable release. The workflow reads
-   that release's final body, downloads its existing DMG, verifies its published
-   SHA-256/size, and embeds those exact curated notes before signing. It does
-   not call `releases/generate-notes`. It uses the existing `GITHUB_TOKEN` and
-   `SPARKLE_PRIVATE_KEY`; no extra token or secret is needed. The private key
-   reaches Sparkle through stdin, never argv or a generated source file.
+   that release's final body, downloads its existing DMG, and verifies its
+   published SHA-256/size. It mounts the DMG read-only and checks the single
+   top-level `Mac Sai.app`: its identity, release version, embedded feed URL and
+   public key must match the selected release and current configuration, and
+   required signature/privacy settings must be intact. An ambiguous app,
+   escaping symlink, configuration drift or mount failure stops the job before
+   signing or upload. It then embeds those exact curated notes before signing.
+   It does not call `releases/generate-notes`. It uses the existing `GITHUB_TOKEN` and
+   environment-scoped `SPARKLE_PRIVATE_KEY`; no personal token is needed. The
+   private key reaches Sparkle through stdin, never argv or a generated source
+   file. Dispatching from another branch must be rejected by the environment's
+   deployment-branch rule; do not relax that rule to make a run proceed.
 5. Before any feed replacement, the generator verifies every archive against
    the configured public key, its HTTPS URL and exact size, and the signed feed
    with the same signing-key source. A warning-only signing failure cannot
@@ -112,11 +130,25 @@ Keep the previous backup until the new feed is confirmed. Do not blindly delete
 assets or repeat a rename after an ambiguous API error. When notes/latest have
 changed, rerun the publication workflow for the current latest stable release.
 
+Archive inspection always attempts to detach its temporary read-only mount,
+including after validation errors. A failed detach stops publication and prints
+the unique mount path for recovery; detach that path before retrying. The script
+never recursively deletes a possibly mounted directory. Keep the public feed
+URL and key unchanged between building the release and publishing its feed, or
+build a new correctly configured release instead of signing mismatched bytes.
+
 Prereleases do not replace the stable appcast. A preview channel needs its own
 feed URL and explicit build configuration. A custom-domain feed must be mirrored
 by its operator; this workflow only uploads GitHub release assets.
 
 ## Building and testing locally
+
+For a DMG or Homebrew installation, the [README's standalone verification
+commands](../README.md#verify-no-telemetry-yourself) inspect all seven binaries
+without a source checkout or Python. The PID-based socket snapshot matches
+executable paths within the selected app bundle. Sparkle can copy helpers to
+other locations, so use a process-aware firewall when observing those helpers;
+the snapshot does not claim to cover every updater or system trust process.
 
 `scripts/build-dmg.sh --app-only` packages both the main app and menu helper,
 embeds Sparkle, and signs nested components inside out. `LOCAL_SIGNING_IDENTITY`
@@ -168,8 +200,22 @@ pending with a retry action; it never force-kills unrelated applications. Normal
 Quit also prepares the helper when Sparkle has staged an install-on-quit update.
 Skipping/cancelling clears that state. The newly launched app reuses the saved
 menu preference and launches its newly embedded helper through the usual path.
+
+Without a staged update, Quit retains the existing application behavior
+(`.terminateNow`). With a staged update, Mac Sai returns `.terminateCancel` for
+the current AppKit request while it prepares installation asynchronously. If an
+operation is still running, the user can choose to wait and quit afterwards or
+keep the app open. Once the operations and helper are ready, the app requests
+termination again. It does not leave a `.terminateLater` request pending: a
+second AppKit termination request can bypass the delegate in that state.
+
 Manual installation and ordinary Quit share one preparation owner. A duplicate
 Quit cannot replace a manual installation's pending task; cancellation
 invalidates the owner before waking suspended work, so stale helper completion
-cannot invoke an old install handler. A cancelled pending Quit receives its
-negative termination reply immediately.
+cannot invoke an old install handler. Cancelling preparation keeps the app open
+without a pending AppKit termination reply.
+
+If the original request came from macOS logout, restart or shutdown, waiting for
+a staged update can cancel that system request. Mac Sai finishing its own Quit
+later does not resume the original logout, restart or shutdown. Start the
+system action again after the app has finished; Mac Sai does not reissue it.

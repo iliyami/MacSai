@@ -87,7 +87,7 @@ struct SettingsPageView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(MCConstants.appName)
                         .font(.title2.weight(.semibold))
-                    Text(L10n.tr("版本 \(selfUpdater.installedVersion)", "Version \(selfUpdater.installedVersion)", "Версия \(selfUpdater.installedVersion)"))
+                    Text(L10n.tr("版本", "Version", "Версия") + " " + selfUpdater.installedVersion)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -126,13 +126,10 @@ struct SettingsPageView: View {
                 }
             }
             if let checked = selfUpdater.lastCheckDate, selfUpdater.usesInAppUpdates {
-                Text(L10n.tr("上次检查：\(checked.formatted())", "Last checked: \(checked.formatted())", "Последняя проверка: \(checked.formatted())"))
+                Text(L10n.tr("上次检查：", "Last checked: ", "Последняя проверка: ") + checked.formatted())
                     .font(.caption).foregroundStyle(.secondary)
             } else if lastUpdateCheckTimestamp > 0 {
-                Text(L10n.tr(
-                    "上次检查：\(lastCheckedDescription)",
-                    "Last checked: \(lastCheckedDescription)",
-                    "Последняя проверка: \(lastCheckedDescription)"))
+                Text(L10n.tr("上次检查：", "Last checked: ", "Последняя проверка: ") + lastCheckedDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
