@@ -36,13 +36,16 @@ public final class SelfUpdatePreparation {
         return true
     }
 
-    public func cancel() {
+    public func cancel(beforeCompletion: () -> Void = {}) {
         let completion = self.completion
         generation = nil
         self.completion = nil
         task?.cancel()
         task = nil
-        // A pending NSTerminateLater request receives its negative reply now,
+        // The owner can restore its state after invalidation but before an
+        // external reply starts another preparation synchronously.
+        beforeCompletion()
+        // A pending Quit request receives its negative completion now,
         // even if the old asynchronous work is slow to observe cancellation.
         completion?(.cancelled)
     }

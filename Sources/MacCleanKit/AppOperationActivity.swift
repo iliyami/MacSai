@@ -85,13 +85,28 @@ public final class AppOperationActivity: @unchecked Sendable {
     /// Cancelling while waiting returns false and releases only this request;
     /// another updater's request still keeps destructive operations suspended.
     /// There is deliberately no timeout that could install over active work.
-    public func prepareForUpdate() async -> Bool {
+    public func prepareForUpdate(
+        confirmWhileBusy: @escaping @Sendable () async -> Bool = { true }
+    ) async -> Bool {
         let waiter = UpdateWaiter()
         return await withTaskCancellationHandler {
+            // Reserve the gate before asking whether to wait. Existing work
+            // may finish while the prompt is visible, but new work cannot
+            // slip between the user's decision and the final idle check.
+            let reserved = lock.withLock {
+                guard !waiter.cancelled, !Task.isCancelled else { return false }
+                updateRequests.insert(waiter.id)
+                return true
+            }
+            guard reserved else { return false }
+            if isBusy, !(await confirmWhileBusy()) {
+                cancel(waiter)
+                return false
+            }
             let ready = await withCheckedContinuation { continuation in
                 let result: Bool? = lock.withLock {
-                    guard !waiter.cancelled, !Task.isCancelled else { return false }
-                    updateRequests.insert(waiter.id)
+                    guard !waiter.cancelled, !Task.isCancelled,
+                          updateRequests.contains(waiter.id) else { return false }
                     guard active.isEmpty else {
                         waiter.continuation = continuation
                         waitingUpdates[waiter.id] = waiter

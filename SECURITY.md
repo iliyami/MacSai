@@ -34,6 +34,20 @@ Reports about the following areas get priority:
 - **Network exfiltration**: optional outbound traffic consists of Sparkle checking the feed embedded in a configured signed app and downloading its signed release notes/archives, Homebrew checks (`formulae.brew.sh`) or the GitHub releases API fallback, reading third-party apps' update feeds, and the opt-in MalwareBazaar hash download (`mb-api.abuse.ch`, only after you add an abuse.ch Auth-Key and press Update Now; each request sends only your Auth-Key and the query, never file hashes or paths, and redirects are refused so the key can't be forwarded; when a downloaded hash matches a signed file, macOS also asks Apple whether its signing certificate was revoked, the same OCSP check Gatekeeper makes). Update requests reveal normal connection metadata such as IP address and HTTP headers; Sparkle system profiling and release-note JavaScript are disabled, and scan results/file lists are not uploaded. Project/support and browser-settings links are user-initiated. Report any undisclosed network activity you observe
 - **TCC / Full Disk Access**: any path to silently gain or abuse FDA
 
+For configured direct installations, automatic update checks are on by default
+and run once a day. Each request includes the app and Sparkle versions in the
+User-Agent; checks can be turned off in Settings. Automatic downloading/installing
+is a separate setting and starts disabled. Existing choices are
+preserved when migrating to Sparkle. Homebrew installations keep their Homebrew
+update route, and builds without a configured feed/key do not start Sparkle.
+
+DMG and Homebrew users can inspect all seven bundled binaries with the
+[standalone `nm`/`strings` loop](README.md#verify-no-telemetry-yourself), without a
+source checkout or Python. The same section selects live socket observations by
+the PIDs of executables inside the chosen bundle, excluding unrelated processes
+with names such as Installer or Updater. Copied Sparkle helpers and macOS trust
+services can run elsewhere and are outside that process snapshot.
+
 To check the installed distribution, run
 `bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"` from a
 matching source checkout. This inspects both Mac Sai executables and all five

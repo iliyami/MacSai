@@ -5,12 +5,14 @@ Never creates/deletes a release or tag. The release archive must already be
 public. A signed candidate is uploaded and read back before the old appcast is
 renamed to a recoverable backup and the candidate promoted. GitHub has no atomic
 asset swap: the two renames can briefly leave appcast.xml unavailable.
+The published app's sealed update configuration is checked before signing.
 """
 import base64
 import hashlib
 import json
 import os
 from pathlib import Path
+import plistlib
 import re
 import subprocess
 import sys
@@ -116,7 +118,67 @@ def generate_feed(directory, prefix):
                    cwd=ROOT, check=True)
 
 
-def publish(repository, tag, environment, github=None, generator=generate_feed):
+def verify_archive_configuration(archive_path, version, environment, runner=subprocess.run):
+    """Check the published app's sealed configuration without modifying its DMG."""
+    mount = Path(tempfile.mkdtemp(prefix="macsai-published-archive-")).resolve()
+    attached = False
+    try:
+        try:
+            result = runner(["hdiutil", "attach", "-readonly", "-nobrowse", "-noautoopen",
+                             "-plist", "-mountpoint", str(mount), str(archive_path)],
+                            check=True, capture_output=True, stdin=subprocess.DEVNULL, timeout=60)
+            attached = True
+        except (OSError, subprocess.SubprocessError) as error:
+            raise RuntimeError(f"Cannot mount published archive read-only at {mount}") from error
+        metadata = plistlib.loads(result.stdout)
+        entities = metadata.get("system-entities", []) if isinstance(metadata, dict) else []
+        require(isinstance(entities, list), "Invalid archive mount metadata")
+        points = [Path(entity["mount-point"]).resolve() for entity in entities
+                  if isinstance(entity, dict) and isinstance(entity.get("mount-point"), str)]
+        require(points == [mount], "Archive must mount exactly one volume at the requested location")
+        apps = [entry for entry in mount.iterdir() if entry.suffix.lower() == ".app"]
+        app = mount / "Mac Sai.app"
+        require(apps == [app] and app.is_dir() and not app.is_symlink(),
+                "Published archive must contain exactly one top-level Mac Sai.app, not an app symlink")
+        info_path = app / "Contents/Info.plist"
+        require(info_path.is_file() and not info_path.is_symlink()
+                and info_path.resolve().is_relative_to(app.resolve()),
+                "Published app Info.plist must remain inside its mounted app bundle")
+        info = plistlib.loads(info_path.read_bytes())
+        require(isinstance(info, dict), "Published app Info.plist must be a dictionary")
+        require(info.get("CFBundleIdentifier") == "com.macclean.app", "Unexpected published app identity")
+        require(info.get("CFBundleShortVersionString") == version,
+                "Published app version differs from the selected release tag")
+        require(info.get("SUFeedURL") == environment["SPARKLE_FEED_URL"],
+                "Published app SUFeedURL differs from the configured feed; rebuild or restore the matching configuration")
+        require(info.get("SUPublicEDKey") == environment["SPARKLE_PUBLIC_ED_KEY"],
+                "Published app public key differs from the configured public key")
+        required_flags = {"SURequireSignedFeed": True, "SUVerifyUpdateBeforeExtraction": True,
+                          "SUSignedFeedFailureExpirationInterval": 0,
+                          "SUEnableSystemProfiling": False, "SUEnableJavaScript": False}
+        for key, expected in required_flags.items():
+            actual = info.get(key)
+            require(type(actual) is type(expected) and actual == expected,
+                    f"Published app has an invalid or missing {key} setting")
+    finally:
+        # Also attempt detach after an ambiguous/failed attach. Only address our
+        # unique mount path, and never recursively delete a possibly mounted tree.
+        detach_error = None
+        try:
+            runner(["hdiutil", "detach", str(mount)], check=True, capture_output=True,
+                   stdin=subprocess.DEVNULL, timeout=30)
+        except (OSError, subprocess.SubprocessError) as error:
+            detach_error = error
+        try:
+            mount.rmdir()
+        except OSError:
+            pass
+        if detach_error and attached:
+            raise RuntimeError(f"Could not detach published archive at {mount}; detach it before retrying") from detach_error
+
+
+def publish(repository, tag, environment, github=None, generator=generate_feed,
+            archive_verifier=verify_archive_configuration):
     validate_configuration(repository, tag, environment)
     github = github or GitHub(repository)
     snapshot = release_snapshot(github, repository, tag)
@@ -130,6 +192,7 @@ def publish(repository, tag, environment, github=None, generator=generate_feed):
         require(len(archive_bytes) == archive["size"], "Downloaded archive size differs from the published asset")
         require("sha256:" + hashlib.sha256(archive_bytes).hexdigest() == archive["digest"],
                 "Downloaded archive SHA-256 differs from the published asset")
+        archive_verifier(archive_path, tag[1:], environment)
         # Preserve the exact API body, including its newlines. Sparkle embeds
         # these curated notes before signing; do not rewrite the generated XML.
         archive_path.with_suffix(".md").write_bytes(snapshot["body"].encode("utf-8"))

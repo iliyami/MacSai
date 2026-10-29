@@ -325,7 +325,7 @@ rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.sw
 
 Les accès réseau facultatifs sont indiqués ci-dessous. Le nettoyage local n’envoie ni résultats d’analyse ni listes de fichiers :
 
-- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle consulte le flux HTTPS inscrit dans l’application signée et télécharge les notes de version et les archives de mise à jour signées. La recherche automatique et le téléchargement/installation automatiques sont des réglages distincts ; le profilage système et JavaScript dans les notes sont désactivés. Voir la [configuration des mises à jour](docs/IN_APP_UPDATES.md).
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle consulte le flux HTTPS inscrit dans l’application signée et télécharge les notes de version et les archives de mise à jour signées. La recherche automatique et le téléchargement/installation automatiques sont des réglages distincts ; le profilage système et JavaScript dans les notes sont désactivés. Voir la [configuration des mises à jour](docs/IN_APP_UPDATES.md). Pour les installations directes configurées, la recherche automatique des mises à jour est activée par défaut et a lieu une fois par jour ; chaque requête contient les versions de l’application et de Sparkle dans le User-Agent, et cette recherche peut être désactivée dans Réglages.
 - `Sources/MacCleanKit/UpdateChecker.swift`: les vérifications Homebrew et la page des versions en solution de repli pour les builds sans flux signé configuré
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift` : la vérification, déclenchée par l'utilisateur, des flux Sparkle *d'autres apps* lorsque vous ouvrez l'Updater
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift` : le téléchargement optionnel des hachages MalwareBazaar. Il ne s'exécute que si vous ajoutez votre propre Auth-Key abuse.ch et cliquez sur Mettre à jour maintenant dans Réglages > Bases de logiciels malveillants. Chaque requête n'envoie que votre Auth-Key et la requête, jamais de hachages ni de chemins de fichiers. Lorsqu'un hachage téléchargé correspond à un fichier signé, macOS demande à Apple si son certificat de signature a été révoqué, la même vérification que celle de Gatekeeper ; cette requête porte sur le certificat, pas sur vos fichiers
@@ -335,13 +335,52 @@ Il n'y a aucun SDK d'analytique, de rapport de plantage ou de traqueur nulle par
 **2. Observez le processus en direct**
 
 ```bash
-pgrep -fl '/Mac Sai.app/'
-lsof -i -P -n | grep -iE 'MacClean|Mac Sai|Autoupdat|Updater|Downloader|Installer' || echo "no network sockets"
+(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)
 ```
+
+Cet instantané sélectionne les PID selon le chemin des exécutables dans le paquet choisi, ce qui exclut les processus Installer/Updater sans rapport. Les assistants Sparkle copiés ailleurs et les services de confiance de macOS sont hors de cette sélection ; utilisez un pare-feu qui distingue les processus pour les observer. Exécutez la commande pendant une recherche ou un téléchargement pour voir les connexions brèves.
 
 Lorsque les vérifications/téléchargements de mises à jour et la vérification facultative des logiciels malveillants sont inactifs, le nettoyage local n’ouvre aucune connexion réseau. Pendant une mise à jour, observez aussi les sous-processus Sparkle ; les vérifications de certificats Apple passent par les services de confiance de macOS. Little Snitch ou LuLu permettent également de les visualiser.
 
 **3. Inspectez le binaire que vous avez réellement installé**
+
+Pour une installation par DMG ou Homebrew, cette boucle ne demande que les outils en ligne de commande de macOS, sans copie du code ni Python. Elle lit les sept binaires fournis et affiche les imports réseau courants, les URL statiques et les chaînes de traceurs pour une inspection manuelle :
+
+```bash
+(
+MACSAI_APP="/Applications/Mac Sai.app"
+MACSAI_SPARKLE="$MACSAI_APP/Contents/Frameworks/Sparkle.framework/Versions/B"
+for MACSAI_BINARY in \
+  "$MACSAI_APP/Contents/MacOS/MacClean" \
+  "$MACSAI_APP/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu" \
+  "$MACSAI_SPARKLE/Sparkle" "$MACSAI_SPARKLE/Autoupdate" \
+  "$MACSAI_SPARKLE/Updater.app/Contents/MacOS/Updater" \
+  "$MACSAI_SPARKLE/XPCServices/Downloader.xpc/Contents/MacOS/Downloader" \
+  "$MACSAI_SPARKLE/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+do
+  printf '\n%s\n' "$MACSAI_BINARY"
+  MACSAI_IMPORTS=$(nm -uj "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_IMPORTS" | grep -Ei \
+    'URLSession|URLConnection|CFNetwork|Network|nw_|DNSService|NetService|curl_|^_(socket|connect|connectx|send|recv)([$]|$)' || true
+  MACSAI_STRINGS=$(strings -a "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_STRINGS" | grep -Ei \
+    '://|sentry|firebase|mixpanel|amplitude|bugsnag|crashlytics|posthog|appsflyer' || true
+done
+)
+```
+
+Ces listes ne constituent pas un verdict automatique ni la preuve que toutes les destinations choisies à l’exécution sont visibles. Utilisez le contrôle ci-dessous pour l’inventaire complet, les listes d’autorisation explicites et les réglages de confidentialité intégrés.
 
 Exécutez le contrôle depuis une copie du code correspondant à la version installée. Il inspecte le véritable paquet de l’application : exécutable principal, assistant de barre des menus, `Sparkle.framework`, `Autoupdate`, `Updater.app`, `Downloader.xpc` et `Installer.xpc` :
 

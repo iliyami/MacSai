@@ -119,9 +119,8 @@ struct MacCleanApp: App {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
-        // A downloaded automatic update may install on normal Quit, which
-        // bypasses Sparkle's relaunch delegate. Never exit mid-cleanup.
-        guard !AppOperationActivity.shared.isBusy else { return .terminateCancel }
+        // Only a prepared installer needs update-specific Quit coordination;
+        // ordinary Quit retains the application's existing behavior.
         return SelfUpdateController.shared.prepareForTermination(sender)
     }
 

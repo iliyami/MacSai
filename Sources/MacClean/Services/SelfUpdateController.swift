@@ -13,12 +13,12 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
     let isConfigured: Bool
     let isHomebrew: Bool
     private(set) var canCheckForUpdates = false
-    private(set) var isPreparingInstallation = false
+    var isPreparingInstallation: Bool { installation.isPreparingInstallation }
     private(set) var automaticChecks = true
     private(set) var automaticDownloads = false
     private(set) var lastCheckDate: Date?
     private(set) var lastError: String?
-    private(set) var canRetryInstallation = false
+    var canRetryInstallation: Bool { installation.canRetryInstallation }
 
     var installedVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? MCConstants.appVersion
@@ -27,13 +27,24 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
     var usesInAppUpdates: Bool { isConfigured && !isHomebrew }
 
     @ObservationIgnored private let configuration: SelfUpdateConfiguration?
-    @ObservationIgnored private var controller: SPUStandardUpdaterController?
+    @ObservationIgnored private var updater: SPUUpdater?
     @ObservationIgnored private var observations: [NSKeyValueObservation] = []
-    @ObservationIgnored private let preparation = SelfUpdatePreparation()
     @ObservationIgnored private var started = false
-    @ObservationIgnored private var pendingInstallHandler: (() -> Void)?
     @ObservationIgnored private var installationState = SelfUpdateInstallationState()
-    @ObservationIgnored private var readyToTerminate = false
+    @ObservationIgnored private let alerts = SelfUpdateAlerts()
+    @ObservationIgnored private lazy var installation = SelfUpdateInstallationCoordinator(
+        activity: .shared,
+        stopHelper: { await MenuBarLauncher.shared.prepareForApplicationUpdate() },
+        resumeHelper: { MenuBarLauncher.shared.resumeAfterCancelledApplicationUpdate() },
+        dismissPrompt: { [weak self] in self?.alerts.dismiss() },
+        helperUnavailable: { [weak self] quitting in
+            guard let self else { return }
+            let message = L10n.tr(
+                "请关闭菜单栏监视器后重试更新。", "Quit the menu bar monitor and try the update again.",
+                "Завершите работу виджета в строке меню и повторите обновление.")
+            self.lastError = message
+            if quitting { self.alerts.showHelperFailure(message) }
+        })
 
     private override init() {
         configuration = SelfUpdateConfiguration(infoDictionary: Bundle.main.infoDictionary ?? [:])
@@ -52,10 +63,11 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
            let existing = defaults.object(forKey: "automaticUpdateChecks") as? Bool {
             defaults.set(existing, forKey: "SUEnableAutomaticChecks")
         }
-        let controller = SPUStandardUpdaterController(
-            startingUpdater: false, updaterDelegate: self, userDriverDelegate: nil)
-        self.controller = controller
-        let updater = controller.updater
+        let userDriver = SelfUpdateUserDriver(hostBundle: .main, delegate: nil)
+        userDriver.updatePrepared = { [weak self] in self?.installationState.prepared() }
+        let updater = SPUUpdater(hostBundle: .main, applicationBundle: .main,
+                                 userDriver: userDriver, delegate: self)
+        self.updater = updater
         observations = [
             updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { @Sendable [weak self] _, _ in
                 Task { @MainActor in self?.refreshState() }
@@ -67,7 +79,11 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
                 Task { @MainActor in self?.refreshState() }
             },
         ]
-        controller.startUpdater()
+        do {
+            try updater.start()
+        } catch {
+            lastError = error.localizedDescription
+        }
         updater.sendsSystemProfile = false
         refreshState()
     }
@@ -76,22 +92,22 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
         start()
         guard canCheckForUpdates else { return }
         lastError = nil
-        controller?.checkForUpdates(nil)
+        updater?.checkForUpdates()
     }
 
     func setAutomaticChecks(_ enabled: Bool) {
-        controller?.updater.automaticallyChecksForUpdates = enabled
+        updater?.automaticallyChecksForUpdates = enabled
         UserDefaults.standard.set(enabled, forKey: "automaticUpdateChecks")
         refreshState()
     }
 
     func setAutomaticDownloads(_ enabled: Bool) {
-        controller?.updater.automaticallyDownloadsUpdates = enabled
+        updater?.automaticallyDownloadsUpdates = enabled
         refreshState()
     }
 
     private func refreshState() {
-        guard let updater = controller?.updater else { return }
+        guard let updater else { return }
         canCheckForUpdates = updater.canCheckForUpdates
         automaticChecks = updater.automaticallyChecksForUpdates
         automaticDownloads = updater.automaticallyDownloadsUpdates
@@ -120,47 +136,15 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
 
     func updater(_ updater: SPUUpdater, shouldPostponeRelaunchForUpdate item: SUAppcastItem,
                  untilInvokingBlock installHandler: @escaping () -> Void) -> Bool {
-        guard !preparation.isRunning else { return true }
-        pendingInstallHandler = installHandler
-        retryInstallation()
+        installationState.prepared()
+        lastError = nil
+        installation.requestInstallation { installHandler() }
         return true
     }
 
     func retryInstallation() {
-        guard !preparation.isRunning, let installHandler = pendingInstallHandler else { return }
         lastError = nil
-        canRetryInstallation = false
-        isPreparingInstallation = true
-        preparation.start(prepare: { await self.prepareUpdatePrerequisites() }) { [self] result in
-            switch result {
-            case .cancelled:
-                return
-            case .unavailable:
-                isPreparingInstallation = false
-                canRetryInstallation = true
-                AppOperationActivity.shared.cancelUpdate()
-                MenuBarLauncher.shared.resumeAfterCancelledApplicationUpdate()
-                lastError = L10n.tr(
-                    "请关闭菜单栏监视器后重试更新。", "Quit the menu bar monitor and try the update again.",
-                    "Завершите работу виджета в строке меню и повторите обновление.")
-                return
-            case .ready:
-                readyToTerminate = true
-                pendingInstallHandler = nil
-                installHandler()
-            }
-        }
-    }
-
-    private func prepareUpdatePrerequisites() async -> Bool {
-        guard await AppOperationActivity.shared.prepareForUpdate(), !Task.isCancelled else { return false }
-        return await MenuBarLauncher.shared.prepareForApplicationUpdate()
-    }
-
-    func updater(_ updater: SPUUpdater, didExtractUpdate item: SUAppcastItem) {
-        // Manual downloads can be deferred at the ready-to-install screen too;
-        // their installer then waits for a normal Quit, just like auto updates.
-        installationState.prepared()
+        installation.retryInstallation()
     }
 
     func updater(_ updater: SPUUpdater, willInstallUpdateOnQuit item: SUAppcastItem,
@@ -171,24 +155,20 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
 
     /// Also covers automatic installation on normal Quit (no relaunch callback).
     func prepareForTermination(_ application: NSApplication) -> NSApplication.TerminateReply {
-        guard installationState.hasPreparedUpdate, !readyToTerminate else { return .terminateNow }
-        // A manual retry may already own the helper wait and install handler.
-        // Do not replace its task with a second preparation for Command-Q.
-        guard !preparation.isRunning else { return .terminateCancel }
-        isPreparingInstallation = true
-        preparation.start(prepare: { await self.prepareUpdatePrerequisites() }) { [self] result in
-            switch result {
-            case .cancelled:
-                application.reply(toApplicationShouldTerminate: false)
-            case .unavailable:
-                cancelInstallationPreparation()
-                application.reply(toApplicationShouldTerminate: false)
-            case .ready:
-                readyToTerminate = true
-                application.reply(toApplicationShouldTerminate: true)
+        switch installation.requestTermination(
+            hasPreparedUpdate: installationState.hasPreparedUpdate,
+            chooseWait: { [alerts] in await alerts.chooseWait() },
+            reply: { ready in
+                if ready { application.terminate(nil) }
             }
+        ) {
+        case .now: return .terminateNow
+        case .cancel: return .terminateCancel
+        // AppKit may terminate immediately on a second terminate() while a
+        // NSTerminateLater request is pending, bypassing the delegate. Cancel
+        // this request and issue a fresh Quit only after preparation succeeds.
+        case .deferred: return .terminateCancel
         }
-        return .terminateLater
     }
 
     func updater(_ updater: SPUUpdater, userDidMake choice: SPUUserUpdateChoice,
@@ -212,9 +192,13 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
             SUError.notValidUpdateError.rawValue, SUError.agentInvalidationError.rawValue,
             SUError.installationWriteNoPermissionError.rawValue,
         ].map { Int($0) })
-        installationState.aborted(installationFailed:
-            failure.domain == SUSparkleErrorDomain && installerErrors.contains(failure.code))
-        cancelInstallationPreparation()
+        let installationFailed = failure.domain == SUSparkleErrorDomain && installerErrors.contains(failure.code)
+        installationState.aborted(installationFailed: installationFailed)
+        // A later network/check error must not cancel a normal Quit that is
+        // already waiting to install a previously prepared update.
+        if installationFailed || !installationState.hasPreparedUpdate {
+            cancelInstallationPreparation()
+        }
         refreshState()
     }
 
@@ -224,12 +208,6 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
     }
 
     private func cancelInstallationPreparation() {
-        preparation.cancel()
-        isPreparingInstallation = false
-        canRetryInstallation = false
-        readyToTerminate = false
-        pendingInstallHandler = nil
-        AppOperationActivity.shared.cancelUpdate()
-        MenuBarLauncher.shared.resumeAfterCancelledApplicationUpdate()
+        installation.cancel()
     }
 }
