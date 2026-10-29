@@ -39,13 +39,13 @@ final class CategoryTests: XCTestCase {
     }
 
     func testUserCacheLeavesPackageManagerCachesToTheirOwnCategory() {
-        // Homebrew, pip and legacy uv live under ~/Library/Caches but belong to the
+        // Homebrew, pip, pnpm and legacy uv live under ~/Library/Caches but belong to the
         // opt-in Package Manager Caches card. Listing them in the
         // auto-selected User Caches too would bypass that opt-in and count
         // their size twice.
         let userCaches = UserCacheCategory().targets[0]
         let packageManagerPaths = Set(PackageManagerCachesCategory().targets.map(\.path))
-        for path in [MCConstants.homebrewCache, MCConstants.pipCache, MCConstants.uvLegacyCache] {
+        for path in [MCConstants.homebrewCache, MCConstants.pipCache, MCConstants.uvLegacyCache, MCConstants.pnpmCache] {
             XCTAssertTrue(packageManagerPaths.contains(path))
             XCTAssertTrue(userCaches.isExcludedPath(path), "\(path.path) must be skipped by User Caches")
             XCTAssertTrue(userCaches.isExcludedPath(path.appending(path: "downloads/x.tar.gz")))

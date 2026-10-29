@@ -133,6 +133,12 @@ public enum MCConstants {
     public static let xcodeArchives = userLibrary.appending(path: "Developer/Xcode/Archives")
     public static let xcodeDeviceSupport = userLibrary.appending(path: "Developer/Xcode/iOS DeviceSupport")
     public static let coreSimulator = userLibrary.appending(path: "Developer/CoreSimulator")
+    // Docker Desktop's virtual disk (raw on current releases, qcow2 on old
+    // ones). It holds every image, container, and volume: report only.
+    public static let dockerDesktopDiskImages = [
+        userContainers.appending(path: "com.docker.docker/Data/vms/0/data/Docker.raw"),
+        userContainers.appending(path: "com.docker.docker/Data/vms/0/data/Docker.qcow2"),
+    ]
     public static let xcodePreviews = userLibrary.appending(path: "Developer/Xcode/UserData/Previews")
 
     // MARK: - Browser Directories
@@ -159,6 +165,19 @@ public enum MCConstants {
     // ~/Library/Caches/uv. Both are fully regenerable (`uv cache clean`).
     public static let uvCache = home.appending(path: ".cache/uv")
     public static let uvLegacyCache = userCaches.appending(path: "uv")
+    // pnpm's store keeps one folder per layout version (store/v3, store/v10,
+    // ...) and never removes the old one after an upgrade. Store roots: the
+    // macOS default $PNPM_HOME/store, the XDG location, and ~/.pnpm-store from
+    // pnpm 6 and older. ~/Library/pnpm itself also holds the pnpm binary and
+    // global packages, so only its store/ folder is ever targeted.
+    public static let pnpmStoreRoots = [
+        userLibrary.appending(path: "pnpm/store"),
+        home.appending(path: ".local/share/pnpm/store"),
+        home.appending(path: ".pnpm-store"),
+    ]
+    // pnpm's package metadata cache, regenerable on the next install.
+    public static let pnpmCache = userCaches.appending(path: "pnpm")
+    public static let pnpmXDGCache = home.appending(path: ".cache/pnpm")
     public static let cargoRegistry = home.appending(path: ".cargo/registry")
 
     // MARK: - Developer & AI Tool Caches
