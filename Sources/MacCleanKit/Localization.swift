@@ -290,6 +290,17 @@ public enum L10n {
 
         "无法开启登录时启动：{message}": "無法開啟登入時啟動：{message}",
         "无法关闭登录时启动：{message}": "無法關閉登入時啟動：{message}",
+        // Swap and memory alerts
+        "提醒": "提醒",
+        "内存压力提醒": "記憶體壓力提醒",
+        "内存压力持续偏高时通知你。": "記憶體壓力持續偏高時通知你。",
+        "交换空间提醒": "交換空間提醒",
+        "交换空间超过所选大小时通知一次，降到明显低于该值后才会再次提醒。": "交換空間超過所選大小時通知一次，降到明顯低於該值後才會再次提醒。",
+        "不提醒": "不提醒",
+        "提醒由菜单栏小组件发送，需要保持开启。": "提醒由選單列小工具傳送，需要保持開啟。",
+        "交换空间 {size}": "交換空間 {size}",
+        "交换空间使用过高": "交換空間使用過高",
+        "你的 Mac 正在使用 {used} 交换空间，超过了你设置的 {limit} 提醒值。退出不用的应用可以减轻内存压力。": "你的 Mac 正在使用 {used} 交換空間，超過了你設定的 {limit} 提醒值。結束不用的 App 可以減輕記憶體壓力。",
         // Post-clean support card and Settings link
         "这次清理，你没花一分钱。": "這次清理，你沒花一分錢。",
         "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "沒有訂閱，沒有廣告，沒有追蹤。Mac Sai 是我和幾位志願者在業餘時間做的。如果它幫你省下了買清理軟體的錢，請我喝杯咖啡，讓它對所有人繼續免費。",
@@ -922,6 +933,17 @@ public enum L10n {
 
         "无法开启登录时启动：{message}": "Impossible d'activer le lancement au démarrage : {message}",
         "无法关闭登录时启动：{message}": "Impossible de désactiver le lancement au démarrage : {message}",
+        // Swap and memory alerts
+        "提醒": "Alertes",
+        "内存压力提醒": "Alerte de pression mémoire",
+        "内存压力持续偏高时通知你。": "Vous avertit lorsque la pression mémoire reste élevée.",
+        "交换空间提醒": "Alerte d'utilisation du swap",
+        "交换空间超过所选大小时通知一次，降到明显低于该值后才会再次提醒。": "Vous avertit une fois lorsque le swap dépasse la taille choisie, puis seulement après qu'il est nettement redescendu.",
+        "不提醒": "Désactivée",
+        "提醒由菜单栏小组件发送，需要保持开启。": "Les alertes sont envoyées par le widget de la barre des menus, qui doit donc rester activé.",
+        "交换空间 {size}": "Swap {size}",
+        "交换空间使用过高": "Utilisation du swap élevée",
+        "你的 Mac 正在使用 {used} 交换空间，超过了你设置的 {limit} 提醒值。退出不用的应用可以减轻内存压力。": "Votre Mac utilise {used} de swap, au-delà de votre seuil d'alerte de {limit}. Quitter les apps inutilisées réduit la pression mémoire.",
         // Post-clean support card and Settings link
         "这次清理，你没花一分钱。": "Ce nettoyage ne vous a rien coûté.",
         "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "Pas d'abonnement, pas de pub, pas de pistage. Je développe Mac Sai le soir et le week-end, avec quelques bénévoles. S'il vous a évité de payer un nettoyeur, un café le garde gratuit pour tout le monde.",
@@ -1578,6 +1600,17 @@ public enum L10n {
 
         "无法开启登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht aktiviert werden: {message}",
         "无法关闭登录时启动：{message}": "„Beim Anmelden starten“ konnte nicht deaktiviert werden: {message}",
+        // Swap and memory alerts
+        "提醒": "Hinweise",
+        "内存压力提醒": "Hinweis bei hoher Speicherauslastung",
+        "内存压力持续偏高时通知你。": "Benachrichtigt dich, wenn die Speicherauslastung dauerhaft hoch bleibt.",
+        "交换空间提醒": "Hinweis bei Swap-Nutzung",
+        "交换空间超过所选大小时通知一次，降到明显低于该值后才会再次提醒。": "Benachrichtigt dich einmal, wenn der Swap die gewählte Größe überschreitet, und erst wieder, nachdem er deutlich darunter gefallen ist.",
+        "不提醒": "Aus",
+        "提醒由菜单栏小组件发送，需要保持开启。": "Hinweise kommen vom Menüleisten-Widget, es muss also eingeschaltet sein.",
+        "交换空间 {size}": "Swap {size}",
+        "交换空间使用过高": "Hohe Swap-Nutzung",
+        "你的 Mac 正在使用 {used} 交换空间，超过了你设置的 {limit} 提醒值。退出不用的应用可以减轻内存压力。": "Dein Mac nutzt {used} Swap und liegt damit über deiner Grenze von {limit}. Beende Apps, die du nicht brauchst, um den Speicher zu entlasten.",
         // Post-clean support card and Settings link
         "这次清理，你没花一分钱。": "Diese Reinigung hat dich nichts gekostet.",
         "没有订阅，没有广告，没有追踪。Mac Sai 是我和几位志愿者在业余时间做的。如果它帮你省下了买清理软件的钱，请我喝杯咖啡，让它对所有人继续免费。": "Kein Abo, keine Werbung, kein Tracking. Ich entwickle Mac Sai abends und am Wochenende, zusammen mit ein paar Freiwilligen. Wenn es dir ein bezahltes Reinigungsprogramm erspart hat, hält ein Kaffee es für alle kostenlos.",
@@ -2267,6 +2300,17 @@ public enum L10n {
 
         "无法开启登录时启动：{message}": "Impossibile attivare l'apertura al login: {message}",
         "无法关闭登录时启动：{message}": "Impossibile disattivare l'apertura al login: {message}",
+        // Swap and memory alerts
+        "提醒": "Avvisi",
+        "内存压力提醒": "Avviso di pressione della memoria",
+        "内存压力持续偏高时通知你。": "Ti avvisa quando la pressione della memoria resta alta.",
+        "交换空间提醒": "Avviso sull'uso dello swap",
+        "交换空间超过所选大小时通知一次，降到明显低于该值后才会再次提醒。": "Ti avvisa una volta quando lo swap supera la dimensione scelta, e di nuovo solo dopo che è sceso nettamente sotto.",
+        "不提醒": "Disattivato",
+        "提醒由菜单栏小组件发送，需要保持开启。": "Gli avvisi vengono inviati dal widget nella barra dei menu, che quindi deve restare attivo.",
+        "交换空间 {size}": "Swap {size}",
+        "交换空间使用过高": "Uso dello swap elevato",
+        "你的 Mac 正在使用 {used} 交换空间，超过了你设置的 {limit} 提醒值。退出不用的应用可以减轻内存压力。": "Il tuo Mac sta usando {used} di swap, oltre la soglia di avviso di {limit}. Chiudere le app che non usi riduce la pressione della memoria.",
         "查找并移除系统缓存、日志、\n语言文件和其他垃圾": "Trova e rimuovi cache di sistema, registri,\nfile di localizzazione e altri file non necessari",
         "清理会删除悬空的构建缓存。下次构建可能会变慢。": "L'eliminazione rimuove la cache di compilazione orfana. La prossima compilazione potrebbe essere più lenta.",
         "代码项目中的依赖和构建文件夹。": "Cartelle di dipendenze e di compilazione nei tuoi progetti di codice.",

@@ -94,6 +94,24 @@ public enum SharedAppState {
         return Date().timeIntervalSince(when) < suppressionWindow
     }
 
+    // MARK: - Swap alert latch
+
+    /// Persisted so a widget restart while swap is still high does not
+    /// repeat an alert the user already saw.
+    private static let swapAlertLatchKey = "swapAlertLatch"
+
+    public static var swapAlertLatch: SwapAlertLatch {
+        get {
+            guard let data = defaults.data(forKey: swapAlertLatchKey) else { return SwapAlertLatch() }
+            return (try? JSONDecoder().decode(SwapAlertLatch.self, from: data)) ?? SwapAlertLatch()
+        }
+        set {
+            if let data = try? JSONEncoder().encode(newValue) {
+                defaults.set(data, forKey: swapAlertLatchKey)
+            }
+        }
+    }
+
     // MARK: - Notification suppression (Phase 4)
 
     /// One-time notifications (battery health below threshold, etc.)

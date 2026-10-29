@@ -24,6 +24,8 @@ struct SettingsPageView: View {
     @AppStorage("lastUpdateCheckDate") private var lastUpdateCheckTimestamp: Double = 0
     @AppStorage(AppearanceManager.defaultsKey) private var appearanceRaw = AppearanceMode.dark.rawValue
     @AppStorage(AppLanguage.defaultsKey, store: SharedAppState.defaults) private var appLanguageRaw = AppLanguage.system.rawValue
+    @AppStorage(HealthAlertSettings.memoryPressureAlertKey, store: SharedAppState.defaults) private var memoryPressureAlert = true
+    @AppStorage(HealthAlertSettings.swapAlertThresholdKey, store: SharedAppState.defaults) private var swapAlertThresholdGB = 0
     @State private var launcher = MenuBarLauncher.shared
     @State private var loginLauncher = LaunchAtLoginManager.shared
     @State private var updateState: UpdateUIState = .idle
@@ -48,6 +50,7 @@ struct SettingsPageView: View {
         Form {
             headerSection
             generalSection
+            alertsSection
             interfaceLanguageSection
             appearanceSection
             languageSection
@@ -274,6 +277,42 @@ struct SettingsPageView: View {
                     .font(.caption)
             }
         }
+    }
+
+    // MARK: - Alerts
+
+    private var alertsSection: some View {
+        Section(HealthAlertStrings.sectionTitle) {
+            Toggle(isOn: $memoryPressureAlert) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(HealthAlertStrings.memoryPressureToggle)
+                    Text(HealthAlertStrings.memoryPressureCaption)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .toggleStyle(.switch)
+            Picker(selection: $swapAlertThresholdGB) {
+                ForEach(HealthAlertSettings.swapThresholdChoices, id: \.self) { gigabytes in
+                    Text(gigabytes == 0 ? HealthAlertStrings.swapOff : FileSizeFormatter.format(HealthAlertSettings.bytes(forGB: gigabytes)))
+                        .tag(gigabytes)
+                }
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(HealthAlertStrings.swapPicker)
+                    Text(HealthAlertStrings.swapCaption)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .pickerStyle(.menu)
+            if !showMenuBarWidget {
+                Label(HealthAlertStrings.widgetRequired, systemImage: "info.circle")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .disabled(!showMenuBarWidget)
     }
 
     // MARK: - Interface Language

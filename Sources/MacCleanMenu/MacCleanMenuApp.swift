@@ -179,7 +179,8 @@ struct MenuContentView: View {
                      sub: nil)
             ringCard(icon: "memorychip", label: L10n.tr("内存", "Memory", "Память"),
                      value: s.memoryPressure, center: "\(Int((s.memoryPressure*100).rounded()))%",
-                     sub: FileSizeFormatter.format(s.memoryUsed))
+                     sub: FileSizeFormatter.format(s.memoryUsed),
+                     detail: s.swapUsed > 0 ? HealthAlertStrings.swapLine(s.swapUsed) : nil)
             ringCard(icon: "internaldrive", label: L10n.tr("磁盘", "Disk", "Диск"),
                      value: diskUsed, center: "\(Int((diskUsed*100).rounded()))%",
                      sub: L10n.tr("\(FileSizeFormatter.format(s.diskFree)) 可用", "\(FileSizeFormatter.format(s.diskFree)) free", "Свободно: \(FileSizeFormatter.format(s.diskFree))"))
@@ -194,7 +195,7 @@ struct MenuContentView: View {
         }
     }
 
-    private func ringCard(icon: String, label: String, value: Double, center: String, sub: String?, forceColor: Color? = nil) -> some View {
+    private func ringCard(icon: String, label: String, value: Double, center: String, sub: String?, detail: String? = nil, forceColor: Color? = nil) -> some View {
         let color = forceColor ?? MenuPalette.barColor(value)
         return VStack(spacing: 12) {
             statHeader(icon: icon, label: label, tint: color)
@@ -202,12 +203,23 @@ struct MenuContentView: View {
                 .frame(width: 58, height: 58)
             // Always render the subtitle line (a space when empty) so
             // every card is the same height and the rings line up.
-            Text(sub ?? " ")
-                .font(.system(size: 10, design: .monospaced))
-                .foregroundStyle(MenuPalette.textSecondary)
-                .lineLimit(1)
+            VStack(spacing: 3) {
+                Text(sub ?? " ")
+                    .font(.system(size: 10, design: .monospaced))
+                    .foregroundStyle(MenuPalette.textSecondary)
+                    .lineLimit(1)
+                if let detail {
+                    Text(detail)
+                        .font(.system(size: 10, design: .monospaced))
+                        .foregroundStyle(MenuPalette.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .top)
+        // Fill the grid row so a card with a detail line and its neighbour
+        // stay the same height, rings aligned at the top.
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .padding(16)
         .glassCard()
     }
@@ -246,10 +258,6 @@ struct MenuContentView: View {
                 divider
             }
             netCell(icon: "clock", color: MenuPalette.textSecondary, value: formatUptime(s.uptime))
-            if s.swapUsed > 0 {
-                divider
-                netCell(icon: "arrow.triangle.swap", color: MenuPalette.textSecondary, value: FileSizeFormatter.format(s.swapUsed))
-            }
         }
         .padding(.vertical, 9)
         .glassCard()

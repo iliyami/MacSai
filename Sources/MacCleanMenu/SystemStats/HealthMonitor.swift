@@ -31,6 +31,7 @@ public actor HealthMonitor {
     public func evaluate(stats: SystemStatsCollector.SystemStats) async {
         await checkLowDisk(stats: stats)
         await checkMemoryPressure(stats: stats)
+        await checkSwapUsage(stats: stats)
         await checkBatteryHealth(stats: stats)
         await checkBatteryCycles(stats: stats)
     }
@@ -50,6 +51,10 @@ public actor HealthMonitor {
     }
 
     private func checkMemoryPressure(stats: SystemStatsCollector.SystemStats) async {
+        guard HealthAlertSettings.memoryPressureAlertEnabled else {
+            memoryPressureSampleStreak = 0
+            return
+        }
         if stats.memoryPressure >= thresholds.memoryPressureSustained {
             memoryPressureSampleStreak += 1
         } else {
@@ -65,6 +70,22 @@ public actor HealthMonitor {
             kind: "memory_high",
             title: L10n.tr("内存压力过高", "Memory pressure high", "Высокая нагрузка на память"),
             body: L10n.tr("内存压力持续达到 \(Int(stats.memoryPressure * 100))%。\(MCConstants.appName) 的“维护”模块可释放内存。", "Sustained \(Int(stats.memoryPressure * 100))% memory pressure. \(MCConstants.appName)'s Maintenance module can free up RAM.", "Нагрузка на память держится на уровне \(Int(stats.memoryPressure * 100))%. Модуль «Обслуживание» в \(MCConstants.appName) может освободить оперативную память.")
+        )
+    }
+
+    /// Off unless the user picked a threshold in Settings. The latch, not a
+    /// time throttle, keeps this to one alert per crossing.
+    private func checkSwapUsage(stats: SystemStatsCollector.SystemStats) async {
+        let threshold = HealthAlertSettings.swapAlertThreshold
+        let stored = SharedAppState.swapAlertLatch
+        var latch = stored
+        let alert = latch.shouldAlert(swapUsed: stats.swapUsed, threshold: threshold)
+        if latch != stored { SharedAppState.swapAlertLatch = latch }
+        guard alert, let threshold else { return }
+        await fire(
+            kind: "swap_high",
+            title: HealthAlertStrings.swapAlertTitle,
+            body: HealthAlertStrings.swapAlertBody(used: stats.swapUsed, threshold: threshold)
         )
     }
 
