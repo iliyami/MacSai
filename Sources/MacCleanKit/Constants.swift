@@ -133,6 +133,12 @@ public enum MCConstants {
     public static let xcodeArchives = userLibrary.appending(path: "Developer/Xcode/Archives")
     public static let xcodeDeviceSupport = userLibrary.appending(path: "Developer/Xcode/iOS DeviceSupport")
     public static let coreSimulator = userLibrary.appending(path: "Developer/CoreSimulator")
+    // Docker Desktop's virtual disk (raw on current releases, qcow2 on old
+    // ones). It holds every image, container, and volume: report only.
+    public static let dockerDesktopDiskImages = [
+        userContainers.appending(path: "com.docker.docker/Data/vms/0/data/Docker.raw"),
+        userContainers.appending(path: "com.docker.docker/Data/vms/0/data/Docker.qcow2"),
+    ]
     public static let xcodePreviews = userLibrary.appending(path: "Developer/Xcode/UserData/Previews")
 
     // MARK: - Browser Directories
@@ -155,6 +161,23 @@ public enum MCConstants {
     public static let homebrewCache = userCaches.appending(path: "Homebrew")
     public static let npmCache = userCaches.appending(path: "npm")
     public static let pipCache = userCaches.appending(path: "pip")
+    // uv (Python) uses the XDG-style ~/.cache/uv on macOS; older releases used
+    // ~/Library/Caches/uv. Both are fully regenerable (`uv cache clean`).
+    public static let uvCache = home.appending(path: ".cache/uv")
+    public static let uvLegacyCache = userCaches.appending(path: "uv")
+    // pnpm's store keeps one folder per layout version (store/v3, store/v10,
+    // ...) and never removes the old one after an upgrade. Store roots: the
+    // macOS default $PNPM_HOME/store, the XDG location, and ~/.pnpm-store from
+    // pnpm 6 and older. ~/Library/pnpm itself also holds the pnpm binary and
+    // global packages, so only its store/ folder is ever targeted.
+    public static let pnpmStoreRoots = [
+        userLibrary.appending(path: "pnpm/store"),
+        home.appending(path: ".local/share/pnpm/store"),
+        home.appending(path: ".pnpm-store"),
+    ]
+    // pnpm's package metadata cache, regenerable on the next install.
+    public static let pnpmCache = userCaches.appending(path: "pnpm")
+    public static let pnpmXDGCache = home.appending(path: ".cache/pnpm")
     public static let cargoRegistry = home.appending(path: ".cargo/registry")
 
     // MARK: - Developer & AI Tool Caches
@@ -175,6 +198,15 @@ public enum MCConstants {
     public static let claudeShellSnapshots = home.appending(path: ".claude/shell-snapshots")
     public static let codexTmp = home.appending(path: ".codex/.tmp")
     public static let codexCache = home.appending(path: ".codex/cache")
+
+    /// OpenClaw's data folder. Its gateway keeps writing connection-retry
+    /// logs here, and the folder survives uninstalling the app, so it can grow
+    /// to tens of GB. Only `*.log` files and the `logs/` folder are targeted;
+    /// config, credentials, and workspace data are left alone.
+    public static let openClawHome = home.appending(path: ".openclaw")
+    public static let openClawLogs = openClawHome.appending(path: "logs")
+    /// The agent's working folder: user files, so never scanned for logs.
+    public static let openClawWorkspace = openClawHome.appending(path: "workspace")
 
     /// Standard VS Code-family Electron cache dirs under Application Support.
     /// `User/` and installed `extensions` are excluded (user data / software).

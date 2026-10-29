@@ -102,21 +102,23 @@ public enum AppLeftoversScanner {
 
     /// Recursive byte size of a file or directory. Bounded by the entry's own
     /// subtree; used only to show the user how much each leftover reclaims.
-    private static func directorySize(at url: URL) -> UInt64 {
+    static func directorySize(at url: URL) -> UInt64 {
         let fm = FileManager.default
         var values = try? url.resourceValues(forKeys: [.isDirectoryKey, .totalFileAllocatedSizeKey, .fileAllocatedSizeKey])
         if values?.isDirectory != true {
             return UInt64(values?.totalFileAllocatedSize ?? values?.fileAllocatedSize ?? 0)
         }
         var total: UInt64 = 0
+        var hardLinks = HardLinkTracker()
         if let enumerator = fm.enumerator(
             at: url,
-            includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey],
+            includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey, .linkCountKey],
             options: []
         ) {
             for case let fileURL as URL in enumerator {
-                values = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey])
-                guard values?.isRegularFile == true else { continue }
+                values = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey, .linkCountKey])
+                guard values?.isRegularFile == true,
+                      hardLinks.shouldCount(fileURL, linkCount: values?.linkCount) else { continue }
                 total += UInt64(values?.totalFileAllocatedSize ?? values?.fileAllocatedSize ?? 0)
             }
         }

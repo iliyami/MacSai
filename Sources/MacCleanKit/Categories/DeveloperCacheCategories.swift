@@ -7,7 +7,9 @@ import Foundation
 // The matching history/memory/sessions/extensions are never targeted (see
 // DeveloperCacheCategoriesTests.testNeverTargetsUserData).
 
-/// npm, Cargo, pip, Homebrew, Gradle download/build caches.
+/// npm, pnpm, Cargo, pip, uv, Homebrew, Gradle download/build caches.
+/// pnpm's store is listed one folder per version from `pnpmStoreRoots`
+/// (see `PnpmStore`), not through `targets`.
 public struct PackageManagerCachesCategory: JunkCategory {
     public init() {}
     public let scanCategory = ScanCategory.packageManagerCaches
@@ -21,8 +23,14 @@ public struct PackageManagerCachesCategory: JunkCategory {
             MCConstants.gradleWrapperDists,
             MCConstants.homebrewCache,
             MCConstants.pipCache,
+            MCConstants.uvCache,
+            MCConstants.uvLegacyCache,
+            MCConstants.pnpmCache,
+            MCConstants.pnpmXDGCache,
         ].map { ScanTarget(path: $0, recursive: true) }
     }
+
+    public var pnpmStoreRoots: [URL] { MCConstants.pnpmStoreRoots }
 }
 
 /// VS Code-family editor caches (Cursor, Antigravity): the standard Electron

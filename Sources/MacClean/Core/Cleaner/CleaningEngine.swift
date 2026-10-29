@@ -417,16 +417,18 @@ public actor CleaningEngine {
         let fm = FileManager.default
         guard let enumerator = fm.enumerator(
             at: url,
-            includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .isRegularFileKey],
+            includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .isRegularFileKey, .linkCountKey],
             options: []
         ) else { return 0 }
 
         var total: UInt64 = 0
+        var hardLinks = HardLinkTracker()
         for case let fileURL as URL in enumerator {
             let values = try? fileURL.resourceValues(forKeys: [
-                .totalFileAllocatedSizeKey, .isRegularFileKey,
+                .totalFileAllocatedSizeKey, .isRegularFileKey, .linkCountKey,
             ])
-            if values?.isRegularFile == true {
+            if values?.isRegularFile == true,
+               hardLinks.shouldCount(fileURL, linkCount: values?.linkCount) {
                 total += UInt64(values?.totalFileAllocatedSize ?? 0)
             }
         }
