@@ -320,12 +320,13 @@ Do not take our word for it. Both the source and the running process are checkab
 **1. Search the source for networking APIs**
 
 ```bash
-rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
+rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.swift'
 ```
 
-You should only ever see three network paths, all optional and all read-only:
+The optional network paths are disclosed below. Local cleaning does not upload scan results or file lists:
 
-- `Sources/MacCleanKit/UpdateChecker.swift`: the optional Mac Sai update check (turn it off in Settings)
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle checks the HTTPS feed sealed into the signed app and downloads signed release notes and update archives. Automatic checks and automatic download/install are separate settings; system profiling and release-note JavaScript are disabled. See [update setup](docs/IN_APP_UPDATES.md). For configured direct installations, automatic update checks are on by default and run once a day; each request includes the app and Sparkle versions in the User-Agent, and checks can be turned off in Settings.
+- `Sources/MacCleanKit/UpdateChecker.swift`: Homebrew update checks and the release-page fallback for builds without a configured signed feed
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`: the user-driven check of *other apps'* Sparkle feeds when you open the Updater
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift`: the opt-in MalwareBazaar hash download. It only runs when you add your own abuse.ch Auth-Key and press Update Now in Settings > Malware Databases. Each request sends only your Auth-Key and the query, never file hashes or paths. When a downloaded hash matches a signed file, macOS asks Apple whether its signing certificate was revoked, the same check Gatekeeper makes; that request is about the certificate, not your files
 
@@ -334,28 +335,62 @@ There is no analytics, crash reporter, or tracker SDK anywhere in the codebase.
 **2. Watch the live process**
 
 ```bash
-lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
+(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)
 ```
 
-Expected: no established connections while you are only cleaning locally. Little Snitch or LuLu make the same check visual.
+This snapshot selects PIDs by executable paths inside the chosen app bundle, so unrelated Installer/Updater processes are excluded. Sparkle helpers copied elsewhere and macOS trust services are outside this snapshot; use a process-aware firewall to observe those. Run it while checking or downloading an update to catch short-lived connections.
+
+With update checks/downloads and optional malware verification inactive, local cleaning opens no network connection. Include Sparkle’s child processes when observing an update; Apple certificate checks run through macOS trust services. Little Snitch or LuLu can show these connections too.
 
 **3. Inspect the binary you actually installed**
 
-The source and the signed binary are different artifacts, so the strongest check runs against the app on your disk, not this repo. After `brew install --cask mac-sai`:
+For a DMG or Homebrew installation, this loop needs only macOS command-line tools, with no source checkout or Python. It reads all seven bundled binaries and lists common network imports, static URLs and tracker strings for manual inspection:
 
 ```bash
-APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
-
-# Networking classes the binary imports (only URLSession appears):
-nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
-
-# Every URL compiled into the binary (only the three disclosed endpoints are fetched):
-strings -a "$APP" | grep -iE 'https?://' | sort -u
+(
+MACSAI_APP="/Applications/Mac Sai.app"
+MACSAI_SPARKLE="$MACSAI_APP/Contents/Frameworks/Sparkle.framework/Versions/B"
+for MACSAI_BINARY in \
+  "$MACSAI_APP/Contents/MacOS/MacClean" \
+  "$MACSAI_APP/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu" \
+  "$MACSAI_SPARKLE/Sparkle" "$MACSAI_SPARKLE/Autoupdate" \
+  "$MACSAI_SPARKLE/Updater.app/Contents/MacOS/Updater" \
+  "$MACSAI_SPARKLE/XPCServices/Downloader.xpc/Contents/MacOS/Downloader" \
+  "$MACSAI_SPARKLE/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+do
+  printf '\n%s\n' "$MACSAI_BINARY"
+  MACSAI_IMPORTS=$(nm -uj "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_IMPORTS" | grep -Ei \
+    'URLSession|URLConnection|CFNetwork|Network|nw_|DNSService|NetService|curl_|^_(socket|connect|connectx|send|recv)([$]|$)' || true
+  MACSAI_STRINGS=$(strings -a "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_STRINGS" | grep -Ei \
+    '://|sentry|firebase|mixpanel|amplitude|bugsnag|crashlytics|posthog|appsflyer' || true
+done
+)
 ```
 
-Expected: the only networking class is `_OBJC_CLASS_$_NSURLSession`, and the only fetch endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json`, and `mb-api.abuse.ch/api/v1/` (contacted only after you add a MalwareBazaar key and press Update Now). The other `github.com/iliyami/MacSai` links, the `auth.abuse.ch` sign-up link, and the `buymeacoffee.com/iliyami` support link just open in your browser. No trackers, no analytics hosts, nothing else. Re-run it after any update; it always describes the exact build you are running.
+These listings are not a pass/fail audit or proof that every runtime destination is visible. For the complete component inventory, explicit allowlists and bundled privacy settings, use the automated check below.
 
-Note: on a non-sandboxed Developer ID app like this one, network access is not gated by an entitlement, so this symbol and string inspection, not `codesign --entitlements`, is the real check. The same guard runs in CI on every change ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
+Run the check from a source checkout matching the installed version. It inspects the actual app bundle, including the main executable, menu helper, `Sparkle.framework`, `Autoupdate`, `Updater.app`, `Downloader.xpc`, and `Installer.xpc`:
+
+```bash
+bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"
+```
+
+Expected: seven Mach-O files pass. Missing or unexpected binaries, unlisted network imports or static URLs, and tracker markers fail the check. URLSession imports are allowed in Mac Sai, its menu helper, Sparkle, and Downloader; the other Sparkle helpers have no allowed network imports. Sparkle’s documentation links and XML namespace are explicitly identified, not treated as download endpoints.
+
+The script also prints the bundled `SUFeedURL` and verifies the signed-feed, pre-extraction, and privacy settings. Check that feed’s archive/release-note destinations and the other-app feeds you request against the live connections above. The fallback endpoints are `api.github.com/repos/iliyami/MacSai/releases/latest` and `formulae.brew.sh/api/cask/mac-sai.json`; the opt-in malware endpoint is `mb-api.abuse.ch/api/v1/`. Project/support links and browser-settings links open only when requested. The same complete-bundle check runs during packaging; CI checks both built executables and all five pinned Sparkle binaries. [Check implementation and explicit allowlists](scripts/check-network-surface.py).
 
 ---
 

@@ -3,6 +3,32 @@ import XCTest
 @testable import MacCleanKit
 
 final class LocalizationTests: AppLanguageTestCase {
+    func testUpdaterStringsResolveInEverySupportedDictionary() {
+        let keys = [
+            "版本", "上次检查：", "自动检查更新", "检查更新", "检查更新…",
+            "正在检查…", "已是最新", "重试", "自动下载并安装更新",
+            "更新会在退出时安装，也可以选择立即重启应用。", "更新频道：",
+            "重试安装", "此版本尚未配置应用内安装。", "清理完成后将检查更新。",
+            "请关闭菜单栏监视器后重试更新。", "已取消", "正在准备更新…",
+            "正在等待当前操作完成。", "更新已准备就绪",
+            "Mac Sai 仍在完成当前操作。您可以等待操作完成后退出并安装更新，或留在应用中。",
+            "等待并退出", "留在应用中", "暂时无法退出", "好",
+        ]
+        // These words use the same characters in both Chinese scripts.
+        let unchangedTraditional: Set<String> = ["版本", "已是最新", "已取消", "好"]
+        for language in [AppLanguage.de, .fr, .it, .zhHant] {
+            AppLanguage.current = language
+            for key in keys {
+                let translated = L10n.tr(key, "MISSING", "MISSING")
+                XCTAssertNotEqual(translated, "MISSING", "\(language): \(key)")
+                XCTAssertFalse(translated.isEmpty, "\(language): \(key)")
+                if language == .zhHant && !unchangedTraditional.contains(key) {
+                    XCTAssertNotEqual(translated, key, "Traditional Chinese must not fall back to Simplified Chinese")
+                }
+            }
+        }
+    }
+
     func testGermanLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.de))
         XCTAssertEqual(AppLanguage.de.pickerLabel, "Deutsch")

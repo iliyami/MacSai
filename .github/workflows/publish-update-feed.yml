@@ -1,0 +1,43 @@
+name: Publish curated update feed
+
+# Required maintainer step AFTER publishing a stable release and curating its
+# notes. Run again after editing those notes. Uses the existing signing secret;
+# no personal token or release event (which GITHUB_TOKEN may suppress) is needed.
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Published latest stable tag with final curated notes (vX.Y.Z)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-stable-update-feed
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: macos-15
+    environment: sparkle-release
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Resolve pinned Sparkle tools
+        run: swift package resolve
+
+      - name: Verify publication and signing fixtures
+        run: |
+          python3 scripts/test-update-feed.py
+          python3 scripts/test-publish-update-feed.py
+
+      - name: Publish from final release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
+          SPARKLE_FEED_URL: ${{ vars.SPARKLE_FEED_URL }}
+        run: python3 scripts/publish-update-feed.py

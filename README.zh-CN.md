@@ -316,12 +316,13 @@ Mac Sai 使用 Apple **Developer ID** 进行代码签名，并经 **Apple 公证
 **1. 在源码中搜索网络 API**
 
 ```bash
-rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
+rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.swift'
 ```
 
-你应当只会看到三条网络路径，它们都是可选且只读的：
+可选的网络访问列于下方。本地清理不会上传扫描结果或文件列表：
 
-- `Sources/MacCleanKit/UpdateChecker.swift`：可选的 Mac Sai 更新检查（可在设置中关闭）
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle 检查签名应用中固定的 HTTPS 源，并下载签名的版本说明和更新归档。自动检查与自动下载/安装分别设置；系统信息上报及版本说明中的 JavaScript 均已禁用。参见[更新配置](docs/IN_APP_UPDATES.md)。 对于已配置的直接安装版本，自动检查更新默认开启，每天运行一次；每个请求都会在 User-Agent 中包含应用和 Sparkle 的版本，可在“设置”中关闭自动检查。
+- `Sources/MacCleanKit/UpdateChecker.swift`: Homebrew 更新检查，以及未配置签名源时使用的版本发布页面
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`：打开“应用更新”模块时，由用户触发的对其它应用 Sparkle 源的检查
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift`：可选的 MalwareBazaar 哈希下载。只有在你添加自己的 abuse.ch Auth-Key 并在“设置 > 恶意软件数据库”中点击“立即更新”时才会运行。每次请求只发送你的 Auth-Key 和查询内容，绝不发送文件哈希值或路径。如果下载的哈希与某个已签名的文件匹配，macOS 会向 Apple 查询其签名证书是否已被吊销（与 Gatekeeper 的检查相同）；该请求只涉及证书，不涉及你的文件
 
@@ -330,28 +331,62 @@ rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 **2. 观察实时进程**
 
 ```bash
-lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
+(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)
 ```
 
-预期：仅做本地清理时没有已建立的连接。Little Snitch 或 LuLu 可做同样的可视化检查。
+此快照按所选应用包内的可执行文件路径选取 PID，因此不会包含无关的 Installer/Updater 进程。复制到其他位置的 Sparkle 辅助程序和 macOS 信任服务不在此范围内；请使用可识别进程的防火墙观察它们。在检查或下载更新时重复运行此命令，以观察短暂的连接。
+
+没有进行更新检查、下载或可选的恶意软件验证时，本地清理不会建立网络连接。观察更新时也要包含 Sparkle 子进程；Apple 证书检查由 macOS 信任服务执行。也可以使用 Little Snitch 或 LuLu 查看这些连接。
 
 **3. 检查你实际安装的二进制文件**
 
-源代码和签名后的二进制文件是两个不同的产物，因此最有力的检查是针对你磁盘上的应用，而不是这个仓库。执行 `brew install --cask mac-sai` 之后：
+对于 DMG 或 Homebrew 安装，此循环只需要 macOS 命令行工具，无需源码或 Python。它读取全部七个内置二进制文件，并列出常见网络导入、静态 URL 和跟踪器字符串，供手动检查：
 
 ```bash
-APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
-
-# 二进制文件导入的网络类（只会出现 URLSession）：
-nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
-
-# 编译进二进制文件的所有 URL（只有三个已公开的端点会被请求）：
-strings -a "$APP" | grep -iE 'https?://' | sort -u
+(
+MACSAI_APP="/Applications/Mac Sai.app"
+MACSAI_SPARKLE="$MACSAI_APP/Contents/Frameworks/Sparkle.framework/Versions/B"
+for MACSAI_BINARY in \
+  "$MACSAI_APP/Contents/MacOS/MacClean" \
+  "$MACSAI_APP/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu" \
+  "$MACSAI_SPARKLE/Sparkle" "$MACSAI_SPARKLE/Autoupdate" \
+  "$MACSAI_SPARKLE/Updater.app/Contents/MacOS/Updater" \
+  "$MACSAI_SPARKLE/XPCServices/Downloader.xpc/Contents/MacOS/Downloader" \
+  "$MACSAI_SPARKLE/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+do
+  printf '\n%s\n' "$MACSAI_BINARY"
+  MACSAI_IMPORTS=$(nm -uj "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_IMPORTS" | grep -Ei \
+    'URLSession|URLConnection|CFNetwork|Network|nw_|DNSService|NetService|curl_|^_(socket|connect|connectx|send|recv)([$]|$)' || true
+  MACSAI_STRINGS=$(strings -a "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_STRINGS" | grep -Ei \
+    '://|sentry|firebase|mixpanel|amplitude|bugsnag|crashlytics|posthog|appsflyer' || true
+done
+)
 ```
 
-预期：唯一的网络类是 `_OBJC_CLASS_$_NSURLSession`，唯一会被请求的端点是 `api.github.com/repos/iliyami/MacSai/releases/latest`、`formulae.brew.sh/api/cask/mac-sai.json` 和 `mb-api.abuse.ch/api/v1/`（仅在你添加 MalwareBazaar 密钥并点击“立即更新”后才会访问）。其余的 `github.com/iliyami/MacSai` 链接、注册链接 `auth.abuse.ch` 和支持链接 `buymeacoffee.com/iliyami` 只会在浏览器中打开。没有任何跟踪器或分析域名，也没有其他东西。更新后可以再次运行，它始终反映你正在运行的确切构建。
+这些列表并非自动通过或失败的结论，也不能证明所有运行时目标地址均可见。要核对完整组件清单、明确的允许列表和内置隐私设置，请使用下面的自动检查。
 
-注意：对于本应用这样未启用沙盒的 Developer ID 应用，网络访问不受 entitlement 限制，因此真正的检查是这种符号和字符串检查，而不是 `codesign --entitlements`。同样的守卫会在每次改动时于 CI 中运行（[`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)）。
+请从与安装版本对应的源码目录运行检查。它分析实际安装的应用包，包括主程序、菜单栏助手、`Sparkle.framework`、`Autoupdate`、`Updater.app`、`Downloader.xpc` 和 `Installer.xpc`：
+
+```bash
+bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"
+```
+
+预期结果：七个 Mach-O 文件全部通过。缺失或多出的二进制文件、未获允许的网络导入或静态 URL，以及跟踪器标记都会使检查失败。只有 Mac Sai、菜单栏助手、Sparkle 和 Downloader 允许导入 URLSession；其他 Sparkle 助手不允许网络导入。Sparkle 的文档链接和 XML 命名空间已单独列明，不作为下载端点。
+
+脚本还会显示内置的 `SUFeedURL`，并检查签名源、解包前验证和隐私设置。请将该源中的归档/版本说明地址，以及你主动查询的其他应用更新源，与上述实时连接核对。回退端点为 `api.github.com/repos/iliyami/MacSai/releases/latest` 和 `formulae.brew.sh/api/cask/mac-sai.json`；可选的恶意软件数据库端点为 `mb-api.abuse.ch/api/v1/`。项目、支持及浏览器设置链接只会应用户请求打开。打包时执行相同的完整应用检查；CI 检查两个构建出的可执行文件及固定版本 Sparkle 的全部五个二进制文件。[检查实现及允许列表](scripts/check-network-surface.py)。
 
 ---
 

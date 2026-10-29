@@ -316,12 +316,13 @@ Mac Sai подписан идентификатором Apple **Developer ID** �
 **1. Поиск сетевых API в исходниках**
 
 ```bash
-rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
+rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.swift'
 ```
 
-Вы должны увидеть ровно три сетевых пути, все необязательные и только на чтение:
+Необязательные сетевые обращения перечислены ниже. Локальная очистка не передаёт результаты сканирования или списки файлов:
 
-- `Sources/MacCleanKit/UpdateChecker.swift`: необязательная проверка обновлений Mac Sai (отключается в настройках)
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle проверяет HTTPS-ленту, указанную в подписанном приложении, и загружает подписанные описания и архивы обновлений. Автоматическая проверка и автоматическая загрузка с установкой включаются отдельно; отправка системного профиля и JavaScript в описаниях отключены. См. [настройку обновлений](docs/IN_APP_UPDATES.md). В настроенных сборках для прямой установки автоматическая проверка обновлений включена по умолчанию и выполняется раз в сутки; каждый запрос содержит версии приложения и Sparkle в User-Agent, а проверки можно отключить в Настройках.
+- `Sources/MacCleanKit/UpdateChecker.swift`: проверка обновлений Homebrew и переход на страницу релизов в сборках без настроенной подписанной ленты
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift`: запускаемая пользователем проверка лент Sparkle *других приложений* при открытии модуля «Обновления»
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift`: необязательная загрузка хешей MalwareBazaar. Она выполняется, только если вы добавили собственный Auth-Key abuse.ch и нажали «Обновить сейчас» в разделе «Настройки» > «Базы вредоносного ПО». Каждый запрос передаёт только ваш Auth-Key и сам запрос, но никогда не хеши файлов и не пути. Если загруженный хеш совпадает с подписанным файлом, macOS запрашивает у Apple, не отозван ли его сертификат подписи (та же проверка, что и у Gatekeeper); этот запрос касается сертификата, а не ваших файлов
 
@@ -330,28 +331,62 @@ rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
 **2. Наблюдение за живым процессом**
 
 ```bash
-lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
+(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)
 ```
 
-Ожидание: при обычной локальной очистке установленных соединений нет. Little Snitch или LuLu делают ту же проверку наглядной.
+Этот снимок выбирает PID по путям исполняемых файлов внутри указанного приложения, поэтому посторонние процессы Installer/Updater не попадают в выборку. Помощники Sparkle, скопированные в другие каталоги, и системные службы доверия macOS находятся за её пределами; для них используйте межсетевой экран с учётом процессов. Повторяйте команду во время проверки или загрузки обновления, чтобы увидеть короткие соединения.
+
+Если проверка и загрузка обновлений, а также необязательная проверка вредоносного ПО не выполняются, локальная очистка не открывает сетевые соединения. При обновлении учитывайте дочерние процессы Sparkle; проверка сертификатов Apple выполняется системными службами доверия macOS. Соединения также можно наблюдать в Little Snitch или LuLu.
 
 **3. Проверьте бинарник, который вы на самом деле установили**
 
-Исходный код и подписанный бинарник представляют собой два разных артефакта, поэтому самая надёжная проверка выполняется по приложению на вашем диске, а не по этому репозиторию. После `brew install --cask mac-sai`:
+Для установки из DMG или Homebrew достаточно средств командной строки macOS; исходники и Python не нужны. Этот цикл читает все семь бинарных компонентов и выводит распространённые сетевые импорты, статические URL и строки трекеров для ручной проверки:
 
 ```bash
-APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
-
-# Сетевые классы, которые импортирует бинарник (появляется только URLSession):
-nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
-
-# Все URL, вшитые в бинарник (запрашиваются только три заявленные конечные точки):
-strings -a "$APP" | grep -iE 'https?://' | sort -u
+(
+MACSAI_APP="/Applications/Mac Sai.app"
+MACSAI_SPARKLE="$MACSAI_APP/Contents/Frameworks/Sparkle.framework/Versions/B"
+for MACSAI_BINARY in \
+  "$MACSAI_APP/Contents/MacOS/MacClean" \
+  "$MACSAI_APP/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu" \
+  "$MACSAI_SPARKLE/Sparkle" "$MACSAI_SPARKLE/Autoupdate" \
+  "$MACSAI_SPARKLE/Updater.app/Contents/MacOS/Updater" \
+  "$MACSAI_SPARKLE/XPCServices/Downloader.xpc/Contents/MacOS/Downloader" \
+  "$MACSAI_SPARKLE/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+do
+  printf '\n%s\n' "$MACSAI_BINARY"
+  MACSAI_IMPORTS=$(nm -uj "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_IMPORTS" | grep -Ei \
+    'URLSession|URLConnection|CFNetwork|Network|nw_|DNSService|NetService|curl_|^_(socket|connect|connectx|send|recv)([$]|$)' || true
+  MACSAI_STRINGS=$(strings -a "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_STRINGS" | grep -Ei \
+    '://|sentry|firebase|mixpanel|amplitude|bugsnag|crashlytics|posthog|appsflyer' || true
+done
+)
 ```
 
-Ожидание: в списке будет только сетевой класс `_OBJC_CLASS_$_NSURLSession`, а запрашиваются лишь три адреса: `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json` и `mb-api.abuse.ch/api/v1/` (только после того, как вы добавили ключ MalwareBazaar и нажали «Обновить сейчас»). Остальные ссылки `github.com/iliyami/MacSai`, ссылка регистрации `auth.abuse.ch` и ссылка поддержки `buymeacoffee.com/iliyami` просто открываются в браузере. Никаких трекеров, аналитических доменов и ничего лишнего. Запустите снова после любого обновления: результат всегда описывает именно ту сборку, что у вас запущена.
+Этот вывод не является автоматическим заключением об успешной проверке и не гарантирует видимость всех адресов, выбираемых во время работы. Для полной проверки состава, разрешённых списков и встроенных настроек конфиденциальности используйте скрипт ниже.
 
-Примечание: для приложения с Developer ID без песочницы, как это, доступ к сети не ограничивается entitlement, поэтому настоящая проверка выполняется анализом символов и строк, а не командой `codesign --entitlements`. Та же проверка выполняется в CI при каждом изменении ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
+Запустите проверку из исходников, соответствующих установленной версии. Она анализирует приложение на диске: основной бинарник, помощник строки меню, `Sparkle.framework`, `Autoupdate`, `Updater.app`, `Downloader.xpc` и `Installer.xpc`:
+
+```bash
+bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"
+```
+
+Ожидаемый результат: проверены семь файлов Mach-O. Отсутствующий или посторонний бинарник, сетевой импорт или статический URL вне разрешённого списка, а также признаки трекеров приводят к ошибке. Импорты URLSession разрешены в Mac Sai, его помощнике строки меню, Sparkle и Downloader; остальным помощникам Sparkle сетевые импорты не разрешены. Ссылки Sparkle на документацию и пространство имён XML перечислены отдельно и не считаются адресами загрузки.
+
+Скрипт также выводит встроенный `SUFeedURL` и проверяет настройки подписанной ленты, проверки до распаковки и конфиденциальности. Сопоставьте адреса архивов и описаний в этой ленте, а также запрошенные вами ленты других приложений с живыми соединениями выше. Резервная проверка использует `api.github.com/repos/iliyami/MacSai/releases/latest` и `formulae.brew.sh/api/cask/mac-sai.json`; необязательная загрузка базы использует `mb-api.abuse.ch/api/v1/`. Ссылки проекта, поддержки и настроек браузера открываются по запросу пользователя. При упаковке выполняется та же проверка всего приложения; CI проверяет оба собранных бинарника и все пять бинарников закреплённой версии Sparkle. [Реализация и разрешённые списки](scripts/check-network-surface.py).
 
 ---
 

@@ -22,11 +22,22 @@ jobs:
       - name: Verify VERSION ↔ MCConstants.appVersion sync
         run: bash scripts/check-version-sync.sh
 
+      - name: Validate update build configuration
+        run: |
+          python3 scripts/test-update-configuration.py
+          bash -n scripts/build-dmg.sh scripts/generate-update-feed.sh
+
       - name: Build
         run: swift build
 
+      - name: Verify signed update release failures
+        run: |
+          python3 scripts/test-update-feed.py
+          python3 scripts/test-publish-update-feed.py
+          python3 scripts/test-network-surface.py
+
       - name: Verify network surface (inspect the built binary)
-        run: bash scripts/check-network-surface.sh
+        run: bash scripts/check-network-surface.sh "$(swift build --show-bin-path)/MacClean"
 
       - name: Run Tests (XCTest with code coverage)
         run: swift test --enable-code-coverage

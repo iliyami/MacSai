@@ -98,7 +98,11 @@ jobs:
         run: swift build -c release
 
       - name: Run tests
-        run: swift test
+        run: |
+          swift test
+          python3 scripts/test-update-feed.py
+          python3 scripts/test-publish-update-feed.py
+          python3 scripts/test-network-surface.py
 
       # --- Signing & notarization ---------------------------------------------
       # All secrets live in GitHub repo settings; nothing sensitive is committed.
@@ -148,6 +152,9 @@ jobs:
         env:
           APPLE_DEVELOPER_ID: ${{ secrets.APPLE_DEVELOPER_ID }}
           NOTARY_PROFILE: MacSai
+          BUILD_NUMBER: ${{ github.run_number }}
+          SPARKLE_FEED_URL: ${{ vars.SPARKLE_FEED_URL }}
+          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
         run: |
           # Export so build-dmg.sh names the DMG / Info.plist with this version
           # (the beta tag's version, which differs from the committed VERSION).
@@ -170,10 +177,11 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           TAG="${{ steps.version.outputs.tag }}"
+          ASSETS=(".build/MacSai-${VERSION}.dmg")
 
           if [ "${{ steps.version.outputs.prerelease }}" = "true" ]; then
             gh release create "$TAG" \
-              ".build/MacSai-${VERSION}.dmg" \
+              "${ASSETS[@]}" \
               --title "Mac Sai $TAG (beta)" \
               --prerelease \
               --notes "$(cat <<EOF
@@ -197,7 +205,7 @@ jobs:
             # this release itself, which produced "vX...vX" links.
             PREV_TAG="$(git tag --sort=-creatordate | grep -vx "$TAG" | grep -v -e '-' | head -1 || true)"
             gh release create "$TAG" \
-              ".build/MacSai-${VERSION}.dmg" \
+              "${ASSETS[@]}" \
               --title "Mac Sai $TAG" \
               --generate-notes \
               ${PREV_TAG:+--notes-start-tag "$PREV_TAG"} \
@@ -228,6 +236,12 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish curated appcast reminder
+        if: steps.version.outputs.prerelease == 'false' && vars.SPARKLE_FEED_URL != ''
+        run: |
+          echo "Curate the published release notes, then run Publish curated update feed for this stable tag." >> "$GITHUB_STEP_SUMMARY"
+          echo "The new latest release has no appcast until that required step succeeds. Do not rerun Release to edit the feed." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Update Homebrew cask in tap repo
         if: steps.version.outputs.prerelease != 'true'

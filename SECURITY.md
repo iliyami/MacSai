@@ -30,9 +30,35 @@ Reports about the following areas get priority:
 - **`Sources/MacCleanKit/SafetyGuard.swift`**: bypasses of the protected-paths blocklist, the 10,000-file cap, or the symlink TOCTOU re-resolution
 - **`Sources/MacClean/Core/Cleaner/CleaningEngine.swift`**: anything that causes data loss outside the intended scan results
 - **`Sources/MacClean/Modules/Maintenance/MaintenanceModule.swift`**: anything that turns the administrator-prompt maintenance commands into arbitrary command execution
-- **Update checks**: a tampered third-party update feed steering the user to a malicious download
-- **Network exfiltration**: Mac Sai's only outbound calls are its own update check (the GitHub releases API), reading third-party apps' update feeds, and the opt-in MalwareBazaar hash download (`mb-api.abuse.ch`, only after you add an abuse.ch Auth-Key and press Update Now; each request sends only your Auth-Key and the query, never file hashes or paths, and redirects are refused so the key can't be forwarded; when a downloaded hash matches a signed file, macOS also asks Apple whether its signing certificate was revoked, the same OCSP check Gatekeeper makes); report any other network activity you observe
+- **Updates**: bypasses of Sparkle's pinned HTTPS feed, required feed/archive signatures, or verification before extraction; replacement racing with active file operations; a tampered third-party app feed steering the user to a malicious download
+- **Network exfiltration**: optional outbound traffic consists of Sparkle checking the feed embedded in a configured signed app and downloading its signed release notes/archives, Homebrew checks (`formulae.brew.sh`) or the GitHub releases API fallback, reading third-party apps' update feeds, and the opt-in MalwareBazaar hash download (`mb-api.abuse.ch`, only after you add an abuse.ch Auth-Key and press Update Now; each request sends only your Auth-Key and the query, never file hashes or paths, and redirects are refused so the key can't be forwarded; when a downloaded hash matches a signed file, macOS also asks Apple whether its signing certificate was revoked, the same OCSP check Gatekeeper makes). Update requests reveal normal connection metadata such as IP address and HTTP headers; Sparkle system profiling and release-note JavaScript are disabled, and scan results/file lists are not uploaded. Project/support and browser-settings links are user-initiated. Report any undisclosed network activity you observe
 - **TCC / Full Disk Access**: any path to silently gain or abuse FDA
+
+For configured direct installations, automatic update checks are on by default
+and run once a day. Each request includes the app and Sparkle versions in the
+User-Agent; checks can be turned off in Settings. Automatic downloading/installing
+is a separate setting and starts disabled. Existing choices are
+preserved when migrating to Sparkle. Homebrew installations keep their Homebrew
+update route, and builds without a configured feed/key do not start Sparkle.
+
+DMG and Homebrew users can inspect all seven bundled binaries with the
+[standalone `nm`/`strings` loop](README.md#verify-no-telemetry-yourself), without a
+source checkout or Python. The same section selects live socket observations by
+the PIDs of executables inside the chosen bundle, excluding unrelated processes
+with names such as Installer or Updater. Copied Sparkle helpers and macOS trust
+services can run elsewhere and are outside that process snapshot.
+
+To check the installed distribution, run
+`bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"` from a
+matching source checkout. This inspects both Mac Sai executables and all five
+Sparkle binaries, including the Downloader/Installer XPC services and
+Autoupdate/Updater helpers. Missing or unexpected components, unlisted network
+imports/static URLs, and tracker markers fail the check. It also checks the
+bundled updater privacy/trust settings and prints the configured feed. The
+[explicit allowlists](scripts/check-network-surface.py) run in CI and packaging;
+the [README's live-process check](README.md#verify-no-telemetry-yourself) covers
+runtime destinations selected by signed feeds and user-requested app feeds.
+Apple certificate-revocation requests are performed by macOS trust services.
 
 ## Out of scope
 
