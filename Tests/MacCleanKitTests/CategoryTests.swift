@@ -70,6 +70,22 @@ final class CategoryTests: XCTestCase {
         XCTAssertTrue(exts?.contains("crash") == true)
     }
 
+    func testUserLogsIncludeOpenClawLogsOnly() {
+        let targets = UserLogCategory().targets
+        XCTAssertTrue(targets.contains { $0.path == MCConstants.openClawLogs && $0.recursive })
+
+        guard let home = targets.first(where: { $0.path == MCConstants.openClawHome }) else {
+            return XCTFail("~/.openclaw must be scanned for stray log files")
+        }
+        // Only log files outside logs/: never config, credentials or workspace data.
+        XCTAssertEqual(home.fileExtensions, ["log"])
+        XCTAssertFalse(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "openclaw.json")))
+        XCTAssertTrue(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "agents/main/run.log")))
+        // logs/ belongs to its own target, so nothing is listed twice.
+        XCTAssertTrue(home.isExcludedPath(MCConstants.openClawLogs.appending(path: "gateway.log")))
+        XCTAssertTrue(home.isExcludedPath(MCConstants.openClawWorkspace.appending(path: "notes/build.log")))
+    }
+
     func testUserLogsPreserveCleanupDiagnosticsWithoutExcludingOtherApps() {
         let target = UserLogCategory().targets[0]
         XCTAssertTrue(target.isExcludedPath(MCConstants.operationLogDir))
