@@ -84,7 +84,7 @@ final class HealthAlertLocalizationTests: AppLanguageTestCase {
         let english = allStrings()
         AppLanguage.current = .zhHans
         let simplified = allStrings()
-        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr] {
             AppLanguage.current = language
             for (index, translated) in allStrings().enumerated() where index != swapLine {
                 XCTAssertNotEqual(translated, english[index], "\(language): \(english[index])")
@@ -97,7 +97,7 @@ final class HealthAlertLocalizationTests: AppLanguageTestCase {
     }
 
     func testPlaceholdersAreFilledInEveryLanguage() {
-        for language in [AppLanguage.en, .de, .fr, .it, .es, .ptBR, .ja, .ko, .ru, .zhHans, .zhHant] {
+        for language in [AppLanguage.en, .de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .ru, .zhHans, .zhHant] {
             AppLanguage.current = language
             let body = HealthAlertStrings.swapAlertBody(used: 6_800_000_000, threshold: 4_000_000_000)
             XCTAssertFalse(body.contains("{"), "\(language): \(body)")
