@@ -2,6 +2,7 @@ import Foundation
 import IOKit
 import IOKit.ps
 import MacCleanKit
+import MacSaiSMC
 
 public actor SystemStatsCollector {
     public struct SystemStats: Sendable {
@@ -19,10 +20,14 @@ public actor SystemStatsCollector {
         public let batteryIsCharging: Bool
         public let batteryCycleCount: Int?
         public let batteryTemperature: Double?
+        /// Empty on fanless Macs or when the SMC cannot be read.
+        public let fans: [FanSpeed]
         public let uptime: TimeInterval
     }
 
     private var previousCPUTicks = CPUTicks(user: 0, system: 0, idle: 0, nice: 0)
+    /// Opened once; stays nil on Macs without an AppleSMC service.
+    private lazy var smc = SMCConnection()
 
     public init() {}
 
@@ -48,8 +53,17 @@ public actor SystemStatsCollector {
             batteryIsCharging: battery.isCharging,
             batteryCycleCount: battery.cycleCount,
             batteryTemperature: battery.temperature,
+            fans: getFanSpeeds(),
             uptime: ProcessInfo.processInfo.systemUptime
         )
+    }
+
+    // MARK: - Fans
+
+    /// Read-only SMC fan speeds; see `FanSpeedReader` for the key formats.
+    private func getFanSpeeds() -> [FanSpeed] {
+        guard let smc else { return [] }
+        return FanSpeedReader.readFans { smc.read($0) }
     }
 
     // MARK: - GPU

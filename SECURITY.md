@@ -33,6 +33,7 @@ Reports about the following areas get priority:
 - **Update checks**: a tampered third-party update feed steering the user to a malicious download
 - **Network exfiltration**: Mac Sai's only outbound calls are its own update check (the GitHub releases API), reading third-party apps' update feeds, and the opt-in MalwareBazaar hash download (`mb-api.abuse.ch`, only after you add an abuse.ch Auth-Key and press Update Now; each request sends only your Auth-Key and the query, never file hashes or paths, and redirects are refused so the key can't be forwarded; when a downloaded hash matches a signed file, macOS also asks Apple whether its signing certificate was revoked, the same OCSP check Gatekeeper makes); report any other network activity you observe
 - **TCC / Full Disk Access**: any path to silently gain or abuse FDA
+- **Fan helper** (`Sources/MacSaiFanHelper`, opt-in): the only root code Mac Sai ships. It accepts XPC connections only from the Developer ID signed menu-bar app and offers three calls (read fans, set one fan's target speed, return all fans to automatic). Report any way to reach another SMC key, run code, touch files, push a fan outside its rated range, or keep a fan pinned after the app quits, crashes, sleeps or the helper is removed
 
 ## Out of scope
 

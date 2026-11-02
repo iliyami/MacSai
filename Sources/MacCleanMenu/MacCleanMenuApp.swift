@@ -123,6 +123,7 @@ struct MenuContentView: View {
     let protection: SharedAppState.ProtectionStatus?
     let tips: [TipsEngine.Tip]
     let onDismissTip: (String) -> Void
+    private let fanControl = FanControlModel.shared
 
     var body: some View {
         ZStack {
@@ -135,6 +136,7 @@ struct MenuContentView: View {
                 if let stats {
                     statGrid(stats)
                     networkCard(stats)
+                    if !stats.fans.isEmpty { fansCard(stats.fans) }
                     if !tips.isEmpty { recommendationsCard }
                     if let p = protection { protectionCard(p) }
                     if let d = devices, d.hasAny { devicesCard(d) }
@@ -273,6 +275,102 @@ struct MenuContentView: View {
 
     private var divider: some View {
         Rectangle().fill(Color.white.opacity(0.10)).frame(width: 1, height: 18)
+    }
+
+    // MARK: Fans
+
+    /// Live fan speeds within each fan's rated range. Shown only on Macs that
+    /// report fans; the opt-in control sits below them (issue #242).
+    private func fansCard(_ fans: [FanSpeed]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader(icon: "fan", title: L10n.tr("风扇", "Fans", "Вентиляторы"), tint: MenuPalette.teal)
+            ForEach(fans, id: \.index) { fan in
+                HStack(spacing: 8) {
+                    Text("\(fan.index + 1)")
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(MenuPalette.textSecondary)
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color.white.opacity(0.10))
+                            Capsule().fill(MenuPalette.barColor(fan.fraction))
+                                .frame(width: geo.size.width * fan.fraction)
+                        }
+                    }
+                    .frame(height: 5)
+                    Text("\(Int(fan.current.rounded())) \(L10n.tr("转/分", "rpm", "об/мин"))")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .frame(minWidth: 78, alignment: .trailing)
+                }
+                if let range = rangeText(fan) {
+                    Text(range)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(MenuPalette.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+            fanControlSection
+        }
+        .padding(11)
+        .glassCard()
+    }
+
+    private func rangeText(_ fan: FanSpeed) -> String? {
+        guard let minimum = fan.minimum, let maximum = fan.maximum else { return nil }
+        return "\(Int(minimum.rounded())) - \(Int(maximum.rounded()))"
+    }
+
+    @ViewBuilder
+    private var fanControlSection: some View {
+        Divider().overlay(Color.white.opacity(0.10))
+        Toggle(isOn: Binding(get: { fanControl.isEnabled }, set: { fanControl.setEnabled($0) })) {
+            Text(L10n.tr("风扇控制（高级）", "Fan control (advanced)", "Управление вентиляторами (для опытных)"))
+                .font(.system(size: 11, weight: .semibold)).foregroundStyle(.white)
+        }
+        .toggleStyle(.switch).controlSize(.mini)
+        if !fanControl.isEnabled {
+            Text(L10n.tr(
+                "安装一个需在系统设置中批准的辅助程序。Mac Sai 退出、Mac 睡眠或辅助程序断开连接时，风扇会恢复自动。",
+                "Installs a helper that you approve in System Settings. Fans return to automatic when Mac Sai quits, the Mac sleeps or the helper disconnects.",
+                "Устанавливает вспомогательную программу, которую нужно одобрить в Системных настройках. Вентиляторы возвращаются в автоматический режим, когда Mac Sai завершает работу, Mac уходит в сон или программа отключается."
+            ))
+            .font(.system(size: 9)).foregroundStyle(MenuPalette.textSecondary)
+            .fixedSize(horizontal: false, vertical: true)
+        } else if fanControl.status == .requiresApproval {
+            Button(L10n.tr("在系统设置中批准", "Approve in System Settings", "Одобрить в Системных настройках")) {
+                fanControl.openApproval()
+            }
+            .controlSize(.small)
+        } else if !fanControl.isReady {
+            Text(L10n.tr("此版本无法使用风扇控制。", "Fan control is not available in this build.", "Управление вентиляторами недоступно в этой сборке."))
+                .font(.system(size: 9)).foregroundStyle(MenuPalette.yellow)
+        } else {
+            Picker("", selection: Binding(
+                get: { fanControl.mode },
+                set: { $0 == .manual ? fanControl.selectManual() : fanControl.selectAutomatic() }
+            )) {
+                Text(L10n.tr("自动", "Automatic", "Автоматически")).tag(FanControlModel.Mode.automatic)
+                Text(L10n.tr("手动", "Manual", "Вручную")).tag(FanControlModel.Mode.manual)
+            }
+            .pickerStyle(.segmented).labelsHidden().controlSize(.small)
+            if fanControl.mode == .manual {
+                HStack(spacing: 8) {
+                    Slider(value: Binding(get: { fanControl.manualFraction }, set: { fanControl.manualFraction = $0 }),
+                           in: 0...1) { editing in
+                        if !editing { fanControl.selectManual() }
+                    }
+                    .controlSize(.mini)
+                    Text("\(Int((fanControl.manualFraction * 100).rounded()))%")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .frame(width: 34, alignment: .trailing)
+                }
+            }
+            if fanControl.didFail {
+                Text(L10n.tr("风扇控制失败，已恢复自动。", "Fan control failed. Fans are back on automatic.", "Сбой управления вентиляторами. Включён автоматический режим."))
+                    .font(.system(size: 9)).foregroundStyle(MenuPalette.yellow)
+            }
+        }
     }
 
     // MARK: Recommendations
