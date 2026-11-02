@@ -29,8 +29,13 @@ let package = Package(
         ),
         .executableTarget(
             name: "MacCleanMenu",
-            dependencies: ["MacCleanKit"],
+            dependencies: ["MacCleanKit", "MacSaiSMC"],
             path: "Sources/MacCleanMenu"
+        ),
+        .target(
+            name: "MacSaiSMC",
+            dependencies: ["MacCleanKit"],
+            path: "Sources/MacSaiSMC"
         ),
         .target(
             name: "MacCleanKit",

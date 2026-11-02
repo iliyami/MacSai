@@ -142,6 +142,22 @@ final class LocalizationTests: AppLanguageTestCase {
         }
     }
 
+    func testFanCardStringsResolveInEverySupportedLanguage() {
+        let strings = [
+            ("风扇", "Fans", "Вентиляторы"),
+            ("转/分", "rpm", "об/мин"),
+        ]
+        let inlineLanguages: Set<AppLanguage> = [.system, .en, .ru, .zhHans]
+        for language in AppLanguage.allCases where !inlineLanguages.contains(language) {
+            AppLanguage.current = language
+            for source in strings {
+                let translated = L10n.tr(source.0, "MISSING", "MISSING")
+                XCTAssertNotEqual(translated, "MISSING", "\(language): \(source.0)")
+                XCTAssertFalse(translated.isEmpty, "\(language): \(source.0)")
+            }
+        }
+    }
+
     func testGermanLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.de))
         XCTAssertEqual(AppLanguage.de.pickerLabel, "Deutsch")
