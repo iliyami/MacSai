@@ -58,6 +58,7 @@ final class MenuStatsModel {
             // keeps going and the last-known value stays on screen.
             if let s = await timed("stats", budget: .seconds(2), { await self.statsCollector.collect() }) {
                 stats = s
+                FanControlModel.shared.update(fans: s.fans)
                 await healthMonitor.evaluate(stats: s)
             }
             if let n = await timed("network", budget: .seconds(2), { await self.networkMonitor.measure() }) {
@@ -109,5 +110,9 @@ final class MenuStatsModel {
 final class MenuAppDelegate: NSObject, @preconcurrency NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         MenuStatsModel.shared.start()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        FanControlModel.shared.restoreBeforeQuit()
     }
 }

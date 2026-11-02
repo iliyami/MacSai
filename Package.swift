@@ -10,6 +10,7 @@ let package = Package(
     products: [
         .executable(name: "MacClean", targets: ["MacClean"]),
         .executable(name: "MacCleanMenu", targets: ["MacCleanMenu"]),
+        .executable(name: "MacSaiFanHelper", targets: ["MacSaiFanHelper"]),
         .library(name: "MacCleanKit", targets: ["MacCleanKit"]),
     ],
     dependencies: [
@@ -26,8 +27,20 @@ let package = Package(
         ),
         .executableTarget(
             name: "MacCleanMenu",
-            dependencies: ["MacCleanKit"],
+            dependencies: ["MacCleanKit", "MacSaiSMC"],
             path: "Sources/MacCleanMenu"
+        ),
+        // Opt-in root LaunchDaemon for fan control (issue #242), nested in
+        // the menu app by scripts/build-dmg.sh.
+        .executableTarget(
+            name: "MacSaiFanHelper",
+            dependencies: ["MacCleanKit", "MacSaiSMC"],
+            path: "Sources/MacSaiFanHelper"
+        ),
+        .target(
+            name: "MacSaiSMC",
+            dependencies: ["MacCleanKit"],
+            path: "Sources/MacSaiSMC"
         ),
         .target(
             name: "MacCleanKit",

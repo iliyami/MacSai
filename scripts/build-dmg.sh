@@ -79,6 +79,7 @@ BUILD_ARCHS="${BUILD_ARCHS:---arch arm64 --arch x86_64}"
 echo "[1/7] Building release binaries (${BUILD_ARCHS})..."
 swift build -c release ${BUILD_ARCHS} --product MacClean
 swift build -c release ${BUILD_ARCHS} --product MacCleanMenu
+swift build -c release ${BUILD_ARCHS} --product MacSaiFanHelper
 BUILD_DIR=$(swift build -c release ${BUILD_ARCHS} --product MacClean --show-bin-path)
 echo "  → Binaries: ${BUILD_DIR}"
 
@@ -218,6 +219,43 @@ if [ -f "Resources/AppIcon.icns" ]; then
     cp "Resources/AppIcon.icns" "${MENU_APP}/Contents/Resources/"
 fi
 
+# Step 2.6: Nest the opt-in fan helper (issue #242) in the menu app. It is
+# only installed when the user turns on fan control, through
+# SMAppService.daemon(plistName:), which looks for the plist in
+# Contents/Library/LaunchDaemons of the registering app. The binary is named
+# after its bundle id so its code-signing identifier matches the requirement
+# the menu app checks (MCConstants.codeSigningRequirement).
+echo "[2.6/7] Bundling fan helper..."
+FAN_HELPER_ID="com.macclean.fanhelper"
+cp "${BUILD_DIR}/MacSaiFanHelper" "${MENU_APP}/Contents/MacOS/${FAN_HELPER_ID}"
+mkdir -p "${MENU_APP}/Contents/Library/LaunchDaemons"
+cat > "${MENU_APP}/Contents/Library/LaunchDaemons/${FAN_HELPER_ID}.plist" << FAN_PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>${FAN_HELPER_ID}</string>
+    <key>BundleProgram</key>
+    <string>Contents/MacOS/${FAN_HELPER_ID}</string>
+    <key>MachServices</key>
+    <dict>
+        <key>${FAN_HELPER_ID}</key>
+        <true/>
+    </dict>
+    <key>AssociatedBundleIdentifiers</key>
+    <array>
+        <string>com.macclean.menu</string>
+    </array>
+    <!-- Start at boot and after a crash so startup restores automatic fans. -->
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>
+FAN_PLIST
+
 # Step 3: Entitlements (needed for notarization with hardened runtime).
 # Keep this OUTSIDE the DMG staging folder — it is codesign input only and
 # must not appear as a loose file on the mounted disk image (issue #149).
@@ -237,7 +275,10 @@ ENTITLEMENTS
 
 # Step 4: Sign the app
 echo "[4/7] Signing app bundle..."
+FAN_HELPER_BIN="${APP_BUNDLE}/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/com.macclean.fanhelper"
 if [[ "$NOTARIZE" == "true" ]]; then
+    codesign --force --options runtime --identifier com.macclean.fanhelper \
+        --sign "$SIGNING_IDENTITY" --timestamp "${FAN_HELPER_BIN}"
     codesign --force --deep --options runtime \
         --entitlements "${ENTITLEMENTS_FILE}" \
         --sign "$SIGNING_IDENTITY" \
@@ -245,6 +286,7 @@ if [[ "$NOTARIZE" == "true" ]]; then
         "${APP_BUNDLE}"
     echo "  → Signed with Developer ID + hardened runtime"
 else
+    codesign --force --identifier com.macclean.fanhelper --sign "$SIGNING_IDENTITY" "${FAN_HELPER_BIN}"
     codesign --force --deep --sign "$SIGNING_IDENTITY" "${APP_BUNDLE}"
     echo "  → Ad-hoc signed (no Developer ID provided)"
 fi
