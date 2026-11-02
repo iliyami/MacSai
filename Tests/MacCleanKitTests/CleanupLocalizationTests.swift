@@ -14,7 +14,7 @@ final class CleanupLocalizationTests: AppLanguageTestCase {
     ]
 
     func testStaticCleanupCopyIsTranslatedForEveryDictionaryBackedLanguage() {
-        for language in [AppLanguage.de, .fr, .it, .zhHant] {
+        for language in [AppLanguage.de, .fr, .it, .es, .zhHant] {
             AppLanguage.current = language
             for key in staticKeys {
                 let value = L10n.tr(key, "UNTRANSLATED", "Russian")
@@ -29,7 +29,7 @@ final class CleanupLocalizationTests: AppLanguageTestCase {
         AppLanguage.current = .en
         let english = [CleanupStrings.selectionSummary(selected: 2, total: 21),
                        CleanupStrings.confirmationTitle(count: 2), CleanupStrings.itemCount(2)]
-        for language in [AppLanguage.de, .fr, .it, .ru, .zhHans, .zhHant] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ru, .zhHans, .zhHant] {
             AppLanguage.current = language
             let localized = [CleanupStrings.selectionSummary(selected: 2, total: 21),
                              CleanupStrings.confirmationTitle(count: 2), CleanupStrings.itemCount(2)]
