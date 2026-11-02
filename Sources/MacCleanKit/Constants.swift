@@ -201,6 +201,7 @@ public enum MCConstants {
         "fr.lproj", "fr-FR.lproj", "fr_FR.lproj", "French.lproj",
         "es.lproj", "es-ES.lproj", "es_ES.lproj", "es-MX.lproj", "es_MX.lproj", "es-419.lproj", "es_419.lproj",
         "es-US.lproj", "es_US.lproj", "Spanish.lproj",
+        "pt.lproj", "pt-BR.lproj", "pt_BR.lproj", "Portuguese.lproj", "Portuguese (Brazil).lproj", "Brazilian Portuguese.lproj",
         "it.lproj", "it-IT.lproj", "it_IT.lproj", "it-CH.lproj", "it_CH.lproj", "Italian.lproj",
     ]
 

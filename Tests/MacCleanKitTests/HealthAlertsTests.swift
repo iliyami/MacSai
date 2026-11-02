@@ -74,17 +74,17 @@ final class HealthAlertLocalizationTests: AppLanguageTestCase {
         ]
     }
 
-    /// German, French and Italian fall back to English and Traditional
+    /// German, French, Italian and Brazilian Portuguese fall back to English and Traditional
     /// Chinese to Simplified when a key is missing, so each must differ,
     /// except where the right translation is spelled the same.
     func testEveryStringIsTranslatedInEveryLanguage() {
-        let swapLine = 7 // "Swap 1 byte" is also German, French and Italian.
+        let swapLine = 7 // "Swap 1 byte" is also German, French, Italian and Brazilian Portuguese.
         let sameInTraditional: Set = [0, 5] // 提醒, 不提醒
         AppLanguage.current = .en
         let english = allStrings()
         AppLanguage.current = .zhHans
         let simplified = allStrings()
-        for language in [AppLanguage.de, .fr, .it, .es] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ptBR] {
             AppLanguage.current = language
             for (index, translated) in allStrings().enumerated() where index != swapLine {
                 XCTAssertNotEqual(translated, english[index], "\(language): \(english[index])")
@@ -97,7 +97,7 @@ final class HealthAlertLocalizationTests: AppLanguageTestCase {
     }
 
     func testPlaceholdersAreFilledInEveryLanguage() {
-        for language in [AppLanguage.en, .de, .fr, .it, .es, .ru, .zhHans, .zhHant] {
+        for language in [AppLanguage.en, .de, .fr, .it, .es, .ptBR, .ru, .zhHans, .zhHant] {
             AppLanguage.current = language
             let body = HealthAlertStrings.swapAlertBody(used: 6_800_000_000, threshold: 4_000_000_000)
             XCTAssertFalse(body.contains("{"), "\(language): \(body)")

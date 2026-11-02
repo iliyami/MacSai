@@ -23,6 +23,8 @@ final class LaunchAtLoginErrorLocalizationTests: EnglishAppLanguageTestCase {
             (.it, "Impossibile attivare l'apertura al login: MSG", "Impossibile disattivare l'apertura al login: MSG"),
             (.es, "No se pudo activar Abrir al iniciar sesión: MSG",
              "No se pudo desactivar Abrir al iniciar sesión: MSG"),
+            (.ptBR, "Não foi possível ativar a abertura ao iniciar sessão: MSG",
+             "Não foi possível desativar a abertura ao iniciar sessão: MSG"),
             (.ru, "Не удалось включить запуск при входе: MSG", "Не удалось отключить запуск при входе: MSG"),
             (.zhHans, "无法开启登录时启动：MSG", "无法关闭登录时启动：MSG"),
             (.zhHant, "無法開啟登入時啟動：MSG", "無法關閉登入時啟動：MSG"),
