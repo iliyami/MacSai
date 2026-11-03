@@ -217,6 +217,8 @@ public enum MCConstants {
     /// Opened in the browser from the post-clean support card and Settings.
     /// Never fetched by the app, so it is not part of the network surface.
     public static let supportURL = URL(string: "https://buymeacoffee.com/iliyami")!
+    /// Opened from the Supporters row in Settings. Never fetched either.
+    public static let membershipURL = URL(string: "https://buymeacoffee.com/iliyami/membership")!
     public static let latestReleaseAPI = URL(string: "https://api.github.com/repos/iliyami/MacSai/releases/latest")!
     /// Homebrew's public API for the official cask. Its `version` reflects what
     /// `brew upgrade --cask mac-sai` can actually install right now (autobump
@@ -232,5 +234,5 @@ public enum MCConstants {
     // plugin was tried (commit history) but doesn't work under multi-arch
     // `swift build --arch arm64 --arch x86_64` because xcbuild doesn't
     // execute plugins.
-    public static let appVersion = "1.28.0"
+    public static let appVersion = "1.28.1"
 }

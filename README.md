@@ -433,7 +433,16 @@ Inspired by the open-source Mac utility community:
 
 ## Support and sponsors
 
-Mac Sai is free and stays free: no paid tier, no ads, no tracking. If it saved you from a cleaner subscription, you can [buy me a coffee ☕](https://buymeacoffee.com/iliyami). It keeps the releases signed, notarized, and coming.
+Mac Sai is free and stays free: no paid tier, no ads, no tracking. If it saved you from a cleaner subscription, you can [buy me a coffee ☕](https://buymeacoffee.com/iliyami) or [become a member](https://buymeacoffee.com/iliyami/membership). It keeps the releases signed, notarized, and coming.
+
+### Supporters
+
+Members get behind-the-scenes posts, an early look at each release, opt-in beta builds, and their name in the app. Nothing in the app is ever locked behind a membership.
+
+<p align="center">
+  <em>No members yet.</em> <a href="https://buymeacoffee.com/iliyami/membership">Be the first →</a><br>
+  <sub>Power User and Team members are thanked here. Everyone is listed in <a href="SUPPORTERS.md">SUPPORTERS.md</a>.</sub>
+</p>
 
 ### Sponsor slot
 

@@ -433,7 +433,16 @@ Inspiré par la communauté open source des utilitaires Mac :
 
 ## Soutien et sponsors
 
-Mac Sai est gratuit et le restera : pas de version payante, pas de pub, pas de pistage. S'il vous a évité un abonnement à un nettoyeur, vous pouvez [m'offrir un café ☕](https://buymeacoffee.com/iliyami). Cela permet de continuer à publier des versions signées et notariées.
+Mac Sai est gratuit et le restera : pas de version payante, pas de pub, pas de pistage. S'il vous a évité un abonnement à un nettoyeur, vous pouvez [m'offrir un café ☕](https://buymeacoffee.com/iliyami) ou [devenir membre](https://buymeacoffee.com/iliyami/membership). Cela permet de continuer à publier des versions signées et notariées.
+
+### Soutiens
+
+Les membres reçoivent les coulisses du développement, un aperçu de chaque version, des bêtas sur demande et leur nom dans l'application. Rien dans l'application n'est jamais réservé aux membres.
+
+<p align="center">
+  <em>Aucun membre pour l'instant.</em> <a href="https://buymeacoffee.com/iliyami/membership">Soyez le premier →</a><br>
+  <sub>Les membres Power User et Team sont remerciés ici. Tout le monde figure dans <a href="SUPPORTERS.md">SUPPORTERS.md</a> (en anglais).</sub>
+</p>
 
 ### Emplacement sponsor
 

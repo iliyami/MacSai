@@ -433,7 +433,16 @@ Inspiriert von der Open-Source-Community rund um Mac-Werkzeuge:
 
 ## Unterstützung und Sponsoren
 
-Mac Sai ist kostenlos und bleibt es: keine Bezahlversion, keine Werbung, kein Tracking. Wenn es dir ein Abo für ein Reinigungsprogramm erspart hat, kannst du mir [einen Kaffee spendieren ☕](https://buymeacoffee.com/iliyami). Das hält die Releases signiert, notarisiert und regelmäßig.
+Mac Sai ist kostenlos und bleibt es: keine Bezahlversion, keine Werbung, kein Tracking. Wenn es dir ein Abo für ein Reinigungsprogramm erspart hat, kannst du mir [einen Kaffee spendieren ☕](https://buymeacoffee.com/iliyami) oder [Mitglied werden](https://buymeacoffee.com/iliyami/membership). Das hält die Releases signiert, notarisiert und regelmäßig.
+
+### Unterstützer
+
+Mitglieder bekommen Einblicke hinter die Kulissen, einen frühen Blick auf jedes Release, auf Wunsch Beta-Versionen und ihren Namen in der App. In der App ist nie etwas hinter einer Mitgliedschaft versteckt.
+
+<p align="center">
+  <em>Noch keine Mitglieder.</em> <a href="https://buymeacoffee.com/iliyami/membership">Werde das erste →</a><br>
+  <sub>Power-User- und Team-Mitglieder werden hier genannt. Alle stehen in <a href="SUPPORTERS.md">SUPPORTERS.md</a> (Englisch).</sub>
+</p>
 
 ### Sponsorenplatz
 
