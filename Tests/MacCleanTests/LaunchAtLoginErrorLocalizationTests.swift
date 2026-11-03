@@ -26,6 +26,7 @@ final class LaunchAtLoginErrorLocalizationTests: EnglishAppLanguageTestCase {
             (.ptBR, "Não foi possível ativar a abertura ao iniciar sessão: MSG",
              "Não foi possível desativar a abertura ao iniciar sessão: MSG"),
             (.ja, "ログイン時に起動をオンにできませんでした：MSG", "ログイン時に起動をオフにできませんでした：MSG"),
+            (.ko, "로그인 시 실행을 켤 수 없음: MSG", "로그인 시 실행을 끌 수 없음: MSG"),
             (.ru, "Не удалось включить запуск при входе: MSG", "Не удалось отключить запуск при входе: MSG"),
             (.zhHans, "无法开启登录时启动：MSG", "无法关闭登录时启动：MSG"),
             (.zhHant, "無法開啟登入時啟動：MSG", "無法關閉登入時啟動：MSG"),
