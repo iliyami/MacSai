@@ -335,6 +335,10 @@ final class LocalizationTests: AppLanguageTestCase {
 
     func testSpanishLanguageResourcesCannotBeOfferedForCleanup() {
         for folder in ["es.lproj", "es-ES.lproj", "es_MX.lproj", "es-419.lproj", "Spanish.lproj"] {
+            XCTAssertTrue(LanguagePreferences.alwaysKept.contains(folder), folder)
+        }
+    }
+
     func testJapaneseLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.ja))
         XCTAssertEqual(AppLanguage.ja.rawValue, "ja")
