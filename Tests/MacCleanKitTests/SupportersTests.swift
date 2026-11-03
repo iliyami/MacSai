@@ -64,7 +64,7 @@ final class SupporterStringsTests: AppLanguageTestCase {
         let english = allStrings()
         AppLanguage.current = .zhHans
         let simplified = allStrings()
-        for language in [AppLanguage.de, .fr, .it, .ru, .ja, .ptBR, .es] {
+        for language in [AppLanguage.de, .fr, .it, .ru, .ko, .ja, .ptBR, .es] {
             AppLanguage.current = language
             for (index, translated) in allStrings().enumerated() {
                 XCTAssertNotEqual(translated, english[index], "\(language): \(english[index])")
@@ -77,7 +77,7 @@ final class SupporterStringsTests: AppLanguageTestCase {
     }
 
     func testPlaceholderIsFilledInEveryLanguage() {
-        for language in [AppLanguage.en, .de, .fr, .it, .ru, .zhHans, .zhHant, .ja, .ptBR, .es] {
+        for language in [AppLanguage.en, .de, .fr, .it, .ru, .zhHans, .zhHant, .ko, .ja, .ptBR, .es] {
             AppLanguage.current = language
             let caption = SupporterStrings.caption(for: ["Ada"])
             XCTAssertTrue(caption.contains("Ada"), "\(language): \(caption)")
