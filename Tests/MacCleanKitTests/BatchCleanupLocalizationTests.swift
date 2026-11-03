@@ -31,7 +31,7 @@ final class BatchCleanupLocalizationTests: AppLanguageTestCase {
         ]
         // These phrases are written identically in both Chinese scripts.
         let sameInTraditional: Set<String> = ["清理已停止", "完成", "清理完成"]
-        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .zhHant] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .zhHant] {
             AppLanguage.current = language
             for key in keys {
                 let value = L10n.tr(key, "MISSING_CLEANUP_TRANSLATION", "RU")
