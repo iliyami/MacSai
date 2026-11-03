@@ -637,8 +637,11 @@ struct SettingsPageView: View {
                      title: L10n.tr("发行说明", "Release notes", "Примечания к выпуску"), caption: L10n.tr("更新日志和历史版本", "Changelog and previous versions", "История изменений и предыдущие версии"),
                      url: MCConstants.releasesURL)
             aboutRow(icon: "cup.and.saucer.fill", tint: .yellow,
-                     title: L10n.tr("支持 Mac Sai", "Support Mac Sai", "Поддержать Mac Sai"), caption: L10n.tr("请开发者喝杯咖啡", "Buy the developer a coffee", "Угостить разработчика кофе"),
+                     title: L10n.tr("支持 Mac Sai", "Support Mac Sai", "Поддержать Mac Sai"), caption: SupporterStrings.supportCaption,
                      url: MCConstants.supportURL)
+            aboutRow(icon: "heart.fill", tint: .pink,
+                     title: SupporterStrings.title, caption: SupporterStrings.caption(for: Supporters.names),
+                     url: MCConstants.membershipURL)
         }
     }
 
@@ -656,6 +659,7 @@ struct SettingsPageView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                     Text(caption).font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
                 Image(systemName: "arrow.up.right")

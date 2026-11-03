@@ -429,7 +429,16 @@ BSD 3-Clause。詳見 [LICENSE](LICENSE)。你可以使用、修改和再分發�
 
 ## 支持與贊助
 
-Mac Sai 免費，而且會一直免費：沒有付費版，沒有廣告，沒有追蹤。如果它幫你省下了一筆清理軟體的訂閱費，歡迎[請我喝杯咖啡 ☕](https://buymeacoffee.com/iliyami)。這能讓每個版本繼續保持簽署、公證，並持續更新。
+Mac Sai 免費，而且會一直免費：沒有付費版，沒有廣告，沒有追蹤。如果它幫你省下了一筆清理軟體的訂閱費，歡迎[請我喝杯咖啡 ☕](https://buymeacoffee.com/iliyami)，或[成為會員](https://buymeacoffee.com/iliyami/membership)。這能讓每個版本繼續保持簽署、公證，並持續更新。
+
+### 支持者
+
+會員可以看到幕後開發動態、搶先了解每個版本、自願試用測試版，名字也會出現在 App 裡。App 裡沒有任何功能需要會員才能使用。
+
+<p align="center">
+  <em>還沒有會員。</em> <a href="https://buymeacoffee.com/iliyami/membership">來做第一個 →</a><br>
+  <sub>Power User 和 Team 會員會在這裡致謝。所有支持者都列在 <a href="SUPPORTERS.md">SUPPORTERS.md</a>（英文）。</sub>
+</p>
 
 ### 贊助位
 
