@@ -1,5 +1,6 @@
 import XCTest
 import Foundation
+import MacCleanTestSupport
 
 /// Guards issue #1: the README must keep a user-verifiable "no telemetry"
 /// section with copy-pasteable commands — not just a marketing claim.
@@ -19,14 +20,73 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             src.contains(headingNeedle),
             "\(fileName) must include heading «\(headingNeedle)» (issue #1)"
         )
+        try assertLiveSocketScope(in: src, fileName: fileName)
         XCTAssertTrue(
-            src.contains("lsof") || src.contains("URLSession"),
-            "\(fileName) telemetry section must include a copy-pasteable verification command"
+            src.contains("bash scripts/check-network-surface.sh \"/Applications/Mac Sai.app\""),
+            "\(fileName) must check the installed bundle, not only the main executable or source"
         )
-        XCTAssertTrue(
-            src.contains("nm -u"),
-            "\(fileName) must include the binary-inspection step (nm -u) so verification covers the shipped artifact, not just the source"
-        )
+        for component in ["Sparkle.framework", "Autoupdate", "Updater.app", "Downloader.xpc", "Installer.xpc"] {
+            XCTAssertTrue(src.contains(component), "\(fileName) must disclose the checked component \(component)")
+        }
+    }
+
+    /// Run the documented command with fixture processes, including similarly
+    /// named unrelated helpers. Nothing queries real sockets or user processes.
+    private func assertLiveSocketScope(in source: String, fileName: String) throws {
+        let blocks = source.components(separatedBy: "```bash\n").dropFirst()
+            .compactMap { $0.components(separatedBy: "```").first }
+        let snippet = try XCTUnwrap(blocks.first { $0.contains("lsof") }, "\(fileName) needs a live socket command")
+        try TestFixtures.withTempDir { directory in
+            let app = directory.appending(path: "Mac Sai.app")
+            let commands = directory.appending(path: "commands")
+            let socketArguments = directory.appending(path: "socket-arguments")
+            try FileManager.default.createDirectory(at: app, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: commands, withIntermediateDirectories: true)
+            let fixtures = [
+                "ps": """
+                #!/bin/bash
+                if [ "$1" = "-ww" ]; then
+                  MACSAI_TEST_APP=$(cd "$MACSAI_TEST_APP" && pwd -P) || exit 1
+                  printf ' 11 %s/Contents/MacOS/MacClean\\n' "$MACSAI_TEST_APP"
+                  printf ' 12 %s/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu\\n' "$MACSAI_TEST_APP"
+                  printf ' 21 /Applications/Other.app/Contents/MacOS/Installer\\n'
+                  printf ' 22 %s-extra/Contents/MacOS/Updater\\n' "$MACSAI_TEST_APP"
+                fi
+                """,
+                "lsof": """
+                #!/bin/bash
+                printf '%s\\n' "$@" > "$MACSAI_TEST_SOCKET_ARGUMENTS"
+                """,
+            ]
+            for (name, script) in fixtures {
+                let url = commands.appending(path: name)
+                try script.write(to: url, atomically: true, encoding: .utf8)
+                try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: url.path)
+            }
+            let process = Process()
+            process.executableURL = URL(filePath: "/bin/bash")
+            process.arguments = ["-c", snippet.replacingOccurrences(of: "/Applications/Mac Sai.app", with: app.path)]
+            process.environment = [
+                "PATH": commands.path + ":/usr/bin:/bin:/usr/sbin:/sbin",
+                "MACSAI_TEST_APP": app.resolvingSymlinksInPath().path,
+                "MACSAI_TEST_SOCKET_ARGUMENTS": socketArguments.path,
+            ]
+            let output = Pipe()
+            process.standardOutput = output
+            process.standardError = output
+            try process.run()
+            process.waitUntilExit()
+            let diagnostics = String(decoding: output.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+            XCTAssertEqual(process.terminationStatus, 0, "\(fileName): \(diagnostics)")
+            XCTAssertTrue(FileManager.default.fileExists(atPath: socketArguments.path), "\(fileName): \(diagnostics)")
+            guard FileManager.default.fileExists(atPath: socketArguments.path) else { return }
+            let arguments = try String(contentsOf: socketArguments, encoding: .utf8).split(separator: "\n").map(String.init)
+            let pidOption = try XCTUnwrap(arguments.firstIndex(of: "-p"), "\(fileName) must select explicit process IDs")
+            XCTAssertLessThan(pidOption + 1, arguments.count)
+            guard pidOption + 1 < arguments.count else { return }
+            XCTAssertEqual(arguments[pidOption + 1], "11,12", "\(fileName) must exclude unrelated Installer/Updater and sibling bundles")
+            XCTAssertTrue(arguments.contains("-a") && arguments.contains("-i"), "\(fileName) must intersect sockets with the selected PIDs")
+        }
     }
 
     func testEnglishReadmeHasVerifyNoTelemetrySection() throws {

@@ -26,6 +26,7 @@ struct SettingsPageView: View {
     @AppStorage(AppLanguage.defaultsKey, store: SharedAppState.defaults) private var appLanguageRaw = AppLanguage.system.rawValue
     @AppStorage(HealthAlertSettings.memoryPressureAlertKey, store: SharedAppState.defaults) private var memoryPressureAlert = true
     @AppStorage(HealthAlertSettings.swapAlertThresholdKey, store: SharedAppState.defaults) private var swapAlertThresholdGB = 0
+    @State private var selfUpdater = SelfUpdateController.shared
     @State private var launcher = MenuBarLauncher.shared
     @State private var loginLauncher = LaunchAtLoginManager.shared
     @State private var updateState: UpdateUIState = .idle
@@ -86,23 +87,49 @@ struct SettingsPageView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(MCConstants.appName)
                         .font(.title2.weight(.semibold))
-                    Text(L10n.tr("版本 \(MCConstants.appVersion)", "Version \(MCConstants.appVersion)", "Версия \(MCConstants.appVersion)"))
+                    Text(L10n.tr("版本", "Version", "Версия") + " " + selfUpdater.installedVersion)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
                 updateControl
             }
-            if case .available(let version, let url) = updateState {
+            if !selfUpdater.usesInAppUpdates, case .available(let version, let url) = updateState {
                 updateAvailableRow(version: version, url: url)
             }
-            Toggle(L10n.tr("自动检查更新", "Automatically check for updates", "Автоматически проверять обновления"),
-                   isOn: $automaticUpdateChecks)
-            if lastUpdateCheckTimestamp > 0 {
-                Text(L10n.tr(
-                    "上次检查：\(lastCheckedDescription)",
-                    "Last checked: \(lastCheckedDescription)",
-                    "Последняя проверка: \(lastCheckedDescription)"))
+            if selfUpdater.usesInAppUpdates {
+                Toggle(L10n.tr("自动检查更新", "Automatically check for updates", "Автоматически проверять обновления"),
+                       isOn: Binding(get: { selfUpdater.automaticChecks }, set: { selfUpdater.setAutomaticChecks($0) }))
+                Toggle(L10n.tr("自动下载并安装更新", "Automatically download and install updates", "Автоматически загружать и устанавливать обновления"),
+                       isOn: Binding(get: { selfUpdater.automaticDownloads }, set: { selfUpdater.setAutomaticDownloads($0) }))
+                    .disabled(!selfUpdater.automaticChecks)
+                Text(L10n.tr("更新会在退出时安装，也可以选择立即重启应用。", "Updates install when you quit, or you can choose to restart the app now.", "Обновления устанавливаются при выходе. Можно также выбрать немедленный перезапуск приложения."))
+                    .font(.caption).foregroundStyle(.secondary)
+                if let channel = Bundle.main.object(forInfoDictionaryKey: "MacSaiUpdateChannelName") as? String {
+                    Text(L10n.tr("更新频道：", "Update channel: ", "Канал обновлений: ") + channel)
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+                if let message = selfUpdater.lastError {
+                    Text(message).font(.caption).foregroundStyle(.secondary)
+                }
+                if selfUpdater.canRetryInstallation {
+                    Button(L10n.tr("重试安装", "Retry Installation", "Повторить установку")) {
+                        selfUpdater.retryInstallation()
+                    }
+                }
+            } else {
+                Toggle(L10n.tr("自动检查更新", "Automatically check for updates", "Автоматически проверять обновления"),
+                       isOn: $automaticUpdateChecks)
+                if !selfUpdater.isHomebrew {
+                    Text(L10n.tr("此版本尚未配置应用内安装。", "In-app installation is not configured in this build.", "В этой сборке установка обновлений внутри приложения ещё не настроена."))
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            if let checked = selfUpdater.lastCheckDate, selfUpdater.usesInAppUpdates {
+                Text(L10n.tr("上次检查：", "Last checked: ", "Последняя проверка: ") + checked.formatted())
+                    .font(.caption).foregroundStyle(.secondary)
+            } else if lastUpdateCheckTimestamp > 0 {
+                Text(L10n.tr("上次检查：", "Last checked: ", "Последняя проверка: ") + lastCheckedDescription)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -116,26 +143,33 @@ struct SettingsPageView: View {
 
     @ViewBuilder
     private var updateControl: some View {
-        switch updateState {
-        case .idle:
-            Button(L10n.tr("检查更新", "Check for Updates", "Проверить обновления")) { startUpdateCheck() }
-        case .checking:
-            HStack(spacing: 6) {
-                ProgressView().controlSize(.small)
-                Text(L10n.tr("正在检查…", "Checking…", "Проверка…")).foregroundStyle(.secondary)
+        if selfUpdater.usesInAppUpdates {
+            Button(L10n.tr("检查更新", "Check for Updates", "Проверить обновления")) {
+                selfUpdater.checkForUpdates()
             }
-        case .upToDate:
-            HStack(spacing: 4) {
-                Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
-                Text(L10n.tr("已是最新", "Up to date", "Установлена последняя версия"))
-            }
-        case .available:
-            EmptyView()   // detail rendered by updateAvailableRow
-        case .failed(let message):
-            HStack(spacing: 6) {
-                Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
-                Text(message).font(.caption).foregroundStyle(.secondary).lineLimit(1)
-                Button(L10n.tr("重试", "Retry", "Повторить")) { startUpdateCheck() }
+            .disabled(!selfUpdater.canCheckForUpdates || selfUpdater.isPreparingInstallation)
+        } else {
+            switch updateState {
+            case .idle:
+                Button(L10n.tr("检查更新", "Check for Updates", "Проверить обновления")) { startUpdateCheck() }
+            case .checking:
+                HStack(spacing: 6) {
+                    ProgressView().controlSize(.small)
+                    Text(L10n.tr("正在检查…", "Checking…", "Проверка…")).foregroundStyle(.secondary)
+                }
+            case .upToDate:
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    Text(L10n.tr("已是最新", "Up to date", "Установлена последняя версия"))
+                }
+            case .available:
+                EmptyView()   // detail rendered by updateAvailableRow
+            case .failed(let message):
+                HStack(spacing: 6) {
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.orange)
+                    Text(message).font(.caption).foregroundStyle(.secondary).lineLimit(1)
+                    Button(L10n.tr("重试", "Retry", "Повторить")) { startUpdateCheck() }
+                }
             }
         }
     }

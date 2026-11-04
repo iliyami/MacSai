@@ -320,12 +320,13 @@ Ne nous croyez pas sur parole. Le code source comme le processus en cours d'exé
 **1. Cherchez dans le code les API réseau**
 
 ```bash
-rg -n 'URLSession|NSURLConnection' Sources --glob '*.swift'
+rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.swift'
 ```
 
-Vous ne devriez jamais voir que trois chemins réseau, tous optionnels et en lecture seule :
+Les accès réseau facultatifs sont indiqués ci-dessous. Le nettoyage local n’envoie ni résultats d’analyse ni listes de fichiers :
 
-- `Sources/MacCleanKit/UpdateChecker.swift` : la vérification optionnelle des mises à jour de Mac Sai (désactivable dans les Réglages)
+- `Sources/MacClean/Services/SelfUpdateController.swift`: Sparkle consulte le flux HTTPS inscrit dans l’application signée et télécharge les notes de version et les archives de mise à jour signées. La recherche automatique et le téléchargement/installation automatiques sont des réglages distincts ; le profilage système et JavaScript dans les notes sont désactivés. Voir la [configuration des mises à jour](docs/IN_APP_UPDATES.md). Pour les installations directes configurées, la recherche automatique des mises à jour est activée par défaut et a lieu une fois par jour ; chaque requête contient les versions de l’application et de Sparkle dans le User-Agent, et cette recherche peut être désactivée dans Réglages.
+- `Sources/MacCleanKit/UpdateChecker.swift`: les vérifications Homebrew et la page des versions en solution de repli pour les builds sans flux signé configuré
 - `Sources/MacClean/Modules/Updater/UpdaterModule.swift` : la vérification, déclenchée par l'utilisateur, des flux Sparkle *d'autres apps* lorsque vous ouvrez l'Updater
 - `Sources/MacCleanKit/MalwareBazaarFeed.swift` : le téléchargement optionnel des hachages MalwareBazaar. Il ne s'exécute que si vous ajoutez votre propre Auth-Key abuse.ch et cliquez sur Mettre à jour maintenant dans Réglages > Bases de logiciels malveillants. Chaque requête n'envoie que votre Auth-Key et la requête, jamais de hachages ni de chemins de fichiers. Lorsqu'un hachage téléchargé correspond à un fichier signé, macOS demande à Apple si son certificat de signature a été révoqué, la même vérification que celle de Gatekeeper ; cette requête porte sur le certificat, pas sur vos fichiers
 
@@ -334,28 +335,62 @@ Il n'y a aucun SDK d'analytique, de rapport de plantage ou de traqueur nulle par
 **2. Observez le processus en direct**
 
 ```bash
-lsof -i -P -n | grep -i 'MacClean\|Mac Sai\|MacSai' || echo "no network sockets"
+(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)
 ```
 
-Attendu : aucune connexion établie tant que vous ne faites que nettoyer localement. Little Snitch ou LuLu rendent la même vérification visuelle.
+Cet instantané sélectionne les PID selon le chemin des exécutables dans le paquet choisi, ce qui exclut les processus Installer/Updater sans rapport. Les assistants Sparkle copiés ailleurs et les services de confiance de macOS sont hors de cette sélection ; utilisez un pare-feu qui distingue les processus pour les observer. Exécutez la commande pendant une recherche ou un téléchargement pour voir les connexions brèves.
+
+Lorsque les vérifications/téléchargements de mises à jour et la vérification facultative des logiciels malveillants sont inactifs, le nettoyage local n’ouvre aucune connexion réseau. Pendant une mise à jour, observez aussi les sous-processus Sparkle ; les vérifications de certificats Apple passent par les services de confiance de macOS. Little Snitch ou LuLu permettent également de les visualiser.
 
 **3. Inspectez le binaire que vous avez réellement installé**
 
-Le code source et le binaire signé sont deux artefacts différents, la vérification la plus forte s'exécute donc contre l'app sur votre disque, pas contre ce dépôt. Après `brew install --cask mac-sai` :
+Pour une installation par DMG ou Homebrew, cette boucle ne demande que les outils en ligne de commande de macOS, sans copie du code ni Python. Elle lit les sept binaires fournis et affiche les imports réseau courants, les URL statiques et les chaînes de traceurs pour une inspection manuelle :
 
 ```bash
-APP="/Applications/Mac Sai.app/Contents/MacOS/MacClean"
-
-# Les classes réseau que le binaire importe (seul URLSession apparaît) :
-nm -u "$APP" | grep -iE 'URLSession|NWConnection|CFSocket' | sort -u
-
-# Chaque URL compilée dans le binaire (seuls les trois points de terminaison déclarés sont appelés) :
-strings -a "$APP" | grep -iE 'https?://' | sort -u
+(
+MACSAI_APP="/Applications/Mac Sai.app"
+MACSAI_SPARKLE="$MACSAI_APP/Contents/Frameworks/Sparkle.framework/Versions/B"
+for MACSAI_BINARY in \
+  "$MACSAI_APP/Contents/MacOS/MacClean" \
+  "$MACSAI_APP/Contents/Library/LoginItems/MacCleanMenu.app/Contents/MacOS/MacCleanMenu" \
+  "$MACSAI_SPARKLE/Sparkle" "$MACSAI_SPARKLE/Autoupdate" \
+  "$MACSAI_SPARKLE/Updater.app/Contents/MacOS/Updater" \
+  "$MACSAI_SPARKLE/XPCServices/Downloader.xpc/Contents/MacOS/Downloader" \
+  "$MACSAI_SPARKLE/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+do
+  printf '\n%s\n' "$MACSAI_BINARY"
+  MACSAI_IMPORTS=$(nm -uj "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_IMPORTS" | grep -Ei \
+    'URLSession|URLConnection|CFNetwork|Network|nw_|DNSService|NetService|curl_|^_(socket|connect|connectx|send|recv)([$]|$)' || true
+  MACSAI_STRINGS=$(strings -a "$MACSAI_BINARY") || exit 1
+  printf '%s\n' "$MACSAI_STRINGS" | grep -Ei \
+    '://|sentry|firebase|mixpanel|amplitude|bugsnag|crashlytics|posthog|appsflyer' || true
+done
+)
 ```
 
-Attendu : la seule classe réseau est `_OBJC_CLASS_$_NSURLSession`, et les seuls points de terminaison appelés sont `api.github.com/repos/iliyami/MacSai/releases/latest`, `formulae.brew.sh/api/cask/mac-sai.json` et `mb-api.abuse.ch/api/v1/` (contacté seulement après l'ajout d'une clé MalwareBazaar et un clic sur Mettre à jour maintenant). Les autres liens `github.com/iliyami/MacSai`, le lien d'inscription `auth.abuse.ch` et le lien de soutien `buymeacoffee.com/iliyami` ouvrent simplement votre navigateur. Aucun traqueur, aucun hôte d'analytique, rien d'autre. Relancez-le après chaque mise à jour ; il décrit toujours exactement la version que vous exécutez.
+Ces listes ne constituent pas un verdict automatique ni la preuve que toutes les destinations choisies à l’exécution sont visibles. Utilisez le contrôle ci-dessous pour l’inventaire complet, les listes d’autorisation explicites et les réglages de confidentialité intégrés.
 
-Note : sur une app Developer ID sans bac à sable comme celle-ci, l'accès réseau n'est pas régi par un entitlement, c'est donc cette inspection des symboles et des chaînes, et non `codesign --entitlements`, qui est la vraie vérification. La même protection s'exécute dans la CI à chaque changement ([`scripts/check-network-surface.sh`](scripts/check-network-surface.sh)).
+Exécutez le contrôle depuis une copie du code correspondant à la version installée. Il inspecte le véritable paquet de l’application : exécutable principal, assistant de barre des menus, `Sparkle.framework`, `Autoupdate`, `Updater.app`, `Downloader.xpc` et `Installer.xpc` :
+
+```bash
+bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"
+```
+
+Résultat attendu : sept fichiers Mach-O vérifiés. Un binaire manquant ou inattendu, un import réseau ou une URL statique non autorisés, ou un marqueur de traqueur font échouer le contrôle. Les imports URLSession sont autorisés dans Mac Sai, son assistant de barre des menus, Sparkle et Downloader ; les autres assistants Sparkle n’ont aucun import réseau autorisé. Les liens de documentation et l’espace de noms XML de Sparkle sont explicitement répertoriés, sans être considérés comme des adresses de téléchargement.
+
+Le script affiche aussi la `SUFeedURL` intégrée et vérifie l’exigence de signature du flux, la vérification avant extraction et les réglages de confidentialité. Comparez les adresses d’archives/notes de ce flux et les flux des autres apps que vous consultez aux connexions observées. Les adresses de repli sont `api.github.com/repos/iliyami/MacSai/releases/latest` et `formulae.brew.sh/api/cask/mac-sai.json` ; celle de la base facultative est `mb-api.abuse.ch/api/v1/`. Les liens du projet, de soutien et des paramètres du navigateur s’ouvrent à votre demande. Le même contrôle du paquet complet s’exécute lors de sa création ; la CI vérifie les deux exécutables compilés et les cinq binaires de la version Sparkle épinglée. [Implémentation et listes d’autorisation](scripts/check-network-surface.py).
 
 ---
 

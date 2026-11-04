@@ -51,6 +51,7 @@ public final class MenuBarLauncher {
     private let service = SMAppService.loginItem(identifier: MCConstants.menuBundleIdentifier)
     private var helperTerminationObserver: NSObjectProtocol?
     private var isLaunchingHelper = false
+    private var applicationUpdateInProgress = false
 
     public var isRegistered: Bool {
         service.status == .enabled
@@ -91,6 +92,7 @@ public final class MenuBarLauncher {
     /// call `SMAppService.register()` — that stays on the enable path so a
     /// crash cannot spam backgroundtaskmanagementd.
     public func ensureHelperRunningIfPreferred() async {
+        guard !applicationUpdateInProgress else { return }
         let enabled = UserDefaults.standard.object(forKey: MenuBarKeepAlive.preferenceKey) as? Bool ?? true
         await reconcileHelper(
             preferenceEnabled: enabled,
@@ -253,6 +255,7 @@ public final class MenuBarLauncher {
     /// on the main actor, so the `lastError` write is safe. Do NOT reintroduce
     /// a completion handler that touches `@MainActor` state here.
     func openHelper(at url: URL) async {
+        guard !applicationUpdateInProgress else { return }
         let config = Self.helperOpenConfiguration()
         do {
             _ = try await NSWorkspace.shared.openApplication(at: url, configuration: config)
@@ -271,6 +274,26 @@ public final class MenuBarLauncher {
         config.hides = false
         config.promptsUserIfNeeded = false
         return config
+    }
+
+    /// Stop the embedded helper before the containing app bundle is replaced.
+    /// The watchdog stays suspended until this process exits or update aborts.
+    func prepareForApplicationUpdate() async -> Bool {
+        applicationUpdateInProgress = true
+        terminateRunningHelper()
+        for _ in 0..<50 {
+            if !isHelperRunning(), !isLaunchingHelper { return true }
+            try? await Task.sleep(for: .milliseconds(100))
+            if Task.isCancelled { return false }
+            terminateRunningHelper()
+        }
+        return !isHelperRunning() && !isLaunchingHelper
+    }
+
+    func resumeAfterCancelledApplicationUpdate() {
+        guard applicationUpdateInProgress else { return }
+        applicationUpdateInProgress = false
+        Task { await ensureHelperRunningIfPreferred() }
     }
 
     private func terminateRunningHelper() {

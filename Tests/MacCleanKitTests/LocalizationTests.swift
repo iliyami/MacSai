@@ -74,6 +74,74 @@ final class LocalizationTests: AppLanguageTestCase {
         XCTAssertTrue(LanguagePreferences.selectableLanguages().isEmpty)
     }
 
+    private static let updaterStrings: [(zhHans: String, english: String, russian: String)] = [
+        ("版本", "Version", "Версия"),
+        ("上次检查：", "Last checked: ", "Последняя проверка: "),
+        ("自动检查更新", "Automatically check for updates", "Автоматически проверять обновления"),
+        ("检查更新", "Check for Updates", "Проверить обновления"),
+        ("检查更新…", "Check for Updates…", "Проверить обновления…"),
+        ("正在检查…", "Checking…", "Проверка…"),
+        ("已是最新", "Up to date", "Установлена последняя версия"),
+        ("重试", "Retry", "Повторить"),
+        ("自动下载并安装更新", "Automatically download and install updates", "Автоматически загружать и устанавливать обновления"),
+        ("更新会在退出时安装，也可以选择立即重启应用。",
+         "Updates install when you quit, or you can choose to restart the app now.",
+         "Обновления устанавливаются при выходе. Можно также выбрать немедленный перезапуск приложения."),
+        ("更新频道：", "Update channel: ", "Канал обновлений: "),
+        ("重试安装", "Retry Installation", "Повторить установку"),
+        ("此版本尚未配置应用内安装。", "In-app installation is not configured in this build.",
+         "В этой сборке установка обновлений внутри приложения ещё не настроена."),
+        ("清理完成后将检查更新。", "Updates will be checked after cleanup finishes.",
+         "Проверка обновлений будет выполнена после завершения очистки."),
+        ("请关闭菜单栏监视器后重试更新。", "Quit the menu bar monitor and try the update again.",
+         "Завершите работу виджета в строке меню и повторите обновление."),
+        ("已取消", "Cancelled", "Отменено"),
+        ("正在准备更新…", "Preparing update…", "Подготовка обновления…"),
+        ("正在等待当前操作完成。", "Waiting for current operations to finish.", "Ожидание завершения текущих операций."),
+        ("更新已准备就绪", "An update is ready to install", "Обновление готово к установке"),
+        ("Mac Sai 仍在完成当前操作。您可以等待操作完成后退出并安装更新，或留在应用中。",
+         "Mac Sai is still finishing an operation. You can wait, then quit and install the update, or stay in the app.",
+         "Mac Sai ещё выполняет операцию. Можно дождаться её завершения, выйти и установить обновление или остаться в приложении."),
+        ("等待并退出", "Wait and Quit", "Дождаться и выйти"),
+        ("留在应用中", "Stay in App", "Остаться в приложении"),
+        ("暂时无法退出", "Unable to quit yet", "Пока не удалось выйти"),
+        ("好", "OK", "ОК"),
+        ("取消", "Cancel", "Отмена"),
+    ]
+
+    func testUpdaterStringsResolveInEverySupportedDictionary() {
+        // These words use the same characters in both Chinese scripts.
+        let unchangedTraditional: Set<String> = ["版本", "已是最新", "已取消", "好", "取消"]
+        // The three inline source languages are checked separately. Enumerate
+        // every other language so newly supported dictionaries cannot be missed.
+        let inlineLanguages: Set<AppLanguage> = [.system, .en, .ru, .zhHans]
+        for language in AppLanguage.allCases where !inlineLanguages.contains(language) {
+            AppLanguage.current = language
+            for source in Self.updaterStrings {
+                let key = source.zhHans
+                let translated = L10n.tr(key, "MISSING", "MISSING")
+                XCTAssertNotEqual(translated, "MISSING", "\(language): \(key)")
+                XCTAssertFalse(translated.isEmpty, "\(language): \(key)")
+                if language == .zhHant && !unchangedTraditional.contains(key) {
+                    XCTAssertNotEqual(translated, key, "Traditional Chinese must not fall back to Simplified Chinese")
+                }
+            }
+        }
+    }
+
+    func testUpdaterStringsUseInlineCopyForEnglishRussianAndSimplifiedChinese() {
+        for source in Self.updaterStrings {
+            let expected: [AppLanguage: String] = [
+                .en: source.english, .ru: source.russian, .zhHans: source.zhHans,
+            ]
+            for (language, value) in expected {
+                AppLanguage.current = language
+                XCTAssertEqual(L10n.tr(source.zhHans, source.english, source.russian), value,
+                               "\(language): \(source.zhHans)")
+            }
+        }
+    }
+
     func testGermanLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.de))
         XCTAssertEqual(AppLanguage.de.pickerLabel, "Deutsch")
