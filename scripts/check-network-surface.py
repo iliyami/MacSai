@@ -30,6 +30,7 @@ APP_URLS = {
     "https://mb-api.abuse.ch/api/v1/",
     # These are user-initiated browser links, not background fetches.
     "https://auth.abuse.ch/", "https://buymeacoffee.com/iliyami",
+    "https://buymeacoffee.com/iliyami/membership",
     "https://github.com/iliyami/MacSai", "https://github.com/iliyami/MacSai/releases",
     "https://github.com/iliyami/MacSai/issues/new/choose",
     # Local browser/settings routes and the menu helper's own deep link.

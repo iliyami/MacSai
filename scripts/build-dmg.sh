@@ -99,9 +99,10 @@ echo ""
 # Step 1: Build release as a universal (arm64 + x86_64) binary
 BUILD_ARCHS="${BUILD_ARCHS:---arch arm64 --arch x86_64}"
 echo "[1/7] Building release binaries (${BUILD_ARCHS})..."
-swift build "${SWIFT_BUILD_OPTIONS[@]}" -c release ${BUILD_ARCHS} --product MacClean
-swift build "${SWIFT_BUILD_OPTIONS[@]}" -c release ${BUILD_ARCHS} --product MacCleanMenu
-BUILD_DIR=$(swift build "${SWIFT_BUILD_OPTIONS[@]}" -c release ${BUILD_ARCHS} --product MacClean --show-bin-path)
+# Bash 3.2 treats an empty array as unset under nounset; expand it only when set.
+swift build ${SWIFT_BUILD_OPTIONS[@]+"${SWIFT_BUILD_OPTIONS[@]}"} -c release ${BUILD_ARCHS} --product MacClean
+swift build ${SWIFT_BUILD_OPTIONS[@]+"${SWIFT_BUILD_OPTIONS[@]}"} -c release ${BUILD_ARCHS} --product MacCleanMenu
+BUILD_DIR=$(swift build ${SWIFT_BUILD_OPTIONS[@]+"${SWIFT_BUILD_OPTIONS[@]}"} -c release ${BUILD_ARCHS} --product MacClean --show-bin-path)
 echo "  → Binaries: ${BUILD_DIR}"
 
 # Step 2: Create .app bundle

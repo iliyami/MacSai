@@ -14,6 +14,7 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
     let isHomebrew: Bool
     private(set) var canCheckForUpdates = false
     var isPreparingInstallation: Bool { installation.isPreparingInstallation }
+    var canCancelPreparation: Bool { installation.canCancelPreparation }
     private(set) var automaticChecks = true
     private(set) var automaticDownloads = false
     private(set) var lastCheckDate: Date?
@@ -145,6 +146,12 @@ final class SelfUpdateController: NSObject, SPUUpdaterDelegate {
     func retryInstallation() {
         lastError = nil
         installation.retryInstallation()
+    }
+
+    func cancelPreparation() {
+        // Keep the prepared update for the next Quit and the manual callback
+        // for an explicit retry. This only cancels our prerequisite wait.
+        installation.cancel(preservingInstallHandler: true)
     }
 
     func updater(_ updater: SPUUpdater, willInstallUpdateOnQuit item: SUAppcastItem,

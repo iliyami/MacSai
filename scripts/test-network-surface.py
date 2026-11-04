@@ -13,6 +13,17 @@ SPEC.loader.exec_module(SURFACE)
 
 
 class NetworkSurfaceTests(unittest.TestCase):
+    def testMembershipLinkIsAllowedOnlyAsAnExactAppURL(self):
+        membership = "https://buymeacoffee.com/iliyami/membership"
+        SURFACE.audit_surface("", membership, "app")
+        for url in (membership + "/", membership + "/other", membership + "?tracking=1",
+                    "https://buymeacoffee.com/someone-else/membership"):
+            with self.subTest(url=url), self.assertRaisesRegex(ValueError, "Unlisted static URL"):
+                SURFACE.audit_surface("", url, "app")
+        for role in ("Sparkle", "Downloader", "Installer", "Autoupdate", "Updater"):
+            with self.subTest(role=role), self.assertRaisesRegex(ValueError, "Unlisted static URL"):
+                SURFACE.audit_surface("", membership, role)
+
     def testReviewedSparkleImportsAndDocumentationPass(self):
         for role in ("Sparkle", "Downloader"):
             SURFACE.audit_surface("_OBJC_CLASS_$_NSURLSession\n_NSURLSessionTransferSizeUnknown", "", role)

@@ -198,8 +198,9 @@ Before replacement, Mac Sai suspends its menu-helper watchdog, requests the
 helper to exit, and waits for its exit. A timed-out helper stop leaves the update
 pending with a retry action; it never force-kills unrelated applications. Normal
 Quit also prepares the helper when Sparkle has staged an install-on-quit update.
-Skipping/cancelling clears that state. The newly launched app reuses the saved
-menu preference and launches its newly embedded helper through the usual path.
+Skipping the update or an installer failure clears its prepared state. The newly
+launched app reuses the saved menu preference and launches its newly embedded
+helper through the usual path.
 
 Without a staged update, Quit retains the existing application behavior
 (`.terminateNow`). With a staged update, Mac Sai returns `.terminateCancel` for
@@ -212,8 +213,17 @@ second AppKit termination request can bypass the delegate in that state.
 Manual installation and ordinary Quit share one preparation owner. A duplicate
 Quit cannot replace a manual installation's pending task; cancellation
 invalidates the owner before waking suspended work, so stale helper completion
-cannot invoke an old install handler. Cancelling preparation keeps the app open
-without a pending AppKit termination reply.
+cannot invoke an old install handler.
+
+While preparation is waiting, the overlay's Cancel button (or Escape) keeps the
+app open, reopens the operation gate and resumes the helper watchdog. It does
+not cancel the running cleanup/maintenance operation or discard the prepared
+update. The user can return to the operation's controls; the next Quit starts
+preparation again. A pending manual installation also remains available through
+Retry Installation. Cancellation is disabled once preparation has handed the
+installation to Sparkle; it cannot undo an installation already started. An
+installer abort/skip uses a separate reset path. No AppKit termination reply is
+left pending after cancelling preparation.
 
 If the original request came from macOS logout, restart or shutdown, waiting for
 a staged update can cancel that system request. Mac Sai finishing its own Quit

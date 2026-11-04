@@ -74,14 +74,9 @@ struct ContentView: View {
         .disabled(selfUpdater.isPreparingInstallation)
         .overlay {
             if selfUpdater.isPreparingInstallation {
-                VStack(spacing: 12) {
-                    ProgressView()
-                    Text(L10n.tr("正在准备更新…", "Preparing update…", "Подготовка обновления…"))
-                    Text(L10n.tr("正在等待当前操作完成。", "Waiting for current operations to finish.", "Ожидание завершения текущих операций."))
-                        .font(.caption).foregroundStyle(.secondary)
-                }
-                .padding(24)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16))
+                SelfUpdatePreparationOverlay(
+                    canCancel: selfUpdater.canCancelPreparation,
+                    onCancel: { selfUpdater.cancelPreparation() })
             }
         }
         .background(TitleBarConfigurator())

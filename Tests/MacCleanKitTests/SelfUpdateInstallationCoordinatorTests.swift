@@ -233,6 +233,158 @@ final class SelfUpdateInstallationCoordinatorTests: XCTestCase {
         f.coordinator.cancel()
     }
 
+    func testUserCancelKeepsActiveWorkAndManualRetryWhileReleasingQueuedWork() async throws {
+        let f = Fixture()
+        let active = try await f.activity.begin()
+        var installs = 0
+        f.coordinator.requestInstallation { installs += 1 }
+        await waitUntil { f.activity.isPreparingUpdate }
+        let queued = Task { try await f.activity.begin() }
+        await waitUntil { f.activity.queuedOperationCount == 1 }
+        XCTAssertTrue(f.coordinator.canCancelPreparation)
+
+        f.coordinator.cancel(preservingInstallHandler: true)
+
+        XCTAssertFalse(f.coordinator.isPreparingInstallation)
+        XCTAssertFalse(f.coordinator.canCancelPreparation)
+        XCTAssertTrue(f.coordinator.canRetryInstallation)
+        XCTAssertFalse(f.activity.isPreparingUpdate)
+        XCTAssertTrue(f.activity.isBusy)
+        XCTAssertEqual(f.helperStops, 0)
+        XCTAssertEqual(installs, 0)
+        let resumed = try await queued.value
+        f.activity.end(resumed)
+        XCTAssertTrue(f.activity.isBusy, "Cancel must not end the existing operation")
+
+        f.coordinator.retryInstallation()
+        await waitUntil { f.activity.isPreparingUpdate }
+        XCTAssertEqual(installs, 0)
+        f.activity.end(active)
+        await waitUntil { installs == 1 }
+        XCTAssertEqual(f.helperStops, 1)
+        XCTAssertFalse(f.coordinator.canRetryInstallation)
+        f.coordinator.cancel()
+    }
+
+    func testOrdinaryQuitAfterManualCancellationDoesNotReviveCancelledRelaunch() async throws {
+        let f = Fixture()
+        let active = try await f.activity.begin()
+        var manualInstalls = 0
+        f.coordinator.requestInstallation { manualInstalls += 1 }
+        await waitUntil { f.activity.isPreparingUpdate }
+        f.coordinator.cancel(preservingInstallHandler: true)
+        XCTAssertTrue(f.coordinator.canRetryInstallation)
+
+        var choices = 0
+        var replies: [Bool] = []
+        XCTAssertEqual(f.coordinator.requestTermination(hasPreparedUpdate: true, chooseWait: {
+            choices += 1
+            return true
+        }, reply: { replies.append($0) }), .deferred)
+        await waitUntil { choices == 1 }
+        XCTAssertTrue(f.activity.isPreparingUpdate)
+        XCTAssertEqual(f.helperStops, 0)
+        f.activity.end(active)
+        await waitUntil { replies.count == 1 }
+
+        XCTAssertEqual(replies, [true])
+        XCTAssertEqual(manualInstalls, 0, "Normal Quit must install on quit, without the cancelled manual relaunch")
+        XCTAssertEqual(f.helperStops, 1)
+        XCTAssertTrue(f.coordinator.readyToTerminate)
+        f.coordinator.cancel()
+    }
+
+    func testUserCancelAfterChoosingWaitAllowsPreparedUpdateOnNextQuit() async throws {
+        let f = Fixture()
+        let active = try await f.activity.begin()
+        var choices = 0
+        var replies: [Bool] = []
+        _ = f.coordinator.requestTermination(hasPreparedUpdate: true, chooseWait: {
+            choices += 1
+            return true
+        }, reply: { replies.append($0) })
+        await waitUntil { choices == 1 }
+
+        f.coordinator.cancel(preservingInstallHandler: true)
+
+        XCTAssertEqual(replies, [false])
+        XCTAssertTrue(f.activity.isBusy)
+        XCTAssertFalse(f.activity.isPreparingUpdate)
+        XCTAssertFalse(f.coordinator.canRetryInstallation)
+        XCTAssertEqual(f.helperStops, 0)
+
+        XCTAssertEqual(f.coordinator.requestTermination(hasPreparedUpdate: true, chooseWait: {
+            choices += 1
+            return true
+        }, reply: { replies.append($0) }), .deferred)
+        await waitUntil { choices == 2 }
+        f.activity.end(active)
+        await waitUntil { replies.count == 2 }
+        XCTAssertEqual(replies, [false, true])
+        XCTAssertEqual(f.helperStops, 1)
+        f.coordinator.cancel()
+    }
+
+    func testUserCancelDuringHelperWaitKeepsRetryAndIgnoresStaleHelperCompletion() async {
+        let activity = AppOperationActivity()
+        var helperWaits: [CheckedContinuation<Bool, Never>] = []
+        var completedHelpers = 0
+        var helperResumes = 0
+        var installs = 0
+        let coordinator = SelfUpdateInstallationCoordinator(
+            activity: activity,
+            stopHelper: {
+                let ready = await withCheckedContinuation { helperWaits.append($0) }
+                completedHelpers += 1
+                return ready
+            },
+            resumeHelper: { helperResumes += 1 })
+        coordinator.requestInstallation { installs += 1 }
+        await waitUntil { helperWaits.count == 1 }
+
+        coordinator.cancel(preservingInstallHandler: true)
+
+        XCTAssertFalse(activity.isPreparingUpdate)
+        XCTAssertEqual(helperResumes, 1)
+        XCTAssertTrue(coordinator.canRetryInstallation)
+        coordinator.retryInstallation()
+        await waitUntil { helperWaits.count == 2 }
+        helperWaits[0].resume(returning: true)
+        await waitUntil { completedHelpers == 1 }
+        XCTAssertEqual(installs, 0)
+        XCTAssertTrue(coordinator.isPreparingInstallation)
+        XCTAssertTrue(activity.isPreparingUpdate)
+        helperWaits[1].resume(returning: true)
+        await waitUntil { installs == 1 }
+        XCTAssertEqual(completedHelpers, 2)
+        XCTAssertEqual(installs, 1)
+        coordinator.cancel()
+    }
+
+    func testUserCancelCannotReopenGateAfterHandoffButInstallerAbortCan() async {
+        let f = Fixture()
+        var installs = 0
+        f.coordinator.requestInstallation { installs += 1 }
+        await waitUntil { installs == 1 }
+        XCTAssertTrue(f.coordinator.readyToTerminate)
+        XCTAssertFalse(f.coordinator.canCancelPreparation)
+
+        f.coordinator.cancel(preservingInstallHandler: true)
+
+        XCTAssertTrue(f.coordinator.readyToTerminate)
+        XCTAssertTrue(f.activity.isPreparingUpdate)
+        XCTAssertFalse(f.coordinator.canRetryInstallation)
+        XCTAssertEqual(f.helperResumes, 0)
+        XCTAssertEqual(installs, 1)
+
+        f.coordinator.cancel() // An actual installer error still resets state.
+        XCTAssertFalse(f.coordinator.readyToTerminate)
+        XCTAssertFalse(f.coordinator.isPreparingInstallation)
+        XCTAssertFalse(f.activity.isPreparingUpdate)
+        XCTAssertFalse(f.coordinator.canRetryInstallation)
+        XCTAssertEqual(f.helperResumes, 1)
+    }
+
     private func waitUntil(_ condition: @MainActor () -> Bool,
                            file: StaticString = #filePath, line: UInt = #line) async {
         let deadline = ContinuousClock.now + .seconds(2)

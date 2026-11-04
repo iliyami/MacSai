@@ -12,6 +12,7 @@ public final class SelfUpdateInstallationCoordinator {
     public private(set) var isPreparingInstallation = false
     public private(set) var canRetryInstallation = false
     public private(set) var readyToTerminate = false
+    public var canCancelPreparation: Bool { isPreparingInstallation && !readyToTerminate }
 
     @ObservationIgnored private let activity: AppOperationActivity
     @ObservationIgnored private let stopHelper: @MainActor () async -> Bool
@@ -20,6 +21,7 @@ public final class SelfUpdateInstallationCoordinator {
     @ObservationIgnored private let helperUnavailable: @MainActor (_ quitting: Bool) -> Void
     @ObservationIgnored private let preparation = SelfUpdatePreparation()
     @ObservationIgnored private var pendingInstallHandler: (@MainActor () -> Void)?
+    @ObservationIgnored private var installRequestedForCurrentPreparation = false
 
     public init(
         activity: AppOperationActivity,
@@ -40,7 +42,10 @@ public final class SelfUpdateInstallationCoordinator {
         // owns the preparation. Keep its callback and share that preparation;
         // Stay preserves it for an explicit retry instead of installing.
         if pendingInstallHandler == nil { pendingInstallHandler = install }
-        guard !preparation.isRunning else { return }
+        if preparation.isRunning {
+            installRequestedForCurrentPreparation = true
+            return
+        }
         retryInstallation()
     }
 
@@ -69,6 +74,10 @@ public final class SelfUpdateInstallationCoordinator {
     ) {
         isPreparingInstallation = true
         canRetryInstallation = false
+        // A retained callback is available for an explicit Retry. A later
+        // ordinary Quit must not revive its cancelled install-and-relaunch
+        // intent; a new manual request may still join this preparation.
+        installRequestedForCurrentPreparation = !quitting
         var helperFailed = false
         preparation.start(prepare: { [self] in
             guard await activity.prepareForUpdate(confirmWhileBusy: { await chooseWait() }),
@@ -83,6 +92,7 @@ public final class SelfUpdateInstallationCoordinator {
                 completion(false)
             case .unavailable:
                 isPreparingInstallation = false
+                installRequestedForCurrentPreparation = false
                 canRetryInstallation = pendingInstallHandler != nil
                 activity.cancelUpdate()
                 resumeHelper()
@@ -90,22 +100,28 @@ public final class SelfUpdateInstallationCoordinator {
                 completion(false)
             case .ready:
                 readyToTerminate = true
-                let install = pendingInstallHandler
-                pendingInstallHandler = nil
+                let install = installRequestedForCurrentPreparation ? pendingInstallHandler : nil
+                if installRequestedForCurrentPreparation { pendingInstallHandler = nil }
+                installRequestedForCurrentPreparation = false
                 install?()
                 completion(readyToTerminate)
             }
         }
     }
 
-    public func cancel() {
+    public func cancel(preservingInstallHandler: Bool = false) {
+        // The user's Cancel only applies while we own the prerequisites.
+        // Once handed to Sparkle, opening the gate cannot undo installation.
+        // Abort/skip still use the default path to reset a failed installer.
+        if preservingInstallHandler && !canCancelPreparation { return }
         // Invalidate callback ownership before dismissing a prompt or waking
         // the old helper wait; either can otherwise complete synchronously.
         preparation.cancel { [self] in
             isPreparingInstallation = false
-            canRetryInstallation = false
             readyToTerminate = false
-            pendingInstallHandler = nil
+            installRequestedForCurrentPreparation = false
+            if !preservingInstallHandler { pendingInstallHandler = nil }
+            canRetryInstallation = pendingInstallHandler != nil
             activity.cancelUpdate()
             resumeHelper()
             dismissPrompt()
