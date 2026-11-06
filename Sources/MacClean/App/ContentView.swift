@@ -13,6 +13,7 @@ struct ContentView: View {
     /// launch.
     @State private var visited: Set<SidebarItem> = []
     @State private var updateCoordinator = UpdateCoordinator()
+    @State private var selfUpdater = SelfUpdateController.shared
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -70,6 +71,14 @@ struct ContentView: View {
             }
             .toolbarBackground(.hidden, for: .windowToolbar)
         }
+        .disabled(selfUpdater.isPreparingInstallation)
+        .overlay {
+            if selfUpdater.isPreparingInstallation {
+                SelfUpdatePreparationOverlay(
+                    canCancel: selfUpdater.canCancelPreparation,
+                    onCancel: { selfUpdater.cancelPreparation() })
+            }
+        }
         .background(TitleBarConfigurator())
         // Empty: the system-drawn title pins to the leading edge and on
         // macOS 26 ignores titleVisibility re-asserts while SwiftUI owns a
@@ -87,11 +96,11 @@ struct ContentView: View {
         // once per day and one popup per session.
         .task {
             try? await Task.sleep(for: .seconds(3))
-            await updateCoordinator.runCheckIfDue()
+            if !selfUpdater.usesInAppUpdates { await updateCoordinator.runCheckIfDue() }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
-                Task { await updateCoordinator.runCheckIfDue() }
+                Task { if !selfUpdater.usesInAppUpdates { await updateCoordinator.runCheckIfDue() } }
             }
         }
         .alert(

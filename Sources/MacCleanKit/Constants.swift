@@ -231,7 +231,13 @@ public enum MCConstants {
         "de.lproj", "de-DE.lproj", "de_DE.lproj", "de-AT.lproj", "de_AT.lproj",
         "de-CH.lproj", "de_CH.lproj", "German.lproj",
         "fr.lproj", "fr-FR.lproj", "fr_FR.lproj", "French.lproj",
+        "es.lproj", "es-ES.lproj", "es_ES.lproj", "es-MX.lproj", "es_MX.lproj", "es-419.lproj", "es_419.lproj",
+        "es-US.lproj", "es_US.lproj", "Spanish.lproj",
+        "pt.lproj", "pt-BR.lproj", "pt_BR.lproj", "Portuguese.lproj", "Portuguese (Brazil).lproj", "Brazilian Portuguese.lproj",
+        "ko.lproj", "ko-KR.lproj", "ko_KR.lproj", "Korean.lproj",
         "it.lproj", "it-IT.lproj", "it_IT.lproj", "it-CH.lproj", "it_CH.lproj", "Italian.lproj",
+        "ja.lproj", "ja-JP.lproj", "ja_JP.lproj", "Japanese.lproj",
+        "tr.lproj", "tr-TR.lproj", "tr_TR.lproj", "Turkish.lproj",
     ]
 
     // MARK: - Log File Path
@@ -249,6 +255,8 @@ public enum MCConstants {
     /// Opened in the browser from the post-clean support card and Settings.
     /// Never fetched by the app, so it is not part of the network surface.
     public static let supportURL = URL(string: "https://buymeacoffee.com/iliyami")!
+    /// Opened from the Supporters row in Settings. Never fetched either.
+    public static let membershipURL = URL(string: "https://buymeacoffee.com/iliyami/membership")!
     public static let latestReleaseAPI = URL(string: "https://api.github.com/repos/iliyami/MacSai/releases/latest")!
     /// Homebrew's public API for the official cask. Its `version` reflects what
     /// `brew upgrade --cask mac-sai` can actually install right now (autobump
@@ -264,5 +272,5 @@ public enum MCConstants {
     // plugin was tried (commit history) but doesn't work under multi-arch
     // `swift build --arch arm64 --arch x86_64` because xcbuild doesn't
     // execute plugins.
-    public static let appVersion = "1.29.0"
+    public static let appVersion = "1.31.0"
 }

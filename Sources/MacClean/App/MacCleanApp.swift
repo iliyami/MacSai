@@ -61,6 +61,14 @@ struct MacCleanApp: App {
         // Keep the standard "Settings…" menu item + Cmd-comma, but route
         // them to the in-app page (the separate Settings window is gone).
         .commands {
+            CommandGroup(after: .appInfo) {
+                if SelfUpdateController.shared.usesInAppUpdates {
+                    Button(L10n.tr("检查更新…", "Check for Updates…", "Проверить обновления…")) {
+                        SelfUpdateController.shared.checkForUpdates()
+                    }
+                    .disabled(!SelfUpdateController.shared.canCheckForUpdates)
+                }
+            }
             CommandGroup(replacing: .appSettings) {
                 Button(L10n.tr("设置…", "Settings…", "Настройки…")) {
                     appState.selectedSidebarItem = .settings
@@ -110,8 +118,15 @@ struct MacCleanApp: App {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        // Only a prepared installer needs update-specific Quit coordination;
+        // ordinary Quit retains the application's existing behavior.
+        return SelfUpdateController.shared.prepareForTermination(sender)
+    }
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         AppearanceManager.applyStored()
+        SelfUpdateController.shared.start()
         MenuBarLauncher.shared.startWatchingHelperTermination()
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
