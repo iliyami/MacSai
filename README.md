@@ -7,7 +7,7 @@
 <p align="center">
   <strong>The open-source Mac cleaner, optimizer, and malware scanner.</strong><br>
   A free, Apple-notarized alternative to CleanMyMac, built with Swift 6 and SwiftUI.<br>
-  <sub>Downloaded 100,000+ times. Free forever, with zero telemetry.</sub>
+  <sub>Downloaded 125,000+ times. Free forever, with zero telemetry.</sub>
 </p>
 
 <p align="center">
@@ -486,9 +486,9 @@ Mac Sai has **one** sponsor slot, shown here and at the top of this page, in eve
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100,000+</h3><sub>downloads</sub></td>
+    <td align="center" width="25%"><h3>125,000+</h3><sub>downloads</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub stars</sub></td>
-    <td align="center" width="25%"><h3>17,000</h3><sub>page views a month</sub></td>
+    <td align="center" width="25%"><h3>23,000</h3><sub>page views a month</sub></td>
     <td align="center" width="25%"><h3>6</h3><sub>README languages</sub></td>
   </tr>
 </table>
