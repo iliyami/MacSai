@@ -109,13 +109,15 @@ public actor AppDiscovery {
     private func directorySize(_ url: URL) -> UInt64 {
         guard let enumerator = FileManager.default.enumerator(
             at: url,
-            includingPropertiesForKeys: [.totalFileAllocatedSizeKey],
+            includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .linkCountKey],
             options: [.skipsHiddenFiles]
         ) else { return 0 }
 
         var total: UInt64 = 0
+        var hardLinks = HardLinkTracker()
         while let fileURL = enumerator.nextObject() as? URL {
-            let values = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey])
+            let values = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .linkCountKey])
+            guard hardLinks.shouldCount(fileURL, linkCount: values?.linkCount) else { continue }
             total += UInt64(values?.totalFileAllocatedSize ?? 0)
         }
         return total
@@ -199,12 +201,14 @@ public struct AppPathFinder: Sendable {
     private func directorySize(_ url: URL) -> UInt64 {
         guard let enumerator = FileManager.default.enumerator(
             at: url,
-            includingPropertiesForKeys: [.totalFileAllocatedSizeKey],
+            includingPropertiesForKeys: [.totalFileAllocatedSizeKey, .linkCountKey],
             options: []
         ) else { return 0 }
         var total: UInt64 = 0
+        var hardLinks = HardLinkTracker()
         while let fileURL = enumerator.nextObject() as? URL {
-            let v = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey])
+            let v = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .linkCountKey])
+            guard hardLinks.shouldCount(fileURL, linkCount: v?.linkCount) else { continue }
             total += UInt64(v?.totalFileAllocatedSize ?? 0)
         }
         return total

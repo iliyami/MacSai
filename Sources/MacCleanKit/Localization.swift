@@ -236,6 +236,12 @@ public enum L10n {
     }
 
     private static let brazilianPortugueseFallbacks: [String: String] = [
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "Caches regeráveis de npm, pnpm, Cargo, pip, uv, Homebrew e Gradle.",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "Caches de download e compilação. npm, pnpm, Cargo, pip, uv, Homebrew e Gradle baixam o que precisam na próxima instalação ou compilação.",
+        "Docker Desktop 磁盘映像": "Imagem de disco do Docker Desktop",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "O disco virtual do Docker. Ele guarda todas as suas imagens, contêineres e volumes, então o Mac Sai nunca o exclui. Limpar itens do Docker libera espaço dentro dele, e depois o Docker Desktop devolve esse espaço ao macOS. Para limitar o tamanho, diminua o limite de disco nos ajustes de Recursos do Docker Desktop.",
+        "旧版本，可能已不再使用": "Versão antiga, provavelmente sem uso",
+        "当前版本，删除后会重新下载": "Versão atual, baixada de novo após a remoção",
         // In-app updates and preparation controls.
         "版本": "Versão",
         "上次检查：": "Última verificação: ",
@@ -954,6 +960,12 @@ public enum L10n {
     ]
 
     private static let koreanFallbacks: [String: String] = [
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "npm, pnpm, Cargo, pip, uv, Homebrew 및 Gradle에서 재생성 가능한 캐시입니다.",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "다운로드 및 빌드 캐시입니다. npm, pnpm, Cargo, pip, uv, Homebrew 및 Gradle은 다음 설치나 빌드 때 필요한 파일을 다시 다운로드합니다.",
+        "Docker Desktop 磁盘映像": "Docker Desktop 디스크 이미지",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Docker의 가상 디스크입니다. 모든 이미지, 컨테이너, 볼륨이 들어 있어서 Mac Sai는 이를 절대 삭제하지 않습니다. Docker 항목을 정리하면 그 안의 공간이 확보되고, 이후 Docker Desktop이 그 공간을 macOS에 돌려줍니다. 크기를 제한하려면 Docker Desktop의 리소스 설정에서 디스크 한도를 낮추세요.",
+        "旧版本，可能已不再使用": "이전 버전, 사용하지 않을 가능성 높음",
+        "当前版本，删除后会重新下载": "현재 버전, 삭제 후 다시 다운로드됨",
         // In-app updates and preparation controls.
         "版本": "버전",
         "上次检查：": "마지막 확인: ",
@@ -1842,7 +1854,7 @@ public enum L10n {
         "iPhone 和 iPad 的本地备份。": "iPhone 和 iPad 的本地備份。",
         "macOS 的“哪类文件由哪个应用打开”数据库会被清除并重建。完成前（通常数小时），双击文件可能失败或打开错误应用，默认应用设置可能重置，Spotlight 启动应用也可能不可用。重启可加快恢复。": "macOS 的“哪類檔案由哪個應用開啟”資料庫會被清除並重建。完成前（通常數小時），雙擊檔案可能失敗或開啟錯誤應用，預設應用設定可能重置，Spotlight 啟動應用也可能不可用。重啟可加快恢復。",
         "macOS 诊断日志。": "macOS 診斷日誌。",
-        "npm、Cargo、pip、Homebrew、Gradle 的可重建缓存。": "npm、Cargo、pip、Homebrew、Gradle 的可重建快取。",
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建快取。",
         "~/Library/Logs/MacClean/operations.log — 30 天后自动清理": "~/Library/Logs/MacClean/operations.log — 30 天后自動清理",
         "“邮件”应用的搜索索引会从头重建。重建完成前，邮件搜索和未读数可能不准确（大型邮箱通常需 10–30 分钟）。": "“郵件”應用的搜尋索引會從頭重建。重建完成前，郵件搜尋和未讀數可能不準確（大型郵箱通常需 10–30 分鐘）。",
         "一切就绪！": "一切就緒！",
@@ -2001,6 +2013,10 @@ public enum L10n {
         "清理所选 Docker 项目…": "清理所選 Docker 項目…",
         "删除所选模拟器项目…": "刪除所選模擬器項目…",
         "已找到 Docker，但它没有响应。请先启动 Docker Desktop，然后点“刷新”。": "已找到 Docker，但它沒有回應。請先啟動 Docker Desktop，然後點「重新整理」。",
+        "Docker Desktop 磁盘映像": "Docker Desktop 磁碟映像",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Docker 的虛擬磁碟，裡面存放著你所有的映像檔、容器和卷宗，所以 Mac Sai 絕不會刪除它。清理 Docker 項目會釋放其中的空間，Docker Desktop 隨後會把空間還給 macOS。如需限制它的大小，請在 Docker Desktop 的「資源」設定中調低磁碟上限。",
+        "旧版本，可能已不再使用": "舊版本，可能已不再使用",
+        "当前版本，删除后会重新下载": "目前版本，刪除後會重新下載",
         "这台 Mac 上没有找到 Docker 或 Xcode 模拟器。": "這台 Mac 上沒有找到 Docker 或 Xcode 模擬器。",
         "永久清理所选 Docker 项目？": "永久清理所選 Docker 項目？",
         "永久删除所选模拟器项目？": "永久刪除所選模擬器項目？",
@@ -2333,7 +2349,7 @@ public enum L10n {
         "清理前请检查": "清理前請檢查",
         "应用临时文件。每个应用下次启动时会自动重新生成。": "應用程式暫存檔。每個應用程式下次啟動時會自動重新產生。",
         "由 macOS 自行管理的缓存，需要时会自动重建。": "由 macOS 自行管理的快取，需要時會自動重建。",
-        "下载和构建缓存。npm、Cargo、pip、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "下載與建置快取。npm、Cargo、pip、Homebrew 和 Gradle 會在下次安裝或建置時重新下載所需內容。",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "下載與建置快取。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 會在下次安裝或建置時重新下載所需內容。",
         "仅编辑器缓存。Cursor 和 Antigravity 下次启动时会重新生成；你的设置和扩展不受影响。": "僅編輯器快取。Cursor 和 Antigravity 下次啟動時會重新產生；你的設定和延伸功能不受影響。",
         "仅临时和缓存文件夹。Claude 和 Codex 会按需重新生成；绝不包含历史、记忆和会话。": "僅暫存與快取檔案夾。Claude 和 Codex 會依需要重新產生；絕不包含歷史、記憶和工作階段。",
         "应用为排查问题写下的诊断记录。应用不会回读旧日志，运行时会写新的日志。": "應用程式為排查問題寫下的診斷紀錄。應用程式不會回讀舊日誌，執行時會寫入新的日誌。",
@@ -2511,7 +2527,7 @@ public enum L10n {
         "iPhone 和 iPad 的本地备份。": "Sauvegardes locales d'iPhone et d'iPad.",
         "macOS 的“哪类文件由哪个应用打开”数据库会被清除并重建。完成前（通常数小时），双击文件可能失败或打开错误应用，默认应用设置可能重置，Spotlight 启动应用也可能不可用。重启可加快恢复。": "La base de données d'associations de fichiers macOS sera effacée et reconstruite. Un redémarrage peut accélérer le processus.",
         "macOS 诊断日志。": "Journaux de diagnostic macOS.",
-        "npm、Cargo、pip、Homebrew、Gradle 的可重建缓存。": "Caches reconstructibles de npm, Cargo, pip, Homebrew, Gradle.",
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "Caches reconstructibles de npm, pnpm, Cargo, pip, uv, Homebrew, Gradle.",
         "~/Library/Logs/MacClean/operations.log — 30 天后自动清理": "~/Library/Logs/MacClean/operations.log — Nettoyage automatique après 30 jours",
         "“邮件”应用的搜索索引会从头重建。重建完成前，邮件搜索和未读数可能不准确（大型邮箱通常需 10–30 分钟）。": "L'index de recherche de Mail sera reconstruit à partir de zéro.",
         "一切就绪！": "Tout est prêt !",
@@ -2688,6 +2704,10 @@ public enum L10n {
         "清理所选 Docker 项目…": "Nettoyer les éléments Docker sélectionnés…",
         "删除所选模拟器项目…": "Supprimer les éléments de simulateur sélectionnés…",
         "已找到 Docker，但它没有响应。请先启动 Docker Desktop，然后点“刷新”。": "Docker est installé mais ne répond pas. Lancez Docker Desktop, puis cliquez sur Actualiser.",
+        "Docker Desktop 磁盘映像": "Image disque de Docker Desktop",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Le disque virtuel de Docker. Il contient toutes vos images, conteneurs et volumes, Mac Sai ne le supprime donc jamais. Nettoyer des éléments Docker libère de l'espace à l'intérieur, puis Docker Desktop rend cet espace à macOS. Pour limiter sa taille, baissez la limite de disque dans les réglages Ressources de Docker Desktop.",
+        "旧版本，可能已不再使用": "Ancienne version, probablement inutilisée",
+        "当前版本，删除后会重新下载": "Version actuelle, retéléchargée après suppression",
         "这台 Mac 上没有找到 Docker 或 Xcode 模拟器。": "Ni Docker ni simulateurs Xcode trouvés sur ce Mac.",
         "永久清理所选 Docker 项目？": "Nettoyer définitivement les éléments Docker sélectionnés ?",
         "永久清理": "Nettoyer définitivement",
@@ -3199,7 +3219,7 @@ public enum L10n {
         "iPhone 和 iPad 的本地备份。": "Lokale Backups von iPhone und iPad.",
         "macOS 的“哪类文件由哪个应用打开”数据库会被清除并重建。完成前（通常数小时），双击文件可能失败或打开错误应用，默认应用设置可能重置，Spotlight 启动应用也可能不可用。重启可加快恢复。": "Die macOS-Datenbank zur Zuordnung von Dateitypen zu Apps wird gelöscht und neu erstellt. Bis zum Abschluss (oft mehrere Stunden) können Doppelklicks fehlschlagen oder die falsche App öffnen, Standard-Apps zurückgesetzt werden und App-Starts über Spotlight fehlschlagen. Ein Neustart beschleunigt dies.",
         "macOS 诊断日志。": "macOS-Diagnoseprotokolle.",
-        "npm、Cargo、pip、Homebrew、Gradle 的可重建缓存。": "Neu erzeugbare Caches von npm, Cargo, pip, Homebrew und Gradle.",
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "Neu erzeugbare Caches von npm, pnpm, Cargo, pip, uv, Homebrew und Gradle.",
         "~/Library/Logs/MacClean/operations.log — 30 天后自动清理": "~/Library/Logs/MacClean/operations.log — Einträge werden nach 30 Tagen entfernt",
         "“邮件”应用的搜索索引会从头重建。重建完成前，邮件搜索和未读数可能不准确（大型邮箱通常需 10–30 分钟）。": "Der Suchindex von Mail wird neu erstellt. Suche und Anzahl ungelesener Nachrichten können bis zum Abschluss falsch sein (bei großen Postfächern meist 10–30 Minuten).",
         "一切就绪！": "Alles bereit!",
@@ -3377,6 +3397,10 @@ public enum L10n {
         "清理所选 Docker 项目…": "Ausgewählte Docker-Objekte bereinigen …",
         "删除所选模拟器项目…": "Ausgewählte Simulator-Objekte löschen …",
         "已找到 Docker，但它没有响应。请先启动 Docker Desktop，然后点“刷新”。": "Docker ist installiert, reagiert aber nicht. Starte Docker Desktop und klicke dann auf „Aktualisieren“.",
+        "Docker Desktop 磁盘映像": "Docker Desktop-Disk-Image",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Die virtuelle Festplatte von Docker. Sie enthält alle deine Images, Container und Volumes, deshalb löscht Mac Sai sie nie. Das Bereinigen von Docker-Elementen gibt Platz darin frei, und Docker Desktop gibt diesen Platz danach an macOS zurück. Um ihre Größe zu begrenzen, senke das Festplattenlimit in den Ressourcen-Einstellungen von Docker Desktop.",
+        "旧版本，可能已不再使用": "Ältere Version, wahrscheinlich ungenutzt",
+        "当前版本，删除后会重新下载": "Aktuelle Version, wird nach dem Entfernen erneut geladen",
         "这台 Mac 上没有找到 Docker 或 Xcode 模拟器。": "Auf diesem Mac wurden weder Docker noch Xcode-Simulatoren gefunden.",
         "永久清理所选 Docker 项目？": "Ausgewählte Docker-Objekte endgültig bereinigen?",
         "永久清理": "Endgültig bereinigen",
@@ -3743,7 +3767,7 @@ public enum L10n {
         "清理前请检查": "Vor dem Bereinigen prüfen",
         "应用临时文件。每个应用下次启动时会自动重新生成。": "Temporäre App-Dateien. Werden beim nächsten Start der jeweiligen App automatisch neu erstellt.",
         "由 macOS 自行管理的缓存，需要时会自动重建。": "Von macOS selbst verwaltete Caches. Das System erstellt sie bei Bedarf automatisch neu.",
-        "下载和构建缓存。npm、Cargo、pip、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "Download- und Build-Caches. npm, Cargo, pip, Homebrew und Gradle laden Benötigtes bei der nächsten Installation oder dem nächsten Build erneut herunter.",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "Download- und Build-Caches. npm, pnpm, Cargo, pip, uv, Homebrew und Gradle laden Benötigtes bei der nächsten Installation oder dem nächsten Build erneut herunter.",
         "仅编辑器缓存。Cursor 和 Antigravity 下次启动时会重新生成；你的设置和扩展不受影响。": "Nur Editor-Caches. Cursor und Antigravity erstellen sie beim nächsten Start neu; Einstellungen und Erweiterungen bleiben unberührt.",
         "仅临时和缓存文件夹。Claude 和 Codex 会按需重新生成；绝不包含历史、记忆和会话。": "Nur Arbeits- und Cache-Ordner. Claude und Codex erstellen sie bei Bedarf neu; Verlauf, Gedächtnis und Sitzungen sind nie enthalten.",
         "应用为排查问题写下的诊断记录。应用不会回读旧日志，运行时会写新的日志。": "Diagnosetexte, die Apps zur Fehlersuche geschrieben haben. Apps lesen alte Protokolle nicht wieder ein und beginnen beim Ausführen neue.",
@@ -3956,6 +3980,10 @@ public enum L10n {
         "正在计算文件夹大小…": "Calcolo dimensioni cartelle in corso…",
         "还没有可恢复的清理记录": "Nessuna pulizia da ripristinare al momento",
         "已找到 Docker，但它没有响应。请先启动 Docker Desktop，然后点“刷新”。": "Docker è installato ma non risponde. Avvia Docker Desktop e fai clic su Aggiorna.",
+        "Docker Desktop 磁盘映像": "Immagine disco di Docker Desktop",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Il disco virtuale di Docker. Contiene tutte le tue immagini, i container e i volumi, quindi Mac Sai non lo elimina mai. Pulire gli elementi di Docker libera spazio al suo interno, poi Docker Desktop restituisce quello spazio a macOS. Per limitarne la dimensione, riduci il limite del disco nelle impostazioni Risorse di Docker Desktop.",
+        "旧版本，可能已不再使用": "Versione precedente, probabilmente inutilizzata",
+        "当前版本，删除后会重新下载": "Versione attuale, riscaricata dopo la rimozione",
         "永久删除所选模拟器项目？": "Eliminare definitivamente gli elementi dei simulatori selezionati?",
         "移除扩展？": "Rimuovere l'estensione?",
         "永久清理": "Elimina definitivamente",
@@ -4004,7 +4032,7 @@ public enum L10n {
         "iPhone 和 iPad 的本地备份。": "Backup locali di iPhone e iPad.",
         "macOS 的“哪类文件由哪个应用打开”数据库会被清除并重建。完成前（通常数小时），双击文件可能失败或打开错误应用，默认应用设置可能重置，Spotlight 启动应用也可能不可用。重启可加快恢复。": "Il database di macOS che associa i tipi di file alle applicazioni verrà cancellato e ricostruito. Fino al termine (spesso diverse ore), fare doppio clic su un file potrebbe fallire o aprire l'app sbagliata, le impostazioni delle app predefinite potrebbero reimpostarsi e l'avvio delle app tramite Spotlight potrebbe non funzionare. Riavviare velocizza il processo.",
         "macOS 诊断日志。": "Registri di diagnosi di macOS.",
-        "npm、Cargo、pip、Homebrew、Gradle 的可重建缓存。": "Cache rigenerabili di npm, Cargo, pip, Homebrew e Gradle.",
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "Cache rigenerabili di npm, pnpm, Cargo, pip, uv, Homebrew e Gradle.",
         "~/Library/Logs/MacClean/operations.log — 30 天后自动清理": "~/Library/Logs/MacClean/operations.log: eliminato automaticamente dopo 30 giorni",
         "“邮件”应用的搜索索引会从头重建。重建完成前，邮件搜索和未读数可能不准确（大型邮箱通常需 10–30 分钟）。": "L'indice di ricerca dell'app Mail verrà ricostruito da zero. Fino al termine, la ricerca e il conteggio delle email non lette potrebbero risultare errati (in genere 10–30 minuti per caselle di posta voluminose).",
         "一切就绪！": "Tutto pronto!",
@@ -4462,7 +4490,7 @@ public enum L10n {
         "清理前请检查": "Verifica prima di pulire",
         "应用临时文件。每个应用下次启动时会自动重新生成。": "File temporanei delle app. Ricreati automaticamente al prossimo avvio di ciascuna app.",
         "由 macOS 自行管理的缓存，需要时会自动重建。": "Cache gestite direttamente da macOS. Ricostruite automaticamente al bisogno.",
-        "下载和构建缓存。npm、Cargo、pip、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "Cache di download e compilazione. npm, Cargo, pip, Homebrew e Gradle riscaricheranno quanto necessario alla prossima installazione o compilazione.",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "Cache di download e compilazione. npm, pnpm, Cargo, pip, uv, Homebrew e Gradle riscaricheranno quanto necessario alla prossima installazione o compilazione.",
         "仅编辑器缓存。Cursor 和 Antigravity 下次启动时会重新生成；你的设置和扩展不受影响。": "Solo cache degli editor. Cursor e Antigravity le ricreeranno al prossimo avvio; impostazioni ed estensioni restano intatte.",
         "仅临时和缓存文件夹。Claude 和 Codex 会按需重新生成；绝不包含历史、记忆和会话。": "Solo cartelle temporanee e di cache. Claude e Codex le ricreano al bisogno; cronologia, memoria e sessioni non sono mai incluse.",
         "应用为排查问题写下的诊断记录。应用不会回读旧日志，运行时会写新的日志。": "Testo di diagnostica scritto dalle app per la risoluzione dei problemi. Le app non rileggono i vecchi registri e ne avviano di nuovi durante l'esecuzione.",
@@ -4529,6 +4557,12 @@ public enum L10n {
     ]
 
     private static let spanishFallbacks: [String: String] = [
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "Cachés regenerables de npm, pnpm, Cargo, pip, uv, Homebrew y Gradle.",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "Cachés de descargas y compilación. npm, pnpm, Cargo, pip, uv, Homebrew y Gradle vuelven a descargar lo necesario en la próxima instalación o compilación.",
+        "Docker Desktop 磁盘映像": "Imagen de disco de Docker Desktop",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "El disco virtual de Docker. Guarda todas tus imágenes, contenedores y volúmenes, así que Mac Sai nunca lo elimina. Limpiar elementos de Docker libera espacio dentro de él, y después Docker Desktop devuelve ese espacio a macOS. Para limitar su tamaño, baja el límite de disco en los ajustes de Recursos de Docker Desktop.",
+        "旧版本，可能已不再使用": "Versión antigua, probablemente sin uso",
+        "当前版本，删除后会重新下载": "Versión actual, se vuelve a descargar tras eliminarla",
         // In-app updates and preparation controls.
         "版本": "Versión",
         "上次检查：": "Última comprobación: ",
@@ -5248,6 +5282,12 @@ public enum L10n {
 
 
     private static let japaneseFallbacks: [String: String] = [
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle の再生成可能なキャッシュ。",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "ダウンロードとビルドのキャッシュです。npm、pnpm、Cargo、pip、uv、Homebrew、Gradle は次回のインストールやビルド時に必要なものを再ダウンロードします。",
+        "Docker Desktop 磁盘映像": "Docker Desktop のディスクイメージ",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Docker の仮想ディスクです。すべてのイメージ、コンテナ、ボリュームが入っているため、Mac Sai が削除することはありません。Docker の項目を整理するとディスク内の空き容量が増え、その後 Docker Desktop がその分を macOS に返します。サイズを制限するには、Docker Desktop のリソース設定でディスク上限を下げてください。",
+        "旧版本，可能已不再使用": "古いバージョン（使われていない可能性が高い）",
+        "当前版本，删除后会重新下载": "現在のバージョン（削除後に再ダウンロード）",
         // In-app updates and preparation controls.
         "版本": "バージョン",
         "上次检查：": "前回の確認：",
@@ -5967,6 +6007,12 @@ public enum L10n {
 
 
     private static let turkishFallbacks: [String: String] = [
+        "npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。": "npm, pnpm, Cargo, pip, uv, Homebrew ve Gradle'ın yeniden oluşturulabilir önbellekleri.",
+        "下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。": "İndirme ve derleme önbellekleri. npm, pnpm, Cargo, pip, uv, Homebrew ve Gradle sonraki yükleme veya derlemede gerekenleri yeniden indirir.",
+        "Docker Desktop 磁盘映像": "Docker Desktop disk imajı",
+        "Docker 的虚拟磁盘，里面存放着你所有的镜像、容器和卷，所以 Mac Sai 绝不会删除它。清理 Docker 项目会释放其中的空间，Docker Desktop 随后会把空间还给 macOS。如需限制它的大小，请在 Docker Desktop 的“资源”设置中调低磁盘上限。": "Docker'ın sanal diski. Tüm imajlarınızı, kapsayıcılarınızı ve birimlerinizi barındırır, bu yüzden Mac Sai onu asla silmez. Docker öğelerini temizlemek içindeki alanı boşaltır, ardından Docker Desktop bu alanı macOS'a geri verir. Boyutunu sınırlamak için Docker Desktop'ın Kaynaklar ayarlarında disk sınırını düşürün.",
+        "旧版本，可能已不再使用": "Eski sürüm, büyük olasılıkla kullanılmıyor",
+        "当前版本，删除后会重新下载": "Güncel sürüm, kaldırıldıktan sonra yeniden indirilir",
         // In-app updates and preparation controls.
         "版本": "Sürüm",
         "上次检查：": "Son kontrol: ",

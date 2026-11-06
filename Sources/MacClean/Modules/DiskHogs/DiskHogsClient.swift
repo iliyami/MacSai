@@ -45,6 +45,18 @@ public struct DiskHogsClient: Sendable {
         return .rows(DockerSystemDFParser.parse(outcome.stdoutText))
     }
 
+    /// Disk space Docker Desktop's virtual disk takes, nil when there is none.
+    /// Read from the file, so it shows even while Docker is stopped. The
+    /// image is sparse, so the allocated size is what it really costs.
+    public func dockerDiskImageSize() -> UInt64? {
+        let sizes = MCConstants.dockerDesktopDiskImages.compactMap { url -> UInt64? in
+            guard let values = try? url.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey])
+            else { return nil }
+            return UInt64(values.totalFileAllocatedSize ?? values.fileAllocatedSize ?? 0)
+        }
+        return sizes.isEmpty ? nil : sizes.reduce(0, +)
+    }
+
     /// Unavailable devices and deletable older runtimes. Both empty when the
     /// Mac has no Xcode.
     public func simulators() async -> (devices: [SimulatorDevice], runtimes: [SimulatorRuntime]) {

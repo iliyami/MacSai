@@ -7,7 +7,7 @@ public actor FileTreeScanner {
         .totalFileSizeKey, .totalFileAllocatedSizeKey,
         .isDirectoryKey, .isSymbolicLinkKey, .isPackageKey,
         .contentModificationDateKey, .creationDateKey,
-        .contentTypeKey, .nameKey, .isHiddenKey,
+        .contentTypeKey, .nameKey, .isHiddenKey, .linkCountKey,
     ]
 
     public init() {}
@@ -74,6 +74,7 @@ public actor FileTreeScanner {
 
         var nodeMap: [String: FileNode] = [key(root): rootNode]
         var iterationCount = 0
+        var hardLinks = HardLinkTracker()
 
         while let obj = enumerator.nextObject() {
             if Task.isCancelled { break }
@@ -85,8 +86,11 @@ public actor FileTreeScanner {
 
             guard let fileURL = obj as? URL else { continue }
             guard let values = try? fileURL.resourceValues(forKeys: keys) else { continue }
-            let size = UInt64(values.totalFileAllocatedSize ?? values.fileAllocatedSize ?? values.fileSize ?? 0)
             let isDir = values.isDirectory ?? false
+            // Later links to an already-counted inode keep their node at size 0.
+            let size = isDir || hardLinks.shouldCount(fileURL, linkCount: values.linkCount)
+                ? UInt64(values.totalFileAllocatedSize ?? values.fileAllocatedSize ?? values.fileSize ?? 0)
+                : 0
             let ext = values.name?.components(separatedBy: ".").last?.lowercased() ?? fileURL.pathExtension.lowercased()
 
             let node = FileNode(
@@ -125,7 +129,7 @@ public actor FileTreeScanner {
         let fm = FileManager.default
         guard let children = try? fm.contentsOfDirectory(
             at: root,
-            includingPropertiesForKeys: [.isDirectoryKey, .nameKey, .fileAllocatedSizeKey],
+            includingPropertiesForKeys: [.isDirectoryKey, .nameKey, .fileAllocatedSizeKey, .linkCountKey],
             options: []
         ) else {
             return []
@@ -133,25 +137,31 @@ public actor FileTreeScanner {
 
         var nodes: [FileNode] = []
         var scanned = 0
+        // Shared across children so a file linked from two top-level folders
+        // is counted under the first one only, matching `du`.
+        var hardLinks = HardLinkTracker()
 
         for child in children.sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
             if Task.isCancelled { break }
 
             let values = try? child.resourceValues(
-                forKeys: [.isDirectoryKey, .nameKey, .fileAllocatedSizeKey])
+                forKeys: [.isDirectoryKey, .nameKey, .fileAllocatedSizeKey, .linkCountKey])
             let isDir = values?.isDirectory ?? false
             let name = values?.name ?? child.lastPathComponent
             let ext = (name as NSString).pathExtension.lowercased()
-            var total = UInt64(values?.fileAllocatedSize ?? 0)
+            var total = isDir || hardLinks.shouldCount(child, linkCount: values?.linkCount)
+                ? UInt64(values?.fileAllocatedSize ?? 0)
+                : 0
 
             if isDir, let enumerator = fm.enumerator(
                 at: child,
-                includingPropertiesForKeys: [.fileAllocatedSizeKey],
+                includingPropertiesForKeys: [.fileAllocatedSizeKey, .linkCountKey],
                 options: [.skipsPackageDescendants]
             ) {
                 // Accumulate allocated size only. Reading `fileAllocatedSize` is
                 // metadata, so dataless iCloud files are counted at their local
-                // footprint without triggering a download.
+                // footprint without triggering a download. Hard links count
+                // once per inode.
                 while let obj = enumerator.nextObject() {
                     if Task.isCancelled { break }
                     scanned += 1
@@ -160,7 +170,8 @@ public actor FileTreeScanner {
                         await Task.yield()
                     }
                     guard let url = obj as? URL,
-                          let v = try? url.resourceValues(forKeys: [.fileAllocatedSizeKey])
+                          let v = try? url.resourceValues(forKeys: [.fileAllocatedSizeKey, .linkCountKey]),
+                          hardLinks.shouldCount(url, linkCount: v.linkCount)
                     else { continue }
                     total += UInt64(v.fileAllocatedSize ?? 0)
                 }
