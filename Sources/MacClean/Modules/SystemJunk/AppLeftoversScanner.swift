@@ -116,6 +116,8 @@ public enum AppLeftoversScanner {
             options: []
         ) {
             for case let fileURL as URL in enumerator {
+                // Stores can hold hundreds of thousands of files; stop promptly on cancel.
+                if Task.isCancelled { break }
                 values = try? fileURL.resourceValues(forKeys: [.totalFileAllocatedSizeKey, .fileAllocatedSizeKey, .isRegularFileKey, .linkCountKey])
                 guard values?.isRegularFile == true,
                       hardLinks.shouldCount(fileURL, linkCount: values?.linkCount) else { continue }

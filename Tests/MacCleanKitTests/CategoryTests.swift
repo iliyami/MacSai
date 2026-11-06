@@ -81,10 +81,26 @@ final class CategoryTests: XCTestCase {
         // Only log files outside logs/: never config, credentials or workspace data.
         XCTAssertEqual(home.fileExtensions, ["log"])
         XCTAssertFalse(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "openclaw.json")))
-        XCTAssertTrue(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "agents/main/run.log")))
+        XCTAssertTrue(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "gateway-stray.log")))
+        // Top level only, so per-agent workspace-<agentId> folders are never reached.
+        XCTAssertFalse(home.recursive)
         // logs/ belongs to its own target, so nothing is listed twice.
         XCTAssertTrue(home.isExcludedPath(MCConstants.openClawLogs.appending(path: "gateway.log")))
         XCTAssertTrue(home.isExcludedPath(MCConstants.openClawWorkspace.appending(path: "notes/build.log")))
+    }
+
+    func testOpenClawStrayLogSweepNeverReachesAgentWorkspaces() {
+        guard let home = UserLogCategory().targets.first(where: { $0.path == MCConstants.openClawHome }) else {
+            return XCTFail("~/.openclaw must be scanned for stray log files")
+        }
+        // Multi-agent installs keep user files in ~/.openclaw/workspace-<agentId>.
+        // The workspace exclusion only matches whole path components, so
+        // staying out of subfolders depends on the target not recursing.
+        let agentLog = MCConstants.openClawHome.appending(path: "workspace-research/project/server.log")
+        XCTAssertFalse(home.recursive)
+        XCTAssertFalse(home.isExcludedPath(agentLog))
+        XCTAssertEqual(agentLog.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent(),
+                       MCConstants.openClawHome)
     }
 
     func testUserLogsPreserveCleanupDiagnosticsWithoutExcludingOtherApps() {

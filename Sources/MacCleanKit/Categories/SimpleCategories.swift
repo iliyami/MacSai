@@ -48,12 +48,13 @@ public struct UserLogCategory: JunkCategory {
             // MCConstants.openClawHome). Its logs folder is taken whole so
             // rotated files (gateway.log.1, …) are included.
             ScanTarget(path: MCConstants.openClawLogs, recursive: true),
-            // Stray *.log files anywhere else in ~/.openclaw. The logs folder
-            // is excluded so its files aren't listed twice, and the agent
-            // workspace holds the user's own files.
+            // Stray *.log files directly inside ~/.openclaw only. Not recursive:
+            // with several agents OpenClaw keeps one workspace-<agentId> folder
+            // per agent, and those hold the user's own files. The logs folder
+            // is excluded so its files aren't listed twice.
             ScanTarget(
                 path: MCConstants.openClawHome,
-                recursive: true,
+                recursive: false,
                 fileExtensions: ["log"],
                 excludedPaths: [MCConstants.openClawLogs, MCConstants.openClawWorkspace]
             ),

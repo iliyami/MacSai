@@ -19,7 +19,7 @@ public enum PnpmStore {
             self.isCurrent = isCurrent
         }
 
-        /// "pnpm store v3 · Older version, no longer used"
+        /// "pnpm store v3 · Older version, likely unused"
         public var displayName: String {
             "pnpm store v\(number) · " + (isCurrent ? PnpmStore.currentNote : PnpmStore.staleNote)
         }
@@ -48,7 +48,7 @@ public enum PnpmStore {
     }
 
     public static var staleNote: String {
-        L10n.tr("旧版本，已不再使用", "Older version, no longer used", "Старая версия, больше не используется")
+        L10n.tr("旧版本，可能已不再使用", "Older version, likely unused", "Старая версия, вероятно, не используется")
     }
 
     public static var currentNote: String {
