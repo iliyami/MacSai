@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor"><strong>Apply for the slot →</strong></a>
+  <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor"><strong>Apply for the slot →</strong></a>
 </p>
 
 ---
@@ -66,7 +66,7 @@ Not accepted: cleaners or "optimizers", crypto, affiliate VPN deals, and anythin
 
 ## How to apply
 
-Email [iliya.mi78@gmail.com](mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor) with:
+Email [macsai.team@gmail.com](mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor) with:
 
 1. Your product and a link to it
 2. Your logo (SVG preferred, or PNG at least 400 px wide), with a dark-mode version if you have one
