@@ -20,10 +20,10 @@
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100,000+</h3><sub>downloads</sub></td>
+    <td align="center" width="25%"><h3>125,000+</h3><sub>downloads</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub stars</sub></td>
-    <td align="center" width="25%"><h3>17,000</h3><sub>page views a month</sub></td>
-    <td align="center" width="25%"><h3>9,500</h3><sub>unique visitors a month</sub></td>
+    <td align="center" width="25%"><h3>23,000</h3><sub>page views a month</sub></td>
+    <td align="center" width="25%"><h3>11,500</h3><sub>unique visitors a month</sub></td>
   </tr>
 </table>
 </div>
@@ -35,7 +35,7 @@
 | Homebrew installs | ![Homebrew](https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange) |
 | Development activity | ![Commits](https://img.shields.io/github/commit-activity/m/iliyami/MacSai?style=flat-square&label=commits) |
 
-<sub>Page views and visitors come from GitHub's traffic insights for this repository (October 2026). GitHub does not publish them as a live badge, so they are updated here by hand.</sub>
+<sub>Page views and visitors come from GitHub's traffic insights for this repository (November 2026). GitHub does not publish them as a live badge, so they are updated here by hand.</sub>
 
 **Who visits.** Developers and Mac power users who install open-source tools themselves, from Homebrew or a notarized DMG. They read READMEs before they install, and they care about privacy, security and software that respects them.
 

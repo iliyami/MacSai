@@ -7,7 +7,7 @@
 <p align="center">
   <strong>开源的 Mac 清理、优化与恶意软件扫描工具。</strong><br>
   免费、经 Apple 公证的 CleanMyMac 替代品，使用 Swift 6 和 SwiftUI 构建。<br>
-  <sub>下载量已超过 100,000 次。永久免费，零遥测。</sub>
+  <sub>下载量已超过 125,000 次。永久免费，零遥测。</sub>
 </p>
 
 <p align="center">
@@ -482,9 +482,9 @@ Mac Sai 只有**一个**赞助位，展示在这里和本页顶部，覆盖本 R
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100,000+</h3><sub>次下载</sub></td>
+    <td align="center" width="25%"><h3>125,000+</h3><sub>次下载</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub Star</sub></td>
-    <td align="center" width="25%"><h3>17,000</h3><sub>每月页面浏览量</sub></td>
+    <td align="center" width="25%"><h3>23,000</h3><sub>每月页面浏览量</sub></td>
     <td align="center" width="25%"><h3>6</h3><sub>种 README 语言</sub></td>
   </tr>
 </table>
