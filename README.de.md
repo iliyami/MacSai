@@ -227,7 +227,7 @@ Ein Menüleisten-Widget im Glasmorphismus-Stil, das die Vitalwerte deines Macs e
 
 ## Oberflächensprachen
 
-Wähle in Einstellungen → Oberflächensprache zwischen System, Deutsch, Русский, 简体中文, 繁體中文 oder English. Deutsch und traditionelles Chinesisch übersetzen die statischen Oberflächentexte; interpolierte Meldungen behalten vorerst den englischen Wortlaut und die Pluralregeln (traditionelles Chinesisch fällt auf Vereinfachtes zurück). Das Hauptfenster und das Menüleisten-Widget teilen sich die Sprachauswahl.
+Wähle in Einstellungen → Sprache der Oberfläche zwischen System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 oder 한국어. Englisch, vereinfachtes Chinesisch und Russisch decken die gesamte Oberfläche ab. Die übrigen Sprachen übersetzen die statischen Oberflächentexte; interpolierte Meldungen behalten vorerst den englischen Wortlaut und die Pluralregeln (traditionelles Chinesisch fällt auf Vereinfachtes zurück). Das Hauptfenster und das Menüleisten-Widget teilen sich die Sprachauswahl.
 
 ## Installation
 
