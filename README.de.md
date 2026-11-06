@@ -501,7 +501,7 @@ Die meisten Besucher sind Entwickler und Mac-Power-User und kommen vor allem üb
 - **Niemals in der App.** Mac Sai hat keine Werbung und keine Telemetrie, und daran ändert kein Sponsor etwas.
 
 <p align="center">
-  <strong>Dieser Platz ist frei.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Sponsor werden →</a><br>
+  <strong>Dieser Platz ist frei.</strong> <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor">Sponsor werden →</a><br>
   <sub>Zielgruppe und Bewerbung: <a href="SPONSORS.md">SPONSORS.md</a> (Englisch)</sub>
 </p>
 

@@ -497,7 +497,7 @@ Mac Sai 只有**一個**贊助位，展示在這裡和本頁頂端，涵蓋本 R
 - **絕不進入 App 內。** Mac Sai 沒有廣告、沒有遙測，任何贊助都不會改變這一點。
 
 <p align="center">
-  <strong>這個位置目前空缺。</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">成為贊助者 →</a><br>
+  <strong>這個位置目前空缺。</strong> <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor">成為贊助者 →</a><br>
   <sub>受眾詳情和申請方式：<a href="SPONSORS.md">SPONSORS.md</a>（英文）</sub>
 </p>
 

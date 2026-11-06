@@ -497,7 +497,7 @@ Mac Sai бесплатен и останется бесплатным: без п
 - **Никогда внутри приложения.** В Mac Sai нет рекламы и телеметрии, и ни один спонсор этого не изменит.
 
 <p align="center">
-  <strong>Это место свободно.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Стать спонсором →</a><br>
+  <strong>Это место свободно.</strong> <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor">Стать спонсором →</a><br>
   <sub>Аудитория и как подать заявку: <a href="SPONSORS.md">SPONSORS.md</a> (на английском)</sub>
 </p>
 
