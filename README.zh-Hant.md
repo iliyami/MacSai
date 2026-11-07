@@ -7,7 +7,7 @@
 <p align="center">
   <strong>開源的 Mac 清理、最佳化與惡意軟體掃描工具。</strong><br>
   免費、經 Apple 公證的 CleanMyMac 替代品，使用 Swift 6 和 SwiftUI 構建。<br>
-  <sub>下載量已超過 100,000 次。永久免費，零遙測。</sub>
+  <sub>下載量已超過 125,000 次。永久免費，零遙測。</sub>
 </p>
 
 <p align="center">
@@ -222,6 +222,12 @@ brew install --cask mac-sai
 | **macOS 版本** | 14+ | 13+ | 13+ | 13+ | 視情況 | 視情況 |
 
 > CleanMyMac 是一款很棒的產品，願意為打磨精良、有官方支援的體驗付費的使用者理應讓他們獲得收入。Mac Sai 則面向所有更希望擁有透明原始碼、零訂閱的人。
+
+---
+
+## 介面語言
+
+在 設定 → 介面語言 中選擇 跟隨系統、English、简体中文、繁體中文、Русский、Deutsch、Français、Español、Italiano、Português (Brasil)、Türkçe、日本語、한국어。英文、簡體中文和俄文涵蓋整個介面。其他語言翻譯介面中的靜態文字；含插值的訊息目前仍保留英文措辭和複數規則（繁體中文會回退到簡體中文）。主視窗和選單列小工具共用同一語言設定。
 
 ---
 
@@ -482,9 +488,9 @@ Mac Sai 只有**一個**贊助位，展示在這裡和本頁頂端，涵蓋本 R
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100,000+</h3><sub>次下載</sub></td>
+    <td align="center" width="25%"><h3>125,000+</h3><sub>次下載</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub Star</sub></td>
-    <td align="center" width="25%"><h3>17,000</h3><sub>每月頁面瀏覽量</sub></td>
+    <td align="center" width="25%"><h3>23,000</h3><sub>每月頁面瀏覽量</sub></td>
     <td align="center" width="25%"><h3>6</h3><sub>種 README 語言</sub></td>
   </tr>
 </table>
@@ -497,7 +503,7 @@ Mac Sai 只有**一個**贊助位，展示在這裡和本頁頂端，涵蓋本 R
 - **絕不進入 App 內。** Mac Sai 沒有廣告、沒有遙測，任何贊助都不會改變這一點。
 
 <p align="center">
-  <strong>這個位置目前空缺。</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">成為贊助者 →</a><br>
+  <strong>這個位置目前空缺。</strong> <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor">成為贊助者 →</a><br>
   <sub>受眾詳情和申請方式：<a href="SPONSORS.md">SPONSORS.md</a>（英文）</sub>
 </p>
 

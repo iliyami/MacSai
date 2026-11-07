@@ -7,7 +7,7 @@
 <p align="center">
   <strong>The open-source Mac cleaner, optimizer, and malware scanner.</strong><br>
   A free, Apple-notarized alternative to CleanMyMac, built with Swift 6 and SwiftUI.<br>
-  <sub>Downloaded 100,000+ times. Free forever, with zero telemetry.</sub>
+  <sub>Downloaded 125,000+ times. Free forever, with zero telemetry.</sub>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It i
 
 ## Interface languages
 
-Choose System, Deutsch, Français, Русский, 简体中文, 繁體中文, or English in Settings → Interface Language. German, French, and Traditional Chinese translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
+Choose System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, or 한국어 in Settings → Interface Language. English, Simplified Chinese, and Russian cover the whole interface. The other languages translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
 
 ## Installation
 
@@ -486,9 +486,9 @@ Mac Sai has **one** sponsor slot, shown here and at the top of this page, in eve
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100,000+</h3><sub>downloads</sub></td>
+    <td align="center" width="25%"><h3>125,000+</h3><sub>downloads</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub stars</sub></td>
-    <td align="center" width="25%"><h3>17,000</h3><sub>page views a month</sub></td>
+    <td align="center" width="25%"><h3>23,000</h3><sub>page views a month</sub></td>
     <td align="center" width="25%"><h3>6</h3><sub>README languages</sub></td>
   </tr>
 </table>
@@ -501,7 +501,7 @@ Most visitors are developers and Mac power users, arriving mostly from Google se
 - **Never inside the app.** Mac Sai has no ads and no telemetry, and no sponsor changes that.
 
 <p align="center">
-  <strong>This spot is open.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Become the sponsor →</a><br>
+  <strong>This spot is open.</strong> <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor">Become the sponsor →</a><br>
   <sub>Audience details and how to apply: <a href="SPONSORS.md">SPONSORS.md</a></sub>
 </p>
 

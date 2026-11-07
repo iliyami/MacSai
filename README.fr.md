@@ -227,7 +227,7 @@ Un widget de barre des menus au style glassmorphisme qui met les constantes vita
 
 ## Langues de l'interface
 
-Choisissez System, Deutsch, Français, Русский, 简体中文, 繁體中文 ou English dans Réglages → Langue de l'interface. L'allemand, le français et le chinois traditionnel traduisent les textes statiques de l'interface ; les messages interpolés conservent pour l'instant le texte anglais et ses règles de pluriel (le chinois traditionnel se rabat sur le simplifié). La fenêtre principale et le widget de la barre des menus partagent le réglage de langue.
+Choisissez Selon le système, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 ou 한국어 dans Paramètres → Langue de l'interface. L'anglais, le chinois simplifié et le russe couvrent toute l'interface. Les autres langues traduisent les textes statiques de l'interface ; les messages interpolés conservent pour l'instant le texte anglais et ses règles de pluriel (le chinois traditionnel se rabat sur le simplifié). La fenêtre principale et le widget de la barre des menus partagent le réglage de langue.
 
 ## Installation
 
@@ -501,7 +501,7 @@ La plupart des visiteurs sont des développeurs et des utilisateurs avancés de 
 - **Jamais dans l'application.** Mac Sai n'a ni pub ni télémétrie, et aucun sponsor n'y changera rien.
 
 <p align="center">
-  <strong>Cet emplacement est libre.</strong> <a href="mailto:iliya.mi78@gmail.com?subject=Mac%20Sai%20sponsor">Devenir sponsor →</a><br>
+  <strong>Cet emplacement est libre.</strong> <a href="mailto:macsai.team@gmail.com?subject=Mac%20Sai%20sponsor">Devenir sponsor →</a><br>
   <sub>Audience et candidature : <a href="SPONSORS.md">SPONSORS.md</a> (en anglais)</sub>
 </p>
 
