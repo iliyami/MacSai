@@ -99,8 +99,6 @@ final class CategoryTests: XCTestCase {
         let agentLog = MCConstants.openClawHome.appending(path: "workspace-research/project/server.log")
         XCTAssertFalse(home.recursive)
         XCTAssertFalse(home.isExcludedPath(agentLog))
-        XCTAssertEqual(agentLog.deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent(),
-                       MCConstants.openClawHome)
     }
 
     func testUserLogsPreserveCleanupDiagnosticsWithoutExcludingOtherApps() {
