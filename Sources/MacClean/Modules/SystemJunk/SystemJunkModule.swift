@@ -91,6 +91,8 @@ public struct SystemJunkModule: ScanModule {
                                 NSWorkspace.shared.urlForApplication(withBundleIdentifier: $0) != nil
                             }
                         )
+                    } else if let packageManagers = cat as? PackageManagerCachesCategory {
+                        filtered += PnpmStoreScanner.scan(roots: packageManagers.pnpmStoreRoots)
                     } else if let brokenLogin = cat as? BrokenLoginItemsCategory {
                         filtered = brokenLogin.filterBroken(
                             items,

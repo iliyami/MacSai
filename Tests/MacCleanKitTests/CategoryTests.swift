@@ -39,19 +39,20 @@ final class CategoryTests: XCTestCase {
     }
 
     func testUserCacheLeavesPackageManagerCachesToTheirOwnCategory() {
-        // Homebrew and pip live under ~/Library/Caches but belong to the
+        // Homebrew, pip, pnpm and legacy uv live under ~/Library/Caches but belong to the
         // opt-in Package Manager Caches card. Listing them in the
         // auto-selected User Caches too would bypass that opt-in and count
         // their size twice.
         let userCaches = UserCacheCategory().targets[0]
         let packageManagerPaths = Set(PackageManagerCachesCategory().targets.map(\.path))
-        for path in [MCConstants.homebrewCache, MCConstants.pipCache] {
+        for path in [MCConstants.homebrewCache, MCConstants.pipCache, MCConstants.uvLegacyCache, MCConstants.pnpmCache] {
             XCTAssertTrue(packageManagerPaths.contains(path))
             XCTAssertTrue(userCaches.isExcludedPath(path), "\(path.path) must be skipped by User Caches")
             XCTAssertTrue(userCaches.isExcludedPath(path.appending(path: "downloads/x.tar.gz")))
         }
         XCTAssertFalse(userCaches.isExcludedPath(MCConstants.userCaches.appending(path: "com.example.app")))
         XCTAssertFalse(userCaches.isExcludedPath(MCConstants.userCaches.appending(path: "pipeline-tool")))
+        XCTAssertFalse(userCaches.isExcludedPath(MCConstants.userCaches.appending(path: "uvicorn")))
     }
 
     // MARK: - SystemCacheCategory
@@ -68,6 +69,36 @@ final class CategoryTests: XCTestCase {
         let exts = cat.targets[0].fileExtensions
         XCTAssertTrue(exts?.contains("log") == true)
         XCTAssertTrue(exts?.contains("crash") == true)
+    }
+
+    func testUserLogsIncludeOpenClawLogsOnly() {
+        let targets = UserLogCategory().targets
+        XCTAssertTrue(targets.contains { $0.path == MCConstants.openClawLogs && $0.recursive })
+
+        guard let home = targets.first(where: { $0.path == MCConstants.openClawHome }) else {
+            return XCTFail("~/.openclaw must be scanned for stray log files")
+        }
+        // Only log files outside logs/: never config, credentials or workspace data.
+        XCTAssertEqual(home.fileExtensions, ["log"])
+        XCTAssertFalse(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "openclaw.json")))
+        XCTAssertTrue(home.matchesByNameRules(MCConstants.openClawHome.appending(path: "gateway-stray.log")))
+        // Top level only, so per-agent workspace-<agentId> folders are never reached.
+        XCTAssertFalse(home.recursive)
+        // logs/ belongs to its own target, so nothing is listed twice.
+        XCTAssertTrue(home.isExcludedPath(MCConstants.openClawLogs.appending(path: "gateway.log")))
+        XCTAssertTrue(home.isExcludedPath(MCConstants.openClawWorkspace.appending(path: "notes/build.log")))
+    }
+
+    func testOpenClawStrayLogSweepNeverReachesAgentWorkspaces() {
+        guard let home = UserLogCategory().targets.first(where: { $0.path == MCConstants.openClawHome }) else {
+            return XCTFail("~/.openclaw must be scanned for stray log files")
+        }
+        // Multi-agent installs keep user files in ~/.openclaw/workspace-<agentId>.
+        // The workspace exclusion only matches whole path components, so
+        // staying out of subfolders depends on the target not recursing.
+        let agentLog = MCConstants.openClawHome.appending(path: "workspace-research/project/server.log")
+        XCTAssertFalse(home.recursive)
+        XCTAssertFalse(home.isExcludedPath(agentLog))
     }
 
     func testUserLogsPreserveCleanupDiagnosticsWithoutExcludingOtherApps() {
