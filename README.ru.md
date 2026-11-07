@@ -7,11 +7,11 @@
 <p align="center">
   <strong>Открытый инструмент для очистки, оптимизации и поиска вредоносных программ на Mac.</strong><br>
   Бесплатная, заверенная Apple альтернатива CleanMyMac, созданная на Swift 6 и SwiftUI.<br>
-  <sub>Более 100 000 загрузок. Бесплатно навсегда, без телеметрии.</sub>
+  <sub>Более 125 000 загрузок. Бесплатно навсегда, без телеметрии.</sub>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <strong>Русский</strong>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <strong>Русский</strong> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -488,10 +488,10 @@ Mac Sai бесплатен и останется бесплатным: без п
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100 000+</h3><sub>загрузок</sub></td>
+    <td align="center" width="25%"><h3>125 000+</h3><sub>загрузок</sub></td>
     <td align="center" width="25%"><h3>2 000+</h3><sub>звёзд на GitHub</sub></td>
-    <td align="center" width="25%"><h3>17 000</h3><sub>просмотров в месяц</sub></td>
-    <td align="center" width="25%"><h3>6</h3><sub>языков README</sub></td>
+    <td align="center" width="25%"><h3>23 000</h3><sub>просмотров в месяц</sub></td>
+    <td align="center" width="25%"><h3>12</h3><sub>языков README</sub></td>
   </tr>
 </table>
 </div>
