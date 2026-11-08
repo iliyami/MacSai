@@ -200,6 +200,16 @@ A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It i
 
 ---
 
+### Universal Clipboard archives
+
+Universal Clipboard archives are listed in System Junk for review when they are
+UUID-named files last modified at least 24 hours ago. They start unchecked.
+Finish copying and transfers between devices before selecting them: age alone
+does not prove an archive is unused, and removal can interrupt a pending paste.
+Original files and the clipboard container's metadata are not selected. Normal
+cleanup moves selected archives to the Trash. macOS may require Full Disk Access
+to inspect this folder.
+
 ## How Mac Sai compares
 
 |  | Mac Sai | CleanMyMac | Pearcleaner | PureMac | OnyX | Mole |
