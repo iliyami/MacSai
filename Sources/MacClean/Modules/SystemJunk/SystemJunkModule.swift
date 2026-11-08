@@ -39,9 +39,13 @@ public struct SystemJunkModule: ScanModule {
     ]
 
     public func scan() async -> [ScanResult] {
-        let categories = Self.allCategories
+        await scanReportingPermissions().results
+    }
 
-        return await withTaskGroup(of: ScanResult?.self) { group in
+    public func scanReportingPermissions(
+        categories: [any JunkCategory] = Self.allCategories
+    ) async -> (results: [ScanResult], permissionDeniedPaths: [URL]) {
+        return await withTaskGroup(of: (result: ScanResult?, denied: [URL]).self) { group in
             for cat in categories {
                 group.addTask {
                     // UniversalBinaries needs a system-side scanner (walks
@@ -49,23 +53,23 @@ public struct SystemJunkModule: ScanModule {
                     // rather than the targeted path enumerator.
                     if cat.scanCategory == .universalBinaries {
                         let items = UniversalBinariesScanner.scanAllApplicationsDirectories()
-                        guard !items.isEmpty else { return nil }
-                        return ScanResult(
+                        guard !items.isEmpty else { return (nil, []) }
+                        return (ScanResult(
                             category: .universalBinaries,
                             items: items,
                             autoSelect: cat.scanCategory.autoSelect
-                        )
+                        ), [])
                     }
                     // App leftovers: enumerates the safe Library subdirs for
                     // bundle-id-named entries whose owning app is uninstalled.
                     if cat.scanCategory == .appLeftovers {
                         let items = AppLeftoversScanner.scan()
-                        guard !items.isEmpty else { return nil }
-                        return ScanResult(
+                        guard !items.isEmpty else { return (nil, []) }
+                        return (ScanResult(
                             category: .appLeftovers,
                             items: items,
                             autoSelect: cat.scanCategory.autoSelect
-                        )
+                        ), [])
                     }
                     // Deleted users: /Users folders that no longer match an
                     // active account per `dscl`. Its own scanner (not
@@ -73,14 +77,15 @@ public struct SystemJunkModule: ScanModule {
                     // list rather than a static path target.
                     if cat.scanCategory == .deletedUsers {
                         let items = DeletedUsersScanner.scanForDeletedUserFolders()
-                        guard !items.isEmpty else { return nil }
-                        return ScanResult(
+                        guard !items.isEmpty else { return (nil, []) }
+                        return (ScanResult(
                             category: .deletedUsers,
                             items: items,
                             autoSelect: cat.scanCategory.autoSelect
-                        )
+                        ), [])
                     }
-                    let items = await scanner.scan(targets: cat.targets)
+                    let outcome = await scanner.scanReportingPermissions(targets: cat.targets)
+                    let items = outcome.items
                     var filtered = items
 
                     // Apply category-specific post-filter logic.
@@ -107,24 +112,25 @@ public struct SystemJunkModule: ScanModule {
                         )
                     }
 
-                    guard !filtered.isEmpty else { return nil }
-                    return ScanResult(
+                    guard !filtered.isEmpty else { return (nil, outcome.permissionDeniedPaths) }
+                    return (ScanResult(
                         category: cat.scanCategory,
                         items: filtered,
                         autoSelect: cat.scanCategory.autoSelect
-                    )
+                    ), outcome.permissionDeniedPaths)
                 }
             }
 
             var results: [ScanResult] = []
-            for await result in group {
-                if let result {
+            var deniedPaths: [URL] = []
+            for await outcome in group {
+                if let result = outcome.result {
                     results.append(result)
                 }
+                deniedPaths += outcome.denied
             }
-            return results
-                .filteringUncleanable()
-                .sorted { $0.totalSize > $1.totalSize }
+            return (results.filteringUncleanable().sorted { $0.totalSize > $1.totalSize },
+                    Array(Set(deniedPaths)).sorted { $0.path < $1.path })
         }
     }
 }

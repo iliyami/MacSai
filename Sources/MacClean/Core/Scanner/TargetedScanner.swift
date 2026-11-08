@@ -74,16 +74,17 @@ public actor TargetedScanner {
     private static func scanTarget(_ target: ScanTarget, keys: [URLResourceKey]) -> (items: [FileItem], deniedPath: URL?) {
         let fm = FileManager.default
 
-        guard fm.fileExists(atPath: target.path.path(percentEncoded: false)) else {
-            return ([], nil)
-        }
-
         // The enumerator/`contentsOfDirectory` below swallow EPERM and just
         // yield nothing, so probe readability up front to distinguish a
         // permission denial from a genuinely empty directory.
         if isPermissionDenied(target.path) {
             return ([], target.path)
         }
+
+        guard fm.fileExists(atPath: target.path.path(percentEncoded: false)) else {
+            return ([], nil)
+        }
+
 
         var results: [FileItem] = []
 

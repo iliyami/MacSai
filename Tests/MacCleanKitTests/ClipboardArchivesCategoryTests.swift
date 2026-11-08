@@ -20,7 +20,7 @@ final class ClipboardArchivesCategoryTests: XCTestCase {
 
     func testListsOldArchiveWithItsFullSizeButNeverPreselectsIt() {
         let category = ClipboardArchivesCategory(archivesRoot: root)
-        let items = category.filterArchives([item()], now: now)
+        let items = category.filterArchives([item()])
         let result = ScanResult(category: category.scanCategory, items: items,
                                 autoSelect: category.scanCategory.autoSelect)
         XCTAssertEqual(result.totalSize, 50_340_000_000)
@@ -28,12 +28,11 @@ final class ClipboardArchivesCategoryTests: XCTestCase {
         XCTAssertEqual(category.scanCategory.cleanupSafety, .reviewFirst)
     }
 
-    func testRejectsRecentFutureAndUnknownDates() {
+    func testDetectionIncludesRecentFutureAndUnknownDatesForManualReview() {
         let category = ClipboardArchivesCategory(archivesRoot: root)
-        for age: TimeInterval? in [0, 86399, -3600, nil] {
-            XCTAssertTrue(category.filterArchives([item(age: age)], now: now).isEmpty)
+        for age: TimeInterval? in [0, 86399, -3600, nil, 86400] {
+            XCTAssertEqual(category.filterArchives([item(age: age)]).count, 1)
         }
-        XCTAssertEqual(category.filterArchives([item(age: 86400)], now: now).count, 1)
     }
 
     func testRejectsDirectoriesSymlinksUnknownNamesAndOtherLocations() {
@@ -44,7 +43,7 @@ final class ClipboardArchivesCategoryTests: XCTestCase {
             item(parent: root.deletingLastPathComponent().appending(path: "items")),
             item(parent: URL(filePath: "/Users/test/Documents")),
         ]
-        XCTAssertTrue(category.filterArchives(unsafe, now: now).isEmpty)
+        XCTAssertTrue(category.filterArchives(unsafe).isEmpty)
     }
 
     func testScanStaysInsideArchivesWithoutRecursing() {
@@ -54,6 +53,6 @@ final class ClipboardArchivesCategoryTests: XCTestCase {
             path: "Group Containers/group.com.apple.coreservices.useractivityd/shared-pasteboard/archives"
         ))
         XCTAssertFalse(category.targets[0].recursive)
-        XCTAssertEqual(category.targets[0].minAge, 86400)
+        XCTAssertNil(category.targets[0].minAge)
     }
 }

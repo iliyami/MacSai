@@ -105,7 +105,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .packageManagerCaches: L10n.tr("npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。", "Regenerable caches from npm, pnpm, Cargo, pip, uv, Homebrew, and Gradle.", "Восстанавливаемые кэши npm, pnpm, Cargo, pip, uv, Homebrew и Gradle.")
         case .ideCaches: L10n.tr("代码编辑器的缓存（Cursor、Antigravity 等）。", "Caches from code editors like Cursor and Antigravity.", "Кэши редакторов кода, таких как Cursor и Antigravity.")
         case .aiToolCaches: L10n.tr("AI 编码工具的缓存（Claude、Codex）；不含历史与会话。", "Caches from AI coding tools (Claude, Codex). History and sessions excluded.", "Кэши AI-инструментов для программирования (Claude, Codex). История и сеансы не затрагиваются.")
-        case .clipboardArchives: L10n.tr("超过 24 小时的临时文件副本；清理前请检查。", "Temporary file copies older than 24 hours. Review before cleaning.", "Временные копии файлов старше 24 часов. Проверьте перед очисткой.")
+        case .clipboardArchives: L10n.tr("用于设备间复制粘贴的临时文件副本；清理前请检查。", "Temporary file copies for pasting between devices. Review before cleaning.", "Временные копии файлов для вставки между устройствами. Проверьте перед очисткой.")
         case .mailAttachments: L10n.tr("邮件附件的缓存副本。", "Saved copies of Mail attachments.", "Кэшированные копии почтовых вложений.")
         case .trashBins: L10n.tr("当前位于废纸篓中的项目。", "Items currently sitting in the Trash.", "Объекты, находящиеся в Корзине.")
         case .malware: L10n.tr("在磁盘上发现的已知恶意文件。", "Known malicious files found on disk.", "Известные вредоносные файлы, найденные на диске.")

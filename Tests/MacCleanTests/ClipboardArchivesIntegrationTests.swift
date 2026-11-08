@@ -4,7 +4,7 @@ import MacCleanKit
 import MacCleanTestSupport
 
 final class ClipboardArchivesIntegrationTests: XCTestCase {
-    func testScanFindsOnlyOldLocalArchivesAndLeavesFilesUntouched() async throws {
+    func testScanFindsLocalArchivesOfAllAgesAndLeavesFilesUntouched() async throws {
         try await TestFixtures.withTempDir { tmp in
             let root = tmp.appending(path: "shared-pasteboard/archives")
             let old = root.appending(path: UUID().uuidString)
@@ -23,12 +23,36 @@ final class ClipboardArchivesIntegrationTests: XCTestCase {
             let category = ClipboardArchivesCategory(archivesRoot: root)
             let scanned = await TargetedScanner().scan(targets: category.targets)
             let archives = category.filterArchives(scanned)
-            XCTAssertEqual(archives.map { $0.url.resolvingSymlinksInPath() }, [old.resolvingSymlinksInPath()])
-            XCTAssertEqual(archives.first?.size, 1024)
+            XCTAssertEqual(Set(archives.map { $0.url.resolvingSymlinksInPath() }),
+                           Set([old, recent].map { $0.resolvingSymlinksInPath() }))
+            XCTAssertEqual(archives.reduce(0) { $0 + $1.size }, 1536)
             for url in [old, recent, metadata, nested, incoming, link] {
                 XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
             }
         }
     }
 
+    func testSystemJunkReportsDeniedArchiveRootInsteadOfAnEmptyCategory() async throws {
+        try await TestFixtures.withTempDir { tmp in
+            let parent = tmp.appending(path: "protected")
+            let root = parent.appending(path: "archives")
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+            try FileManager.default.setAttributes([.posixPermissions: 0], ofItemAtPath: parent.path)
+            defer { try? FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: parent.path) }
+            let outcome = await SystemJunkModule().scanReportingPermissions(
+                categories: [ClipboardArchivesCategory(archivesRoot: root)]
+            )
+            XCTAssertTrue(outcome.results.isEmpty)
+            XCTAssertEqual(outcome.permissionDeniedPaths, [root])
+        }
+    }
+
+    func testMissingArchiveRootDoesNotClaimPermissionFailure() async {
+        let root = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let outcome = await SystemJunkModule().scanReportingPermissions(
+            categories: [ClipboardArchivesCategory(archivesRoot: root)]
+        )
+        XCTAssertTrue(outcome.results.isEmpty)
+        XCTAssertTrue(outcome.permissionDeniedPaths.isEmpty)
+    }
 }
