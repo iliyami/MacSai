@@ -131,6 +131,48 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
         )
     }
 
+    func testSpanishReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.es.md",
+            headingNeedle: "Verifica tú mismo que no hay telemetría"
+        )
+    }
+
+    func testItalianReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.it.md",
+            headingNeedle: "Verifica tu stesso l'assenza di telemetria"
+        )
+    }
+
+    func testBrazilianPortugueseReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.pt-BR.md",
+            headingNeedle: "Verifique você mesmo a ausência de telemetria"
+        )
+    }
+
+    func testJapaneseReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.ja.md",
+            headingNeedle: "テレメトリがないことを自分で確認する"
+        )
+    }
+
+    func testKoreanReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.ko.md",
+            headingNeedle: "텔레메트리 없음을 직접 확인하기"
+        )
+    }
+
+    func testTurkishReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.tr.md",
+            headingNeedle: "Telemetri olmadığını kendiniz doğrulayın"
+        )
+    }
+
     /// A MalwareBazaar hit on a signed file makes macOS check the signing
     /// certificate's revocation status with Apple (OCSP). That request comes
     /// from macOS, so check-network-surface.sh can't see it; every README
@@ -143,6 +185,12 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             "README.ru.md": "не отозван ли его сертификат подписи",
             "README.zh-CN.md": "签名证书是否已被吊销",
             "README.zh-Hant.md": "簽署憑證是否已被撤銷",
+            "README.es.md": "certificado de firma fue revocado",
+            "README.it.md": "certificato di firma è stato revocato",
+            "README.pt-BR.md": "certificado de assinatura foi revogado",
+            "README.ja.md": "署名証明書が失効しているかどうか",
+            "README.ko.md": "서명 인증서가 폐기되었는지",
+            "README.tr.md": "imzalama sertifikasının iptal edilip edilmediğini",
         ]
         for (file, needle) in needles {
             let src = try String(contentsOf: readmeURL(file), encoding: .utf8)

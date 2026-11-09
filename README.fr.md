@@ -7,11 +7,11 @@
 <p align="center">
   <strong>Le nettoyeur, optimiseur et scanner de logiciels malveillants open source pour Mac.</strong><br>
   Une alternative gratuite et notariée par Apple à CleanMyMac, conçue avec Swift 6 et SwiftUI.<br>
-  <sub>Téléchargé plus de 100 000 fois. Gratuit pour toujours, sans télémétrie.</sub>
+  <sub>Téléchargé plus de 125 000 fois. Gratuit pour toujours, sans télémétrie.</sub>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <strong>Français</strong> | <a href="README.ru.md">Русский</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <strong>Français</strong> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
 </p>
 
 <p align="center">
@@ -486,10 +486,10 @@ Mac Sai propose **un seul** emplacement sponsor, affiché ici et en haut de cett
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100 000+</h3><sub>téléchargements</sub></td>
+    <td align="center" width="25%"><h3>125 000+</h3><sub>téléchargements</sub></td>
     <td align="center" width="25%"><h3>2 000+</h3><sub>étoiles GitHub</sub></td>
-    <td align="center" width="25%"><h3>17 000</h3><sub>pages vues par mois</sub></td>
-    <td align="center" width="25%"><h3>6</h3><sub>langues du README</sub></td>
+    <td align="center" width="25%"><h3>23 000</h3><sub>pages vues par mois</sub></td>
+    <td align="center" width="25%"><h3>12</h3><sub>langues du README</sub></td>
   </tr>
 </table>
 </div>
