@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <strong>Italiano</strong> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <strong>Italiano</strong> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ Un widget in stile glassmorphism nella barra dei menu che mette i parametri vita
 
 ## Lingue dell'interfaccia
 
-Scegli Sistema, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 o 한국어 in Impostazioni → Lingua interfaccia. Inglese, cinese semplificato e russo coprono l'intera interfaccia. Le altre lingue traducono le stringhe statiche dell'interfaccia; per ora i messaggi con valori interpolati mantengono il testo e le regole del plurale in inglese (il cinese tradizionale ripiega sul cinese semplificato). La finestra principale e il widget della barra dei menu condividono la preferenza della lingua.
+Scegli Sistema, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 o فارسی in Impostazioni → Lingua interfaccia. Inglese, cinese semplificato e russo coprono l'intera interfaccia. Le altre lingue traducono le stringhe statiche dell'interfaccia; per ora i messaggi con valori interpolati mantengono il testo e le regole del plurale in inglese (il cinese tradizionale ripiega sul cinese semplificato). La finestra principale e il widget della barra dei menu condividono la preferenza della lingua. In persiano l'interfaccia è disposta da destra a sinistra.
 
 ## Installazione
 
@@ -489,7 +489,7 @@ Mac Sai ha **un solo** spazio sponsor, mostrato qui e in cima a questa pagina, i
     <td align="center" width="25%"><h3>125.000+</h3><sub>download</sub></td>
     <td align="center" width="25%"><h3>2.000+</h3><sub>stelle su GitHub</sub></td>
     <td align="center" width="25%"><h3>23.000</h3><sub>visualizzazioni di pagina al mese</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>lingue del README</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>lingue del README</sub></td>
   </tr>
 </table>
 </div>

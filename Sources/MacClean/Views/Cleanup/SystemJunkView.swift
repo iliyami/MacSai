@@ -189,7 +189,7 @@ struct SystemJunkView: View {
 
             if let progress {
                 Text(L10n.tr("已处理 \(progress.processedItems.formatted()) / \(progress.totalItems.formatted()) 项", "\(progress.processedItems.formatted()) of \(progress.totalItems.formatted()) items", "Обработано \(progress.processedItems.formatted()) из \(progress.totalItems.formatted()) \(L10n.russianPlural(progress.totalItems, one: "объекта", few: "объектов", many: "объектов"))"))
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(.system(size: 12, design: .monospacedUnlessRightToLeft))
                     .foregroundStyle(.primary.opacity(0.65))
             }
 
@@ -243,7 +243,7 @@ struct SystemJunkView: View {
                         .padding(.top, 2)
                 }
                 Text(L10n.tr("完整日志：~/Library/Logs/MacClean/operations.log", "Full log: ~/Library/Logs/MacClean/operations.log", "Полный журнал: ~/Library/Logs/MacClean/operations.log"))
-                    .font(.system(size: 11, design: .monospaced))
+                    .font(.system(size: 11, design: .monospacedUnlessRightToLeft))
                     .foregroundStyle(.primary.opacity(0.45))
                     .padding(.top, 4)
                     .textSelection(.enabled)

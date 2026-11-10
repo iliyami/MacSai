@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <strong>Русский</strong> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <strong>Русский</strong> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ brew install --cask mac-sai
 
 ## Языки интерфейса
 
-Выберите Системный, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 или 한국어 в Настройки → Язык интерфейса. Английский, упрощённый китайский и русский охватывают весь интерфейс. Остальные языки переводят статические строки интерфейса; сообщения с подставляемыми значениями пока остаются на английском и следуют английским правилам множественного числа (традиционный китайский использует упрощённый в качестве запасного варианта). Главное окно и виджет строки меню используют общую настройку языка.
+Выберите Системный, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 или فارسی в Настройки → Язык интерфейса. Английский, упрощённый китайский и русский охватывают весь интерфейс. Остальные языки переводят статические строки интерфейса; сообщения с подставляемыми значениями пока остаются на английском и следуют английским правилам множественного числа (традиционный китайский использует упрощённый в качестве запасного варианта). Главное окно и виджет строки меню используют общую настройку языка. На персидском интерфейс отображается справа налево.
 
 ---
 
@@ -491,7 +491,7 @@ Mac Sai бесплатен и останется бесплатным: без п
     <td align="center" width="25%"><h3>125 000+</h3><sub>загрузок</sub></td>
     <td align="center" width="25%"><h3>2 000+</h3><sub>звёзд на GitHub</sub></td>
     <td align="center" width="25%"><h3>23 000</h3><sub>просмотров в месяц</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>языков README</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>языков README</sub></td>
   </tr>
 </table>
 </div>

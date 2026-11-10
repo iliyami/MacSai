@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <strong>Deutsch</strong> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <strong>Deutsch</strong> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ Ein Menüleisten-Widget im Glasmorphismus-Stil, das die Vitalwerte deines Macs e
 
 ## Oberflächensprachen
 
-Wähle in Einstellungen → Sprache der Oberfläche zwischen System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 oder 한국어. Englisch, vereinfachtes Chinesisch und Russisch decken die gesamte Oberfläche ab. Die übrigen Sprachen übersetzen die statischen Oberflächentexte; interpolierte Meldungen behalten vorerst den englischen Wortlaut und die Pluralregeln (traditionelles Chinesisch fällt auf Vereinfachtes zurück). Das Hauptfenster und das Menüleisten-Widget teilen sich die Sprachauswahl.
+Wähle in Einstellungen → Sprache der Oberfläche zwischen System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 oder فارسی. Englisch, vereinfachtes Chinesisch und Russisch decken die gesamte Oberfläche ab. Die übrigen Sprachen übersetzen die statischen Oberflächentexte; interpolierte Meldungen behalten vorerst den englischen Wortlaut und die Pluralregeln (traditionelles Chinesisch fällt auf Vereinfachtes zurück). Das Hauptfenster und das Menüleisten-Widget teilen sich die Sprachauswahl. Auf Farsi wird die Oberfläche von rechts nach links dargestellt.
 
 ## Installation
 
@@ -489,7 +489,7 @@ Mac Sai hat **einen einzigen** Sponsorenplatz, hier und oben auf dieser Seite, i
     <td align="center" width="25%"><h3>125.000+</h3><sub>Downloads</sub></td>
     <td align="center" width="25%"><h3>2.000+</h3><sub>GitHub-Sterne</sub></td>
     <td align="center" width="25%"><h3>23.000</h3><sub>Seitenaufrufe pro Monat</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>README-Sprachen</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README-Sprachen</sub></td>
   </tr>
 </table>
 </div>

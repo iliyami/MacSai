@@ -433,7 +433,7 @@ struct SettingsPageView: View {
                 }
                 // Fixed-height scroll box: ~100 languages would otherwise
                 // stretch the page and push the About section out of reach.
-                ScrollView {
+                DirectionalScrollView {
                     LazyVStack(spacing: 0) {
                         ForEach(filteredLanguages, id: \.name) { lang in
                             // One toggle covers every folder variant of the
@@ -716,7 +716,7 @@ struct SettingsPageView: View {
             Text(L10n.tr("组件状态：", "Widget status:", "Состояние виджета:"))
                 .foregroundStyle(.secondary)
             Text(statusText)
-                .font(.system(.body, design: .monospaced))
+                .font(.system(.body, design: .monospacedUnlessRightToLeft))
             Spacer()
         }
         .font(.caption)

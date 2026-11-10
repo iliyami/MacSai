@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It i
 
 ## Interface languages
 
-Choose System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, or 한국어 in Settings → Interface Language. English, Simplified Chinese, and Russian cover the whole interface. The other languages translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
+Choose System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어, or فارسی in Settings → Interface Language. English, Simplified Chinese, and Russian cover the whole interface. The other languages translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference. Farsi uses a right-to-left layout.
 
 ## Installation
 
@@ -489,7 +489,7 @@ Mac Sai has **one** sponsor slot, shown here and at the top of this page, in eve
     <td align="center" width="25%"><h3>125,000+</h3><sub>downloads</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub stars</sub></td>
     <td align="center" width="25%"><h3>23,000</h3><sub>page views a month</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>README languages</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README languages</sub></td>
   </tr>
 </table>
 </div>

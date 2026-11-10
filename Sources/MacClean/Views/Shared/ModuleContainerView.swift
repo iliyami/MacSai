@@ -182,7 +182,7 @@ struct ModuleContainerView: View {
                         .padding(.top, 2)
                 }
                 Text(L10n.tr("完整日志：~/Library/Logs/MacClean/operations.log", "Full log: ~/Library/Logs/MacClean/operations.log", "Полный журнал: ~/Library/Logs/MacClean/operations.log"))
-                    .font(.system(size: 11, design: .monospaced))
+                    .font(.system(size: 11, design: .monospacedUnlessRightToLeft))
                     .foregroundStyle(.primary.opacity(0.45))
                     .padding(.top, 4)
                     .textSelection(.enabled)
@@ -207,7 +207,7 @@ struct ModuleContainerView: View {
             )
             if progress.totalItems > 0 {
                 Text(L10n.tr("已处理 \(progress.processedItems.formatted()) / \(progress.totalItems.formatted()) 项", "\(progress.processedItems.formatted()) of \(progress.totalItems.formatted()) items", "Всего \(progress.totalItems.formatted()) \(L10n.russianPlural(progress.totalItems, one: "объект", few: "объекта", many: "объектов")), обработано \(progress.processedItems.formatted())"))
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(.system(size: 12, design: .monospacedUnlessRightToLeft))
                     .foregroundStyle(.primary.opacity(0.65))
             }
             if let onCancelClean {

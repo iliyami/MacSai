@@ -23,6 +23,7 @@ public enum CleanupStrings {
         case .ja: return "\(selectedText) / \(totalText) 項目を選択済み"
         case .ko: return "\(totalText)개 항목 중 \(selectedText)개 선택됨"
         case .tr: return "\(totalText) öğeden \(selectedText) öğe seçildi"
+        case .fa: return "\(selectedText) از \(totalText) مورد انتخاب شده است"
         case .ru:
             return "Выбрано \(selectedText) из \(totalText) \(L10n.russianPlural(total, one: "объекта", few: "объектов", many: "объектов"))"
         case .zhHans: return "已选择 \(selectedText) / \(totalText) 项"
@@ -42,6 +43,7 @@ public enum CleanupStrings {
         case .ja: return "\(number) 項目をクリーンアップしますか？"
         case .ko: return "\(number)개 항목을 정리할까요?"
         case .tr: return "\(number) öğe temizlensin mi?"
+        case .fa: return "\(number) مورد پاک‌سازی شود؟"
         case .ru:
             return "Очистить \(number) \(L10n.russianPlural(count, one: "объект", few: "объекта", many: "объектов"))?"
         case .zhHans: return "清理 \(number) 项？"
@@ -61,6 +63,7 @@ public enum CleanupStrings {
         case .ja: return "\(number) 項目"
         case .ko: return "\(number)개 항목"
         case .tr: return "\(number) öğe"
+        case .fa: return "\(number) مورد"
         case .ru:
             return "\(number) \(L10n.russianPlural(count, one: "объект", few: "объекта", many: "объектов"))"
         case .zhHans: return "\(number) 项"

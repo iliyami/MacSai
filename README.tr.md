@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <strong>Türkçe</strong>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <strong>Türkçe</strong> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ Mac'inizin hayati değerlerini bir tık uzağınıza getiren, buzlu cam (glassmo
 
 ## Arayüz dilleri
 
-Ayarlar → Arayüz Dili bölümünden Sistem, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 veya 한국어 seçeneğini belirleyin. İngilizce, Basitleştirilmiş Çince ve Rusça arayüzün tamamını kapsar. Diğer diller statik arayüz metinlerini çevirir; değişken değer içeren mesajlar şimdilik İngilizce ifadeleri ve İngilizce çoğul kurallarını korur (Geleneksel Çince, eksik yerlerde Basitleştirilmiş Çinceye geri döner). Ana pencere ve menü çubuğu widget'ı aynı dil tercihini paylaşır.
+Ayarlar → Arayüz Dili bölümünden Sistem, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 veya فارسی seçeneğini belirleyin. İngilizce, Basitleştirilmiş Çince ve Rusça arayüzün tamamını kapsar. Diğer diller statik arayüz metinlerini çevirir; değişken değer içeren mesajlar şimdilik İngilizce ifadeleri ve İngilizce çoğul kurallarını korur (Geleneksel Çince, eksik yerlerde Basitleştirilmiş Çinceye geri döner). Ana pencere ve menü çubuğu widget'ı aynı dil tercihini paylaşır. Farsçada arayüz sağdan sola gösterilir.
 
 ## Kurulum
 
@@ -489,7 +489,7 @@ Mac Sai'nin **tek bir** sponsor alanı var; bu alan burada ve sayfanın en üst�
     <td align="center" width="25%"><h3>125.000+</h3><sub>indirme</sub></td>
     <td align="center" width="25%"><h3>2.000+</h3><sub>GitHub yıldızı</sub></td>
     <td align="center" width="25%"><h3>23.000</h3><sub>aylık sayfa görüntüleme</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>README dili</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README dili</sub></td>
   </tr>
 </table>
 </div>

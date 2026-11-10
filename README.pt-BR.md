@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <strong>Português (Brasil)</strong> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <strong>Português (Brasil)</strong> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ Um widget de barra de menus em estilo glassmorphism que deixa os sinais vitais d
 
 ## Idiomas da interface
 
-Escolha Sistema, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 ou 한국어 em Ajustes → Idioma da interface. Inglês, chinês simplificado e russo cobrem a interface inteira. Os demais idiomas traduzem os textos estáticos da interface; por enquanto, as mensagens interpoladas mantêm o texto e as regras de plural do inglês (o chinês tradicional recorre ao simplificado). A janela principal e o widget da barra de menus compartilham a preferência de idioma.
+Escolha Sistema, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 ou فارسی em Ajustes → Idioma da interface. Inglês, chinês simplificado e russo cobrem a interface inteira. Os demais idiomas traduzem os textos estáticos da interface; por enquanto, as mensagens interpoladas mantêm o texto e as regras de plural do inglês (o chinês tradicional recorre ao simplificado). A janela principal e o widget da barra de menus compartilham a preferência de idioma. Em persa, a interface é exibida da direita para a esquerda.
 
 ## Instalação
 
@@ -489,7 +489,7 @@ O Mac Sai tem **um único** espaço de patrocínio, exibido aqui e no topo desta
     <td align="center" width="25%"><h3>125.000+</h3><sub>downloads</sub></td>
     <td align="center" width="25%"><h3>2.000+</h3><sub>estrelas no GitHub</sub></td>
     <td align="center" width="25%"><h3>23.000</h3><sub>visualizações de página por mês</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>idiomas do README</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>idiomas do README</sub></td>
   </tr>
 </table>
 </div>

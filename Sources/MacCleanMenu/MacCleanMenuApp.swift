@@ -70,6 +70,7 @@ struct MacCleanMenuApp: App {
                 onDismissTip: { model.dismissTip(id: $0) }
             )
             .environment(\.locale, Locale(identifier: appLanguage.localeIdentifier))
+            .environment(\.layoutDirection, appLanguage.isRightToLeft ? .rightToLeft : .leftToRight)
             .id(appLanguage.rawValue)
         } label: {
             HStack(spacing: 4) {
@@ -205,12 +206,12 @@ struct MenuContentView: View {
             // every card is the same height and the rings line up.
             VStack(spacing: 3) {
                 Text(sub ?? " ")
-                    .font(.system(size: 10, design: .monospaced))
+                    .font(.system(size: 10, design: AppLanguage.current.isRightToLeft ? .default : .monospaced))
                     .foregroundStyle(MenuPalette.textSecondary)
                     .lineLimit(1)
                 if let detail {
                     Text(detail)
-                        .font(.system(size: 10, design: .monospaced))
+                        .font(.system(size: 10, design: AppLanguage.current.isRightToLeft ? .default : .monospaced))
                         .foregroundStyle(MenuPalette.textSecondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -350,7 +351,7 @@ struct MenuContentView: View {
                     Image(systemName: "externaldrive.fill").font(.system(size: 10)).foregroundStyle(MenuPalette.teal.opacity(0.8))
                     Text(v.name).font(.system(size: 11)).foregroundStyle(.white).lineLimit(1)
                     Spacer(minLength: 6)
-                    Text(L10n.tr("\(FileSizeFormatter.format(v.freeBytes)) 可用", "\(FileSizeFormatter.format(v.freeBytes)) free", "Свободно: \(FileSizeFormatter.format(v.freeBytes))")).font(.system(size: 10, design: .monospaced)).foregroundStyle(MenuPalette.textSecondary)
+                    Text(L10n.tr("\(FileSizeFormatter.format(v.freeBytes)) 可用", "\(FileSizeFormatter.format(v.freeBytes)) free", "Свободно: \(FileSizeFormatter.format(v.freeBytes))")).font(.system(size: 10, design: AppLanguage.current.isRightToLeft ? .default : .monospaced)).foregroundStyle(MenuPalette.textSecondary)
                 }
             }
             if d.externalDisplays > 0 {

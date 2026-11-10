@@ -36,6 +36,7 @@ struct MacCleanApp: App {
                 .sheet(isPresented: $showOnboarding) {
                     OnboardingView(isPresented: $showOnboarding)
                         .environment(\.locale, Locale(identifier: appLanguage.localeIdentifier))
+                        .environment(\.layoutDirection, appLanguage.isRightToLeft ? .rightToLeft : .leftToRight)
                         .id(appLanguage.rawValue)
                 }
                 .onAppear {

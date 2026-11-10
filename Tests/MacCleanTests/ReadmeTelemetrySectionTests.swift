@@ -173,6 +173,13 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
         )
     }
 
+    func testFarsiReadmeHasVerifyNoTelemetrySection() throws {
+        try assertTelemetrySection(
+            in: "README.fa.md",
+            headingNeedle: "نبود تله\u{200C}متری را خودتان بررسی کنید"
+        )
+    }
+
     /// A MalwareBazaar hit on a signed file makes macOS check the signing
     /// certificate's revocation status with Apple (OCSP). That request comes
     /// from macOS, so check-network-surface.sh can't see it; every README
@@ -191,6 +198,7 @@ final class ReadmeTelemetrySectionTests: XCTestCase {
             "README.ja.md": "署名証明書が失効しているかどうか",
             "README.ko.md": "서명 인증서가 폐기되었는지",
             "README.tr.md": "imzalama sertifikasının iptal edilip edilmediğini",
+            "README.fa.md": "گواهی امضای آن باطل شده است",
         ]
         for (file, needle) in needles {
             let src = try String(contentsOf: readmeURL(file), encoding: .utf8)

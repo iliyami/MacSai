@@ -5,7 +5,7 @@ import MacCleanKit
 /// screens. macOS does not expose a universal "grant all" or FDA status API.
 struct CleanupPermissionsView: View {
     var body: some View {
-        ScrollView {
+        DirectionalScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 Label(L10n.tr("清理权限", "Cleanup permissions", "Разрешения для очистки"), systemImage: "lock.shield")
                     .font(.title2.bold())
