@@ -135,6 +135,7 @@ cat > "${APP_BUNDLE}/Contents/Info.plist" << PLIST
         <string>ja</string>
         <string>ko</string>
         <string>tr</string>
+        <string>fa</string>
     </array>
     <key>CFBundleExecutable</key>
     <string>MacClean</string>
@@ -228,6 +229,7 @@ cat > "${MENU_APP}/Contents/Info.plist" << MENU_PLIST
         <string>ja</string>
         <string>ko</string>
         <string>tr</string>
+        <string>fa</string>
     </array>
     <key>CFBundleExecutable</key>
     <string>MacCleanMenu</string>

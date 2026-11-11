@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <strong>简体中文</strong> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <strong>简体中文</strong> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ brew install --cask mac-sai
 
 ## 界面语言
 
-在 设置 → 界面语言 中选择 跟随系统、English、简体中文、繁體中文、Русский、Deutsch、Français、Español、Italiano、Português (Brasil)、Türkçe、日本語、한국어。英语、简体中文和俄语覆盖整个界面。其他语言翻译界面中的静态文字；含插值的消息目前仍保留英文措辞和复数规则（繁体中文会回退到简体中文）。主窗口和菜单栏小组件共用同一语言设置。
+在 设置 → 界面语言 中选择 跟随系统、English、简体中文、繁體中文、Русский、Deutsch、Français、Español、Italiano、Português (Brasil)、Türkçe、日本語、한국어、فارسی。英语、简体中文和俄语覆盖整个界面。其他语言翻译界面中的静态文字；含插值的消息目前仍保留英文措辞和复数规则（繁体中文会回退到简体中文）。主窗口和菜单栏小组件共用同一语言设置。波斯语界面采用从右到左的布局。
 
 ---
 
@@ -491,7 +491,7 @@ Mac Sai 只有**一个**赞助位，展示在这里和本页顶部，覆盖本 R
     <td align="center" width="25%"><h3>125,000+</h3><sub>次下载</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub Star</sub></td>
     <td align="center" width="25%"><h3>23,000</h3><sub>每月页面浏览量</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>种 README 语言</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>种 README 语言</sub></td>
   </tr>
 </table>
 </div>

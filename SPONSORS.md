@@ -41,7 +41,7 @@
 
 **Where they come from.** Mostly Google search, then YouTube, GitHub, Reddit, Brave Search, Bing and DuckDuckGo.
 
-**Where they read.** The README is published in twelve languages (English, Simplified Chinese, Traditional Chinese, German, French, Russian, Spanish, Italian, Brazilian Portuguese, Japanese, Korean and Turkish), and the sponsor appears in every one of them.
+**Where they read.** The README is published in thirteen languages (English, Simplified Chinese, Traditional Chinese, German, French, Russian, Spanish, Italian, Brazilian Portuguese, Japanese, Korean, Turkish and Farsi), and the sponsor appears in every one of them.
 
 ## What the slot includes
 

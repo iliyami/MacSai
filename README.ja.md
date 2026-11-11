@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <strong>日本語</strong> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <strong>日本語</strong> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ Mac の状態をワンクリックで確認できる、グラスモーフィズ�
 
 ## インターフェース言語
 
-「設定」→「インターフェース言語」で、システム、English、简体中文、繁體中文、Русский、Deutsch、Français、Español、Italiano、Português (Brasil)、Türkçe、日本語、한국어 から選択できます。英語、簡体字中国語、ロシア語はインターフェース全体に対応しています。その他の言語では静的なインターフェース文字列が翻訳されており、値を埋め込むメッセージは現時点では英語の文言と複数形のルールのままです（繁体字中国語では簡体字中国語が代わりに表示されます）。メインウィンドウとメニューバーウィジェットは同じ言語設定を共有します。
+「設定」→「インターフェース言語」で、システム、English、简体中文、繁體中文、Русский、Deutsch、Français、Español、Italiano、Português (Brasil)、Türkçe、日本語、한국어、فارسی から選択できます。英語、簡体字中国語、ロシア語はインターフェース全体に対応しています。その他の言語では静的なインターフェース文字列が翻訳されており、値を埋め込むメッセージは現時点では英語の文言と複数形のルールのままです（繁体字中国語では簡体字中国語が代わりに表示されます）。メインウィンドウとメニューバーウィジェットは同じ言語設定を共有します。ペルシア語ではインターフェースが右から左に表示されます。
 
 ## インストール
 
@@ -489,7 +489,7 @@ Mac Sai のスポンサー枠は**1つだけ**です。この README のすべ�
     <td align="center" width="25%"><h3>125,000+</h3><sub>ダウンロード</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub スター</sub></td>
     <td align="center" width="25%"><h3>23,000</h3><sub>月間ページビュー</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>README の言語</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README の言語</sub></td>
   </tr>
 </table>
 </div>

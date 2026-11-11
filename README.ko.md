@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <strong>한국어</strong> | <a href="README.tr.md">Türkçe</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <strong>한국어</strong> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
@@ -227,7 +227,7 @@ Mac의 핵심 상태를 클릭 한 번 거리에 두는 글래스모피즘 스�
 
 ## 인터페이스 언어
 
-설정 → 인터페이스 언어에서 시스템, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 중 하나를 선택할 수 있습니다. 영어, 중국어 간체, 러시아어는 인터페이스 전체를 지원합니다. 그 외 언어는 고정된 인터페이스 문자열을 번역하며, 변수가 삽입되는 메시지는 당분간 영어 문구와 복수형 규칙을 그대로 사용합니다(중국어 번체는 중국어 간체로 대체됩니다). 메인 윈도우와 메뉴 막대 위젯은 같은 언어 설정을 공유합니다.
+설정 → 인터페이스 언어에서 시스템, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어, فارسی 중 하나를 선택할 수 있습니다. 영어, 중국어 간체, 러시아어는 인터페이스 전체를 지원합니다. 그 외 언어는 고정된 인터페이스 문자열을 번역하며, 변수가 삽입되는 메시지는 당분간 영어 문구와 복수형 규칙을 그대로 사용합니다(중국어 번체는 중국어 간체로 대체됩니다). 메인 윈도우와 메뉴 막대 위젯은 같은 언어 설정을 공유합니다. 페르시아어에서는 인터페이스가 오른쪽에서 왼쪽 방향으로 표시됩니다.
 
 ## 설치
 
@@ -489,7 +489,7 @@ Mac Sai에는 스폰서 자리가 **하나**뿐이며, 이 README의 모든 언�
     <td align="center" width="25%"><h3>125,000+</h3><sub>다운로드</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub 스타</sub></td>
     <td align="center" width="25%"><h3>23,000</h3><sub>월간 페이지 조회수</sub></td>
-    <td align="center" width="25%"><h3>12</h3><sub>README 언어</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README 언어</sub></td>
   </tr>
 </table>
 </div>

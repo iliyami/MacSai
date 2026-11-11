@@ -59,7 +59,7 @@ struct LogViewerView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
-                ScrollView {
+                DirectionalScrollView {
                     Text(displayedText)
                         .font(.system(size: 11, design: .monospaced))
                         .textSelection(.enabled)

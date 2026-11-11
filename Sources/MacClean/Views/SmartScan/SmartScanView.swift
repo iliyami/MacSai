@@ -168,7 +168,7 @@ struct SmartScanView: View {
             .padding(.bottom, 16)
 
             // Module checklist
-            ScrollView {
+            DirectionalScrollView {
                 VStack(spacing: 2) {
                     ForEach(Array(Self.moduleOrder.enumerated()), id: \.offset) { index, module in
                         moduleRow(module: module, currentPhase: phase)
@@ -431,7 +431,7 @@ struct SmartScanView: View {
                                 .lineLimit(1)
                             Spacer(minLength: 8)
                             Text(recentlyCleanedDetail(row))
-                                .font(.system(size: 13, design: .monospaced))
+                                .font(.system(size: 13, design: .monospacedUnlessRightToLeft))
                                 .foregroundStyle(.primary.opacity(0.7))
                                 .multilineTextAlignment(.trailing)
                         }
