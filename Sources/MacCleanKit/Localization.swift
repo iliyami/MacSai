@@ -1762,6 +1762,11 @@ public enum L10n {
     /// back to the Simplified string, which is still readable Chinese. Native
     /// review is welcome to refine wording.
     private static let traditionalChineseFallbacks: [String: String] = [
+        "扫描未完成：部分文件夹无法读取": "掃描未完成：部分檔案夾無法讀取",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "受保護的檔案夾（包括剪貼簿封存）需要完整磁碟取用權限。請為此 Mac Sai 副本授權，重新啟動應用程式並再次掃描。",
+        "通用剪贴板归档": "通用剪貼簿封存",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "用於裝置間複製貼上的暫存檔案副本；清理前請檢查。",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "原始檔案會保留。時間不代表未使用：請先完成複製和裝置間傳輸。清理可能中斷待執行的貼上。",
         // Batch cleanup and shared permissions
         "清理权限": "清理權限",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "允許 Mac Sai 掃描郵件、瀏覽器資料和其他受保護的資料夾。在系統設定中加入 Mac Sai 並開啟權限，然後重新啟動應用程式並重新掃描。",
@@ -3124,6 +3129,11 @@ public enum L10n {
     ]
 
     private static let germanFallbacks: [String: String] = [
+        "扫描未完成：部分文件夹无法读取": "Scan unvollständig: Einige Ordner konnten nicht gelesen werden",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Geschützte Ordner, darunter Zwischenablage-Archive, benötigen Festplattenvollzugriff. Erteile ihn dieser Kopie von Mac Sai, starte die App neu und scanne erneut.",
+        "通用剪贴板归档": "Zwischenablage-Archive",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Temporäre Dateikopien zum Einfügen auf anderen Geräten. Vor dem Bereinigen prüfen.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "Die Originaldateien bleiben erhalten. Das Alter beweist nicht, dass ein Archiv unbenutzt ist: Kopieren und Übertragungen zwischen Geräten zuerst abschließen. Das Bereinigen kann ausstehendes Einfügen unterbrechen.",
         // Batch cleanup and shared permissions
         "清理权限": "Berechtigungen für die Bereinigung",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Lässt Mac Sai Mail, Browserdaten und andere geschützte Ordner scannen. Füge Mac Sai in den Systemeinstellungen hinzu und aktiviere den Zugriff. Starte die App danach neu und scanne erneut.",

@@ -5,8 +5,8 @@ import MacCleanKit
 
 final class SystemJunkModuleTests: EnglishAppLanguageTestCase {
 
-    func testRegistersAll20Categories() {
-        XCTAssertEqual(SystemJunkModule.allCategories.count, 20)
+    func testRegistersAll21Categories() {
+        XCTAssertEqual(SystemJunkModule.allCategories.count, 21)
     }
 
     func testAllCategoriesAreUnique() {
@@ -21,5 +21,10 @@ final class SystemJunkModuleTests: EnglishAppLanguageTestCase {
         XCTAssertEqual(m.name, "System Junk")
         XCTAssertEqual(m.category, .cleanup)
         XCTAssertTrue(m.includedInSmartScan)
+    }
+    func testSystemJunkRegistersOptInClipboardCategory() {
+        let category = SystemJunkModule.allCategories.first { $0.scanCategory == .clipboardArchives }
+        XCTAssertTrue(category is ClipboardArchivesCategory)
+        XCTAssertFalse(ScanCategory.clipboardArchives.autoSelect)
     }
 }

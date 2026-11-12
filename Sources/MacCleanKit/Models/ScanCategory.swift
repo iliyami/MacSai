@@ -22,6 +22,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
     case packageManagerCaches = "package_manager_caches"
     case ideCaches = "ide_caches"
     case aiToolCaches = "ai_tool_caches"
+    case clipboardArchives = "clipboard_archives"
 
     // Mail
     case mailAttachments = "mail_attachments"
@@ -67,6 +68,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .packageManagerCaches: L10n.tr("包管理器缓存", "Package Manager Caches", "Кэш менеджеров пакетов")
         case .ideCaches: L10n.tr("IDE 与编辑器缓存", "IDE & Editor Caches", "Кэш IDE и редакторов")
         case .aiToolCaches: L10n.tr("AI 工具缓存", "AI Tool Caches", "Кэш AI-инструментов")
+        case .clipboardArchives: L10n.tr("通用剪贴板归档", "Universal Clipboard Archives", "Архивы универсального буфера обмена")
         case .mailAttachments: L10n.tr("邮件附件", "Mail Attachments", "Почтовые вложения")
         case .trashBins: L10n.tr("废纸篓", "Trash Bins", "Корзины")
         case .malware: L10n.tr("恶意软件", "Malware", "Вредоносное ПО")
@@ -103,6 +105,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .packageManagerCaches: L10n.tr("npm、pnpm、Cargo、pip、uv、Homebrew、Gradle 的可重建缓存。", "Regenerable caches from npm, pnpm, Cargo, pip, uv, Homebrew, and Gradle.", "Восстанавливаемые кэши npm, pnpm, Cargo, pip, uv, Homebrew и Gradle.")
         case .ideCaches: L10n.tr("代码编辑器的缓存（Cursor、Antigravity 等）。", "Caches from code editors like Cursor and Antigravity.", "Кэши редакторов кода, таких как Cursor и Antigravity.")
         case .aiToolCaches: L10n.tr("AI 编码工具的缓存（Claude、Codex）；不含历史与会话。", "Caches from AI coding tools (Claude, Codex). History and sessions excluded.", "Кэши AI-инструментов для программирования (Claude, Codex). История и сеансы не затрагиваются.")
+        case .clipboardArchives: L10n.tr("用于设备间复制粘贴的临时文件副本；清理前请检查。", "Temporary file copies for pasting between devices. Review before cleaning.", "Временные копии файлов для вставки между устройствами. Проверьте перед очисткой.")
         case .mailAttachments: L10n.tr("邮件附件的缓存副本。", "Saved copies of Mail attachments.", "Кэшированные копии почтовых вложений.")
         case .trashBins: L10n.tr("当前位于废纸篓中的项目。", "Items currently sitting in the Trash.", "Объекты, находящиеся в Корзине.")
         case .malware: L10n.tr("在磁盘上发现的已知恶意文件。", "Known malicious files found on disk.", "Известные вредоносные файлы, найденные на диске.")
@@ -165,7 +168,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .languageFiles, .documentVersions, .iosDeviceBackups, .universalBinaries,
              .xcodeJunk, .deletedUsers, .unusedDiskImages, .mailAttachments, .trashBins,
              .malware, .possibleThreats, .browserPrivacy, .systemPrivacy, .largeFiles, .oldFiles, .duplicates,
-             .projectJunk:
+             .projectJunk, .clipboardArchives:
             .reviewFirst
         }
     }
@@ -179,6 +182,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .packageManagerCaches: L10n.tr("下载和构建缓存。npm、pnpm、Cargo、pip、uv、Homebrew 和 Gradle 会在下次安装或构建时重新下载所需内容。", "Download and build caches. npm, pnpm, Cargo, pip, uv, Homebrew, and Gradle re-download what they need on the next install or build.", "Кэши загрузок и сборок. npm, pnpm, Cargo, pip, uv, Homebrew и Gradle заново скачают нужное при следующей установке или сборке.")
         case .ideCaches: L10n.tr("仅编辑器缓存。Cursor 和 Antigravity 下次启动时会重新生成；你的设置和扩展不受影响。", "Editor caches only. Cursor and Antigravity recreate them on next launch; your settings and extensions aren't touched.", "Только кэши редакторов. Cursor и Antigravity создадут их заново при следующем запуске; настройки и расширения не затрагиваются.")
         case .aiToolCaches: L10n.tr("仅临时和缓存文件夹。Claude 和 Codex 会按需重新生成；绝不包含历史、记忆和会话。", "Scratch and cache folders only. Claude and Codex recreate them as needed; history, memory, and sessions are never included.", "Только временные папки и кэши. Claude и Codex создадут их заново при необходимости; история, память и сеансы никогда не включаются.")
+        case .clipboardArchives: L10n.tr("原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。", "Original files stay in place. Age does not prove an archive is unused: finish copying and transfers between devices first. Cleaning may interrupt a pending paste.", "Исходные файлы сохраняются. Возраст не доказывает, что архив не используется: сначала завершите копирование и передачу между устройствами. Очистка может прервать ожидающую вставку.")
         case .userLogs: L10n.tr("应用为排查问题写下的诊断记录。应用不会回读旧日志，运行时会写新的日志。", "Diagnostic text your apps wrote for troubleshooting. Apps don't read old logs back, and they start new ones as they run.", "Диагностические записи, которые приложения вели для поиска неполадок. Старые журналы приложения не читают и при работе начинают новые.")
         case .systemLogs: L10n.tr("macOS 诊断日志。仅在排查过去的问题时有用；macOS 会继续写入新日志。", "macOS diagnostic logs. Only useful when investigating a past problem; macOS keeps writing fresh ones.", "Диагностические журналы macOS. Нужны только для разбора прошлых проблем; macOS продолжает вести новые.")
         case .brokenPreferences: L10n.tr("无法读取的设置文件，或其应用已不再安装。这台 Mac 上没有任何东西在使用它们。", "Settings files that can't be read, or whose app is no longer installed. Nothing on this Mac uses them.", "Файлы настроек, которые не читаются или чьё приложение больше не установлено. На этом Mac их ничто не использует.")
@@ -226,6 +230,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         case .packageManagerCaches: "shippingbox"
         case .ideCaches: "macwindow"
         case .aiToolCaches: "sparkles"
+        case .clipboardArchives: "doc.on.clipboard"
         case .mailAttachments: "paperclip"
         case .trashBins: "trash"
         case .malware: "shield.lefthalf.filled.trianglebadge.exclamationmark"
@@ -243,7 +248,7 @@ public enum ScanCategory: String, CaseIterable, Identifiable, Sendable {
         switch self {
         case .unusedDiskImages, .largeFiles, .oldFiles, .duplicates, .projectJunk,
              .universalBinaries, .appLeftovers, .deletedUsers,
-             .packageManagerCaches, .ideCaches, .aiToolCaches, .possibleThreats:
+             .packageManagerCaches, .ideCaches, .aiToolCaches, .clipboardArchives, .possibleThreats:
             // possibleThreats: matches that need the user's judgement (a
             // blocklist that also covers once-legitimate software, community
             // reports no vendor confirmed). List them, never pre-check them.

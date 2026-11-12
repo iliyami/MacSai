@@ -10,20 +10,25 @@ struct SystemJunkView: View {
     @State private var showActivityLog = false
 
     var body: some View {
-        Group {
-            switch viewModel.state {
-            case .idle:
-                idleView
-            case .scanning(let progress):
-                scanningView(progress: progress)
-            case .results:
-                resultsView
-            case .empty:
-                emptyView
-            case .cleaning(let progress):
-                cleaningView(progress: progress)
-            case .done(let summary):
-                doneView(summary: summary)
+        VStack(spacing: 0) {
+            if viewModel.isScanComplete && !viewModel.permissionDeniedPaths.isEmpty {
+                permissionWarning
+            }
+            Group {
+                switch viewModel.state {
+                case .idle:
+                    idleView
+                case .scanning(let progress):
+                    scanningView(progress: progress)
+                case .results:
+                    resultsView
+                case .empty:
+                    emptyView
+                case .cleaning(let progress):
+                    cleaningView(progress: progress)
+                case .done(let summary):
+                    doneView(summary: summary)
+                }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -34,7 +39,7 @@ struct SystemJunkView: View {
         }
         .onAppear {
             if let e = appState.scanResultsStore.entry(for: .systemJunk) {
-                viewModel.restore(results: e.results, selection: e.selection, scanComplete: e.scanComplete)
+                viewModel.restore(results: e.results, selection: e.selection, scanComplete: e.scanComplete, permissionDeniedPaths: e.permissionDeniedPaths)
             }
         }
         .onDisappear {
@@ -42,7 +47,8 @@ struct SystemJunkView: View {
                 results: viewModel.results,
                 selection: viewModel.selectedItems,
                 scanComplete: viewModel.isScanComplete,
-                for: .systemJunk
+                for: .systemJunk,
+                permissionDeniedPaths: viewModel.permissionDeniedPaths
             )
         }
         .respondsToModuleShortcuts(
@@ -59,6 +65,26 @@ struct SystemJunkView: View {
                 return false
             }()
         )
+    }
+
+    private var permissionWarning: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label(L10n.tr("扫描未完成：部分文件夹无法读取", "Scan incomplete: some folders could not be read", "Сканирование неполное: некоторые папки недоступны"), systemImage: "exclamationmark.triangle")
+                .font(.headline)
+            Text(L10n.tr("受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。", "Protected folders, including clipboard archives, require Full Disk Access. Grant it to this copy of Mac Sai, restart the app, and scan again.", "Для защищённых папок, включая архивы буфера обмена, нужен полный доступ к диску. Предоставьте его этой копии Mac Sai, перезапустите приложение и повторите сканирование."))
+                .font(.caption)
+            Text(viewModel.permissionDeniedPaths.map { $0.path(percentEncoded: false) }.joined(separator: "\n"))
+                .font(.caption.monospaced())
+                .textSelection(.enabled)
+                .lineLimit(3)
+                .help(viewModel.permissionDeniedPaths.map { $0.path(percentEncoded: false) }.joined(separator: "\n"))
+            Button(L10n.tr("打开完全磁盘访问设置", "Open Full Disk Access Settings", "Открыть настройки доступа к диску")) {
+                PermissionManager.shared.openFullDiskAccessSettings()
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(.orange.opacity(0.15))
     }
 
     private var idleView: some View {
