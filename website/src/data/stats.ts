@@ -51,16 +51,40 @@ const FALLBACK: Stats = {
   brew: null,
 };
 
-function headers(accept = 'application/vnd.github+json'): Record<string, string> {
-  const h: Record<string, string> = { Accept: accept, 'User-Agent': 'macsai-website-build' };
-  if (process.env.GITHUB_TOKEN) h.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+const GITHUB_API = 'https://api.github.com/';
+
+/** The build token is only ever sent to api.github.com, never to Homebrew. */
+function headers(url: string, accept: string | undefined, auth: boolean): Record<string, string> {
+  const github = url.startsWith(GITHUB_API);
+  const h: Record<string, string> = {
+    Accept: accept ?? (github ? 'application/vnd.github+json' : 'application/json'),
+    'User-Agent': 'macsai-website-build',
+  };
+  if (auth && github && process.env.GITHUB_TOKEN) h.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
   return h;
 }
 
 async function getJSON<T>(url: string, accept?: string): Promise<T> {
-  const response = await fetch(url, { headers: headers(accept) });
-  if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+  let response = await fetch(url, { headers: headers(url, accept, true) });
+  // Some endpoints refuse the Actions token; the public data is readable without it.
+  if (response.status === 403 && url.startsWith(GITHUB_API) && process.env.GITHUB_TOKEN) {
+    response = await fetch(url, { headers: headers(url, accept, false) });
+  }
+  if (!response.ok) {
+    const detail = (await response.text()).slice(0, 160).replace(/\s+/g, ' ');
+    throw new Error(`${url}: HTTP ${response.status} ${detail}`);
+  }
   return (await response.json()) as T;
+}
+
+/** Runs an optional lookup; a failure hides that number instead of the section. */
+async function optional<T>(label: string, task: () => Promise<T>): Promise<T | null> {
+  try {
+    return await task();
+  } catch (error) {
+    console.warn(`[stats] ${label} unavailable: ${(error as Error).message}`);
+    return null;
+  }
 }
 
 /** Follows GitHub's 100-per-page pagination until a short page. */
@@ -68,7 +92,7 @@ async function allPages<T>(path: string, accept?: string, maxPages = 400): Promi
   const out: T[] = [];
   for (let page = 1; page <= maxPages; page++) {
     const sep = path.includes('?') ? '&' : '?';
-    const items = await getJSON<T[]>(`https://api.github.com/${path}${sep}per_page=100&page=${page}`, accept);
+    const items = await getJSON<T[]>(`${GITHUB_API}${path}${sep}per_page=100&page=${page}`, accept);
     out.push(...items);
     if (items.length < 100) break;
   }
@@ -129,13 +153,16 @@ async function loadBrew(): Promise<Stats['brew']> {
 async function load(): Promise<Stats> {
   if (process.env.OFFLINE_BUILD === '1') return FALLBACK;
   const brew = loadBrew();
+  const contributors = optional('contributors', () => allPages<unknown>(`repos/${REPO}/contributors`));
+  const stargazersTask = optional('star history', () =>
+    allPages<{ starred_at: string }>(`repos/${REPO}/stargazers`, 'application/vnd.github.star+json'),
+  );
   try {
-    const [repo, releases, contributors, stargazers] = await Promise.all([
-      getJSON<{ stargazers_count: number; forks_count: number }>(`https://api.github.com/repos/${REPO}`),
+    const [repo, releases] = await Promise.all([
+      getJSON<{ stargazers_count: number; forks_count: number }>(`${GITHUB_API}repos/${REPO}`),
       allPages<GHRelease>(`repos/${REPO}/releases`),
-      allPages<unknown>(`repos/${REPO}/contributors`),
-      allPages<{ starred_at: string }>(`repos/${REPO}/stargazers`, 'application/vnd.github.star+json'),
     ]);
+    const stargazers = (await stargazersTask) ?? [];
     const published = releases.filter((r) => !r.draft);
     const downloads = published
       .flatMap((r) => r.assets)
@@ -148,9 +175,9 @@ async function load(): Promise<Stats> {
       live: true,
       downloads: Math.max(downloads, FALLBACK.downloads),
       stars: repo.stargazers_count,
-      stars30d: stargazers.filter((s) => s.starred_at >= monthAgo).length,
+      stars30d: stargazers.length ? stargazers.filter((s) => s.starred_at >= monthAgo).length : null,
       forks: repo.forks_count,
-      contributors: contributors.length,
+      contributors: (await contributors)?.length ?? null,
       releases: published.length,
       starHistory: history,
       brew: await brew,
