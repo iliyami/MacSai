@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { href } from '../lib/url';
+---
+<Base title="Page not found" description="This page doesn’t exist. Head back to Mac Sai, the free and open-source Mac cleaner." path="/404/" noindex>
+  <PageHero title="This page was cleaned up" lede="Or it never existed. The link may be old or mistyped.">
+    <p class="links">
+      <a class="btn btn-primary" href={href('/')}>Go to the home page</a>
+      <a class="btn btn-ghost" href={href('/download/')}>Download Mac Sai</a>
+    </p>
+  </PageHero>
+</Base>
+<style>
+  .links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
+</style>

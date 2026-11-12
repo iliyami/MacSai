@@ -1,0 +1,117 @@
+---
+import { href } from '../lib/url';
+import { LOCALES } from '../i18n/locales.mjs';
+import { FEATURE_PAGES } from '../data/pages';
+import { release, REPO_URL } from '../data/release';
+
+interface Props {
+  currentLang?: string;
+  labels?: { tagline: string; noTracking: string; languages: string };
+}
+
+const {
+  currentLang = 'en',
+  labels = {
+    tagline: 'The free, open-source Mac cleaner.',
+    noTracking: 'This website has no analytics, no cookies and loads nothing from anyone else.',
+    languages: 'Languages',
+  },
+} = Astro.props;
+
+const navTitles: Record<string, string> = {
+  'system-junk': 'System junk and caches',
+  'developer-cleanup': 'Developer disk space',
+  'malware-scanner': 'Malware scanner',
+  'privacy-cleaner': 'Privacy cleaner',
+  'mac-maintenance': 'Maintenance and speed',
+  uninstaller: 'Uninstaller',
+  'disk-space': 'Disk space and duplicates',
+};
+const year = new Date().getFullYear();
+---
+<footer class="site-footer night">
+  <div class="wrap grid">
+    <div class="about">
+      <p class="name">Mac Sai</p>
+      <p>{labels.tagline}</p>
+      <p class="fine">{labels.noTracking}</p>
+    </div>
+
+    <nav aria-label="Features">
+      <h2>Features</h2>
+      <ul>
+        {FEATURE_PAGES.map((p) => <li><a href={href(`/features/${p.slug}/`)}>{navTitles[p.slug]}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Mac Sai">
+      <h2>Mac Sai</h2>
+      <ul>
+        <li><a href={href('/download/')}>Download {release.version}</a></li>
+        <li><a href={href('/cleanmymac-alternative/')}>Compare with CleanMyMac</a></li>
+        <li><a href={href('/privacy/')}>Privacy and verification</a></li>
+        <li><a href={REPO_URL} rel="noopener">Source code on GitHub</a></li>
+        <li><a href={`${REPO_URL}/releases`} rel="noopener">Release notes</a></li>
+        <li><a href={`${REPO_URL}/blob/main/SUPPORTERS.md`} rel="noopener">Support the project</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label={labels.languages}>
+      <h2>{labels.languages}</h2>
+      <ul class="langs">
+        {LOCALES.map((l) => (
+          <li>
+            <a
+              href={href(l.code === 'en' ? '/' : `/${l.code}/`)}
+              hreflang={l.hreflang}
+              lang={l.hreflang}
+              aria-current={l.hreflang === currentLang ? 'page' : undefined}
+            >{l.name}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+  <div class="wrap legal">
+    <p>© {year} Mac Sai contributors. BSD 3-Clause License.</p>
+    <p>Mac Sai is an independent open-source project, not affiliated with Apple or MacPaw. Mac and macOS are trademarks of Apple Inc. CleanMyMac is a trademark of MacPaw.</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding-block: 4rem 2.5rem;
+    border-top: 1px solid var(--night-line);
+    font-size: 0.95rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 2.5rem;
+  }
+  .name { font: 700 1.3rem/1 var(--font-display); margin-bottom: 0.6rem; }
+  .about p + p { margin-top: 0.5rem; }
+  .fine { color: var(--starlight-dim); font-size: 0.875rem; max-width: 30ch; }
+  h2 { font: 600 0.95rem/1.2 var(--font-body); color: var(--starlight); margin-bottom: 0.8rem; letter-spacing: 0; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li + li { margin-top: 0.45rem; }
+  a { color: var(--starlight-dim); text-decoration: none; }
+  a:hover, a[aria-current='page'] { color: var(--starlight); text-decoration: underline; }
+  .langs { columns: 2; column-gap: 1.25rem; }
+  .langs li { break-inside: avoid; }
+  .legal {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--night-line);
+    color: var(--starlight-dim);
+    font-size: 0.8rem;
+    display: grid;
+    gap: 0.35rem;
+  }
+  @media (max-width: 56rem) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 30rem) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>

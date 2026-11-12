@@ -1,0 +1,133 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import AppWindow from '../../components/AppWindow.astro';
+import Faq from '../../components/Faq.astro';
+import DownloadBand from '../../components/DownloadBand.astro';
+import { FEATURE_PAGES, type FeaturePage } from '../../data/pages';
+import { MODULES } from '../../data/modules';
+import { release } from '../../data/release';
+import { href } from '../../lib/url';
+import { softwareApplication, faqPage, breadcrumbs } from '../../lib/schema';
+import { en } from '../../i18n/en';
+
+export function getStaticPaths() {
+  return FEATURE_PAGES.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+interface Props { page: FeaturePage }
+const { page } = Astro.props;
+const path = `/features/${page.slug}/`;
+const modules = MODULES.filter((m) => m.page === page.slug);
+const others = FEATURE_PAGES.filter((p) => p.slug !== page.slug);
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Features', path: '/features/' },
+  { name: page.h1, path },
+];
+const meta = release.dmgSizeMB ? `Version ${release.version}, ${release.dmgSizeMB} MB` : `Version ${release.version}`;
+---
+<Base
+  title={page.title}
+  description={page.description}
+  path={path}
+  jsonld={[softwareApplication(page.description), faqPage(page.faq), breadcrumbs(crumbs)]}
+>
+  <PageHero title={page.h1} lede={page.lede} crumbs={crumbs}>
+    <div class="cta">
+      <a class="btn btn-primary" href={release.dmgURL}>Download Mac Sai, free</a>
+      <span class="meta">{meta}. macOS 14 or later.</span>
+    </div>
+  </PageHero>
+
+  <div class="wrap shot">
+    <AppWindow name={page.shot} alt={page.shotAlt} priority />
+  </div>
+
+  <div class="wrap body">
+    <article class="prose">
+      {page.sections.map((s) => (
+        <>
+          <h2>{s.heading}</h2>
+          {s.body.map((p) => <p>{p}</p>)}
+          {s.bullets && <ul>{s.bullets.map((b) => <li>{b}</li>)}</ul>}
+        </>
+      ))}
+    </article>
+    <aside aria-labelledby="in-app">
+      <h2 id="in-app">In the app</h2>
+      <ul>
+        {modules.map((m) => (
+          <li><strong>{m.name}</strong><span>{m.summary}</span></li>
+        ))}
+      </ul>
+    </aside>
+  </div>
+
+  <Faq heading="Questions" items={page.faq} />
+
+  <nav class="wrap related" aria-labelledby="related">
+    <h2 id="related">More of what Mac Sai does</h2>
+    <ul>
+      {others.map((p) => (
+        <li><a href={href(`/features/${p.slug}/`)}><span>{p.h1}</span><small>{p.description}</small></a></li>
+      ))}
+    </ul>
+  </nav>
+
+  <DownloadBand
+    heading={en.cta.heading}
+    body={en.cta.body}
+    download={en.cta.download}
+    meta={meta}
+    copy={en.hero.copy}
+    copied={en.hero.copied}
+    brewLabel={en.hero.brewLabel}
+  />
+</Base>
+
+<style>
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
+  .meta { color: var(--starlight-dim); font-size: 0.9rem; }
+  .shot { margin-top: clamp(-3rem, -4vw, -1.5rem); position: relative; z-index: 1; }
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    gap: 3rem clamp(2rem, 6vw, 5rem);
+    padding-block: clamp(3rem, 7vw, 5rem) 1rem;
+    align-items: start;
+  }
+  .prose :global(h2:first-child) { margin-top: 0; }
+  aside {
+    position: sticky;
+    top: 2rem;
+    padding: 1.5rem;
+    border-radius: var(--radius-l);
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  aside h2 { font-size: var(--step-1); margin-bottom: 1rem; }
+  aside ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  aside li { display: grid; gap: 0.2rem; font-size: 0.95rem; color: var(--ink-2); line-height: 1.5; }
+  aside strong { color: var(--ink); }
+  .related { padding-block: 1rem clamp(4rem, 9vw, 6rem); }
+  .related h2 { font-size: var(--step-2); margin-bottom: 1.5rem; }
+  .related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: 0 2rem;
+    border-top: 1px solid var(--line);
+  }
+  .related li { border-bottom: 1px solid var(--line); }
+  .related a { display: grid; gap: 0.3rem; padding: 1.1rem 0; text-decoration: none; color: var(--ink); }
+  .related a span { font-weight: 600; }
+  .related a:hover span { text-decoration: underline; }
+  .related small { color: var(--ink-2); font-size: 0.9rem; line-height: 1.45; }
+  @media (max-width: 56rem) {
+    .body { grid-template-columns: 1fr; }
+    aside { position: static; }
+  }
+</style>

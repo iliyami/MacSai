@@ -1,0 +1,75 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import AppWindow from '../../components/AppWindow.astro';
+import DownloadBand from '../../components/DownloadBand.astro';
+import { FEATURE_PAGES } from '../../data/pages';
+import { MODULES, MODULE_COUNT } from '../../data/modules';
+import { release } from '../../data/release';
+import { href } from '../../lib/url';
+import { breadcrumbs } from '../../lib/schema';
+import { en } from '../../i18n/en';
+
+const title = `All ${MODULE_COUNT} Mac Sai tools: cleanup, protection and more`;
+const description = 'Every Mac Sai tool in one place: system junk, developer caches, malware scanning, privacy, maintenance, a complete uninstaller and disk space tools.';
+const crumbs = [{ name: 'Home', path: '/' }, { name: 'Features', path: '/features/' }];
+const meta = release.dmgSizeMB ? `Version ${release.version}, ${release.dmgSizeMB} MB` : `Version ${release.version}`;
+---
+<Base title={title} description={description} path="/features/" jsonld={[breadcrumbs(crumbs)]}>
+  <PageHero
+    title={`${MODULE_COUNT} tools, one free app`}
+    lede="Everything a Mac cleaner should do, grouped the way the app groups it. Each page explains what a tool looks at, what it never touches and how to undo it."
+    crumbs={crumbs}
+  />
+
+  <div class="wrap list">
+    {FEATURE_PAGES.map((page, i) => (
+      <article class:list={['row', { flip: i % 2 === 1 }]}>
+        <div class="text">
+          <h2><a href={href(`/features/${page.slug}/`)}>{page.h1}</a></h2>
+          <p>{page.lede}</p>
+          <ul>
+            {MODULES.filter((m) => m.page === page.slug).map((m) => <li>{m.name}</li>)}
+          </ul>
+        </div>
+        <a class="thumb" href={href(`/features/${page.slug}/`)} tabindex="-1" aria-hidden="true">
+          <AppWindow name={page.shot} alt="" sizes="(min-width: 72rem) 560px, 92vw" />
+        </a>
+      </article>
+    ))}
+  </div>
+
+  <DownloadBand
+    heading={en.cta.heading}
+    body={en.cta.body}
+    download={en.cta.download}
+    meta={meta}
+    copy={en.hero.copy}
+    copied={en.hero.copied}
+    brewLabel={en.hero.brewLabel}
+  />
+</Base>
+
+<style>
+  .list { padding-block: clamp(3rem, 8vw, 6rem); display: grid; gap: clamp(3.5rem, 8vw, 6rem); }
+  .row { display: grid; grid-template-columns: 1fr 1.1fr; gap: 2rem clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .row.flip .text { order: 2; }
+  h2 { font-size: var(--step-2); }
+  h2 a { color: inherit; text-decoration: none; }
+  h2 a:hover { text-decoration: underline; text-decoration-thickness: 2px; }
+  .text p { margin-top: 0.9rem; color: var(--ink-2); }
+  .text ul { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 1.25rem 0 0; }
+  .text li {
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+  .thumb { display: block; transition: transform 200ms ease; }
+  .thumb:hover { transform: translateY(-3px); }
+  @media (max-width: 52rem) {
+    .row { grid-template-columns: 1fr; }
+    .row.flip .text { order: 0; }
+  }
+</style>

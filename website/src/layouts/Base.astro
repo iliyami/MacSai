@@ -1,0 +1,110 @@
+---
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
+import fontURL from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { absolute, href } from '../lib/url';
+import { LOCALES } from '../i18n/locales.mjs';
+import { release, REPO_URL } from '../data/release';
+
+export interface Alternate { hreflang: string; path: string }
+
+interface Props {
+  title: string;
+  description: string;
+  /** Site-relative path of this page, e.g. "/features/uninstaller/". */
+  path: string;
+  lang?: string;
+  dir?: 'ltr' | 'rtl';
+  /** hreflang alternates; include this page itself. */
+  alternates?: Alternate[];
+  jsonld?: Record<string, unknown>[];
+  ogImage?: string;
+  /** Hide the global header (the home hero draws its own over the art). */
+  overlayHeader?: boolean;
+  /** Localized pages pass their own nav labels. */
+  nav?: { features: string; compare: string; privacy: string; download: string; github: string; menu: string; skip: string };
+  footer?: { tagline: string; noTracking: string; languages: string };
+  homePath?: string;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  path,
+  lang = 'en',
+  dir = 'ltr',
+  alternates = [],
+  jsonld = [],
+  ogImage = '/og/mac-sai.jpg',
+  overlayHeader = false,
+  nav,
+  footer,
+  homePath = '/',
+  noindex = false,
+} = Astro.props;
+
+const canonical = absolute(path);
+const fullTitle = title.includes('Mac Sai') ? title : `${title} | Mac Sai`;
+const ogLocale = (LOCALES.find((l) => l.hreflang === lang)?.hreflang ?? 'en').replace('-', '_');
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Mac Sai',
+  url: absolute('/'),
+  logo: absolute('/apple-touch-icon.png'),
+  sameAs: [REPO_URL],
+};
+---
+<!doctype html>
+<html lang={lang} dir={dir}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+    {alternates.map((a) => <link rel="alternate" hreflang={a.hreflang} href={absolute(a.path)} />)}
+    {alternates.length > 0 && <link rel="alternate" hreflang="x-default" href={absolute('/')} />}
+
+    <meta name="theme-color" content="#0d0a26" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={href('/favicon-32.png')} sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href={href('/apple-touch-icon.png')} />
+    <link rel="sitemap" href={href('/sitemap-index.xml')} />
+    <link rel="preload" href={fontURL} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Mac Sai" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={absolute(ogImage)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Mac Sai, the free and open-source Mac cleaner" />
+    <meta property="og:locale" content={ogLocale} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={absolute(ogImage)} />
+
+    <meta name="generator" content={Astro.generator} />
+    <meta name="macsai-version" content={release.version} />
+
+    <script type="application/ld+json" set:html={JSON.stringify([organization, ...jsonld])} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{nav?.skip ?? 'Skip to content'}</a>
+    <Header overlay={overlayHeader} labels={nav} homePath={homePath} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer labels={footer} currentLang={lang} />
+  </body>
+</html>

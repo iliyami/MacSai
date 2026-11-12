@@ -1,0 +1,63 @@
+---
+import { BREW_COMMAND } from '../data/release';
+
+interface Props { command?: string; copyLabel?: string; copiedLabel?: string; label?: string }
+const { command = BREW_COMMAND, copyLabel = 'Copy', copiedLabel = 'Copied', label = 'Install with Homebrew' } = Astro.props;
+---
+<div class="cmd" dir="ltr">
+  <span class="visually-hidden">{label}:</span>
+  <code><span class="prompt" aria-hidden="true">$</span> {command}</code>
+  <button type="button" class="copy" data-copy={command} data-copied={copiedLabel} aria-label={`${copyLabel}: ${command}`}>
+    <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2.5" /><path d="M13 7V5.5A2.5 2.5 0 0 0 10.5 3h-5A2.5 2.5 0 0 0 3 5.5v5A2.5 2.5 0 0 0 5.5 13H7" /></svg>
+    <span class="label">{copyLabel}</span>
+  </button>
+</div>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>('button[data-copy]')) {
+    const label = button.querySelector('.label');
+    const original = label?.textContent ?? '';
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy ?? '');
+        if (label) label.textContent = button.dataset.copied ?? original;
+        setTimeout(() => { if (label) label.textContent = original; }, 1800);
+      } catch {
+        // Clipboard can be blocked; the command stays selectable.
+      }
+    });
+  }
+</script>
+
+<style>
+  .cmd {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 100%;
+    padding: 0.45rem 0.45rem 0.45rem 1rem;
+    border-radius: 999px;
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    font-family: var(--font-code);
+    font-size: 0.92rem;
+  }
+  code { white-space: nowrap; overflow-x: auto; color: var(--ink); background: none; padding: 0; }
+  .prompt { color: var(--ink-2); user-select: none; }
+  .copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex: none;
+    min-height: 2.25rem;
+    padding: 0.35rem 0.8rem;
+    border: 0;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ink) 10%, transparent);
+    color: var(--ink);
+    font: 500 0.85rem/1 var(--font-body);
+    cursor: pointer;
+  }
+  .copy:hover { background: color-mix(in srgb, var(--ink) 18%, transparent); }
+  .copy svg { width: 1rem; height: 1rem; fill: none; stroke: currentColor; stroke-width: 1.5; }
+</style>

@@ -1,0 +1,146 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import Faq from '../components/Faq.astro';
+import DownloadBand from '../components/DownloadBand.astro';
+import { release, REPO_URL } from '../data/release';
+import { href } from '../lib/url';
+import { softwareApplication, faqPage, breadcrumbs } from '../lib/schema';
+import { en } from '../i18n/en';
+
+const title = 'Free CleanMyMac alternative: open source, no tracking';
+const description = 'Mac Sai covers the everyday jobs of CleanMyMac for free: junk cleanup, uninstaller, malware scan, privacy and maintenance. Open source, with no tracking.';
+const crumbs = [{ name: 'Home', path: '/' }, { name: 'Mac Sai and CleanMyMac', path: '/cleanmymac-alternative/' }];
+const meta = release.dmgSizeMB ? `Version ${release.version}, ${release.dmgSizeMB} MB` : `Version ${release.version}`;
+
+const rows: { label: string; macsai: string; other: string }[] = [
+  { label: 'Price', macsai: 'Free, forever', other: 'Paid' },
+  { label: 'License', macsai: 'BSD 3-Clause, open source', other: 'Proprietary' },
+  { label: 'Can you read the code?', macsai: 'Yes, on GitHub', other: 'No' },
+  { label: 'Analytics in the app', macsai: 'None, and you can check it yourself', other: 'Can’t be checked without the source' },
+  { label: 'One-click scan', macsai: 'Smart Scan', other: 'Yes' },
+  { label: 'System junk and caches', macsai: '16+ categories', other: 'Yes' },
+  { label: 'Uninstaller with leftovers', macsai: 'Yes, plus Reset to Defaults', other: 'Yes' },
+  { label: 'Malware scan', macsai: 'On demand, XProtect signatures', other: 'Yes' },
+  { label: 'Browser privacy cleanup', macsai: 'Safari, Chrome, Firefox', other: 'Yes' },
+  { label: 'Maintenance tasks', macsai: 'Yes', other: 'Yes' },
+  { label: 'Menu bar monitor', macsai: 'Yes', other: 'Yes' },
+  { label: 'Support', macsai: 'Community, GitHub issues', other: 'Paid support from MacPaw' },
+];
+
+const faq = [
+  { q: 'Is Mac Sai really a free alternative to CleanMyMac?', a: 'Yes. Mac Sai covers the everyday jobs people use CleanMyMac for, such as junk cleanup, a complete uninstaller, a malware scan, privacy cleanup and maintenance tasks, and it is free with no paid tier.' },
+  { q: 'Can I switch from CleanMyMac to Mac Sai?', a: 'Yes. Install Mac Sai, then use its Uninstaller to remove CleanMyMac together with the files it leaves behind. Your files are not affected either way.' },
+  { q: 'What does CleanMyMac do that Mac Sai doesn’t?', a: 'CleanMyMac is a commercial product with paid support. Mac Sai scans for malware on demand and is not an antivirus that watches in the background. If you want either of those, CleanMyMac is the better fit.' },
+  { q: 'Is Mac Sai made by MacPaw?', a: 'No. Mac Sai is an independent open-source project with no connection to MacPaw.' },
+];
+---
+<Base
+  title={title}
+  description={description}
+  path="/cleanmymac-alternative/"
+  jsonld={[softwareApplication(description), faqPage(faq), breadcrumbs(crumbs)]}
+>
+  <PageHero
+    title="The free, open-source alternative to CleanMyMac"
+    lede="CleanMyMac is a polished app, and many people are happy to pay for it. If you would rather not pay a subscription, or you want to see exactly what a cleaner does with your files, Mac Sai does the same everyday jobs for free, in the open."
+    crumbs={crumbs}
+  >
+    <div class="cta">
+      <a class="btn btn-primary" href={release.dmgURL}>Download Mac Sai, free</a>
+      <span class="meta">{meta}. macOS 14 or later.</span>
+    </div>
+  </PageHero>
+
+  <section class="wrap compare" aria-labelledby="table-title">
+    <h2 id="table-title">Side by side</h2>
+    <div class="table-scroll" tabindex="0" role="region" aria-labelledby="table-title">
+      <table>
+        <thead><tr><th scope="col">Feature</th><th scope="col">Mac Sai</th><th scope="col">CleanMyMac</th></tr></thead>
+        <tbody>
+          {rows.map((r) => <tr><th scope="row">{r.label}</th><td>{r.macsai}</td><td>{r.other}</td></tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p class="footnote">Compared in November 2026 from public information. Features and prices change, so check <a href="https://macpaw.com/cleanmymac" rel="noopener">MacPaw’s site</a> for the current CleanMyMac details. Mac Sai is not affiliated with MacPaw.</p>
+  </section>
+
+  <section class="wrap choose" aria-label="Which one fits you">
+    <div>
+      <h2>Mac Sai fits you if</h2>
+      <ul>
+        <li>You don’t want another subscription.</li>
+        <li>You want to read the code of the app that cleans your files.</li>
+        <li>You want proof that nothing about you leaves your Mac.</li>
+        <li>You are a developer with build folders, Docker images and simulators to clear.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>CleanMyMac fits you if</h2>
+      <ul>
+        <li>You want paid support and a company behind the product.</li>
+        <li>You want an antivirus that watches in the background.</li>
+        <li>You are happy paying for extra polish.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap others" aria-labelledby="others-title">
+    <h2 id="others-title">Other free Mac cleaners worth knowing</h2>
+    <p>Mac Sai isn’t the only good free option. These do one job very well:</p>
+    <dl>
+      <div><dt>Pearcleaner</dt><dd>A focused uninstaller with leftover detection. Source available under a fair-code license.</dd></div>
+      <div><dt>OnyX</dt><dd>A long-standing, thorough maintenance and settings utility. Free, not open source.</dd></div>
+      <div><dt>PureMac</dt><dd>A lightweight junk cleaner under the MIT license.</dd></div>
+      <div><dt>Mole</dt><dd>A command-line cleaner for people who live in Terminal, under the MIT license.</dd></div>
+    </dl>
+    <p class="note">Mac Sai brings these jobs together in one app, alongside malware scanning, privacy cleanup and disk tools. See <a href={href('/features/')}>every tool</a> or read the <a href={`${REPO_URL}#how-mac-sai-compares`} rel="noopener">full comparison on GitHub</a>.</p>
+  </section>
+
+  <Faq heading="Questions" items={faq} />
+
+  <DownloadBand
+    heading={en.cta.heading}
+    body={en.cta.body}
+    download={en.cta.download}
+    meta={meta}
+    copy={en.hero.copy}
+    copied={en.hero.copied}
+    brewLabel={en.hero.brewLabel}
+  />
+</Base>
+
+<style>
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
+  .meta { color: var(--starlight-dim); font-size: 0.9rem; }
+  .compare { padding-block: clamp(3.5rem, 8vw, 5.5rem) 0; }
+  h2 { font-size: var(--step-2); margin-bottom: 1.25rem; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-l); background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; min-width: 36rem; }
+  th, td { text-align: start; padding: 0.9rem 1.25rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tbody tr:last-child > * { border-bottom: 0; }
+  thead th { font-size: 0.9rem; color: var(--ink-2); font-weight: 600; }
+  thead th:nth-child(2) { color: var(--accent); }
+  tbody th { font-weight: 500; color: var(--ink-2); width: 34%; }
+  tbody td:nth-child(2) { font-weight: 600; }
+  .footnote { margin-top: 1rem; font-size: 0.9rem; color: var(--ink-2); max-width: var(--measure); }
+  .choose {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem clamp(2rem, 6vw, 5rem);
+    padding-block: clamp(3.5rem, 8vw, 5.5rem);
+  }
+  .choose ul { margin: 0; padding-inline-start: 1.2em; display: grid; gap: 0.6rem; color: var(--ink-2); }
+  .choose li::marker { color: var(--accent); }
+  .others { padding-block: 0 1rem; max-width: 52rem; margin-inline: auto; }
+  .others > p { color: var(--ink-2); }
+  dl { margin: 1.5rem 0; border-top: 1px solid var(--line); }
+  dl div { display: grid; grid-template-columns: 10rem 1fr; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--line); }
+  dt { font-weight: 650; }
+  dd { margin: 0; color: var(--ink-2); }
+  .note { font-size: 0.95rem; }
+  @media (max-width: 44rem) {
+    .choose { grid-template-columns: 1fr; }
+    dl div { grid-template-columns: 1fr; gap: 0.25rem; }
+  }
+</style>
