@@ -3,10 +3,10 @@ name: Website
 # Builds the static site in website/ and publishes it to GitHub Pages.
 # - Pull requests that touch the site: build only, as a check.
 # - main: build and deploy.
-# - After each Release run and once a day: rebuild, so the version, download
-#   link and the download and star counts on the site stay current. Those
-#   numbers are read from the GitHub API at build time; visitors' browsers
-#   never contact GitHub.
+# - After each Release run and every hour: rebuild, so the version, download
+#   link and the live numbers (downloads, stars, Homebrew installs and rank,
+#   contributors) stay current. They are read from the GitHub and Homebrew
+#   APIs at build time; visitors' browsers never contact either.
 on:
   pull_request:
     branches: [main]
@@ -22,7 +22,7 @@ on:
     workflows: [Release]
     types: [completed]
   schedule:
-    - cron: "17 6 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:

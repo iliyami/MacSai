@@ -22,6 +22,21 @@ export interface HomeStrings {
     shotAlt: string;
   };
   proof: { downloads: string; stars: string; languages: string; trackers: string };
+  /** The live numbers section. {total}, {count} and {time} are filled in at build time. */
+  stats: {
+    heading: string;
+    intro: string;
+    downloads: string;
+    brewInstalls: string;
+    brewRank: string;
+    stars: string;
+    starsDelta: string;
+    contributors: string;
+    chartTitle: string;
+    table: string;
+    date: string;
+    updated: string;
+  };
   trust: {
     heading: string;
     intro: string;

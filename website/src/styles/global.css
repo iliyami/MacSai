@@ -28,6 +28,8 @@
   --accent-ink: #ffffff;
   --link: #4b31c9;
   --code-bg: #efedfb;
+  /* Chart series, validated for contrast and lightness on --surface */
+  --series: #5a3fd8;
 
   --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
   --font-body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
@@ -60,6 +62,7 @@
     --accent-ink: #120d33;
     --link: #b9a2ff;
     --code-bg: #1e1847;
+    --series: #9a7bf5;
   }
 }
 :root[data-theme='dark'] {
@@ -72,6 +75,7 @@
   --accent-ink: #120d33;
   --link: #b9a2ff;
   --code-bg: #1e1847;
+  --series: #9a7bf5;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

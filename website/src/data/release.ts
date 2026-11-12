@@ -1,9 +1,9 @@
 /**
  * Facts about the latest release, read from GitHub once at build time.
  *
- * Visitors' browsers never call GitHub: every number on the site is baked
- * into the HTML. When the API is unreachable (offline builds, rate limits)
- * the fallbacks below keep the build working and the claims conservative.
+ * Visitors' browsers never call GitHub: every fact is baked into the HTML.
+ * When the API is unreachable (offline builds, rate limits) the fallbacks
+ * below keep the build working. Download and star counts are in stats.ts.
  */
 
 const REPO = 'iliyami/MacSai';
@@ -14,9 +14,6 @@ export interface ReleaseInfo {
   publishedAt: string;
   dmgURL: string;
   dmgSizeMB: number | null;
-  /** Rounded down, for "125,000+" style copy. */
-  downloadsFloor: number;
-  starsFloor: number;
 }
 
 const FALLBACK: ReleaseInfo = {
@@ -25,13 +22,7 @@ const FALLBACK: ReleaseInfo = {
   publishedAt: '2026-11-11',
   dmgURL: `https://github.com/${REPO}/releases/latest`,
   dmgSizeMB: null,
-  downloadsFloor: 125_000,
-  starsFloor: 2_000,
 };
-
-function floorTo(value: number, step: number): number {
-  return Math.floor(value / step) * step;
-}
 
 async function gh<T>(path: string): Promise<T> {
   const headers: Record<string, string> = {
@@ -45,33 +36,20 @@ async function gh<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-interface GHAsset { name: string; size: number; download_count: number; browser_download_url: string }
-interface GHRelease { tag_name: string; published_at: string; draft: boolean; prerelease: boolean; assets: GHAsset[] }
+interface GHAsset { name: string; size: number; browser_download_url: string }
+interface GHRelease { tag_name: string; published_at: string; assets: GHAsset[] }
 
 async function load(): Promise<ReleaseInfo> {
   if (process.env.OFFLINE_BUILD === '1') return FALLBACK;
   try {
-    const [latest, repo, releases] = await Promise.all([
-      gh<GHRelease>(`repos/${REPO}/releases/latest`),
-      gh<{ stargazers_count: number }>(`repos/${REPO}`),
-      gh<GHRelease[]>(`repos/${REPO}/releases?per_page=100`),
-    ]);
+    const latest = await gh<GHRelease>(`repos/${REPO}/releases/latest`);
     const dmg = latest.assets.find((a) => /^MacSai-.*\.dmg$/.test(a.name));
-    const downloads = releases
-      .flatMap((r) => r.assets)
-      .filter((a) => a.name.endsWith('.dmg'))
-      .reduce((sum, a) => sum + a.download_count, 0);
-    // Older releases fall off the first page, so this undercounts and never
-    // goes below the figure already published in the README.
-    const downloadsFloor = Math.max(FALLBACK.downloadsFloor, floorTo(downloads, 5_000));
     return {
       version: latest.tag_name.replace(/^v/, ''),
       tag: latest.tag_name,
       publishedAt: latest.published_at.slice(0, 10),
       dmgURL: dmg?.browser_download_url ?? FALLBACK.dmgURL,
       dmgSizeMB: dmg ? Math.round(dmg.size / 1_000_000) : null,
-      downloadsFloor,
-      starsFloor: Math.max(FALLBACK.starsFloor, floorTo(repo.stargazers_count, 100)),
     };
   } catch (error) {
     console.warn(`[release] using fallback facts: ${(error as Error).message}`);

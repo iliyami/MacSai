@@ -1,0 +1,356 @@
+---
+/**
+ * "Mac Sai in numbers": live counts from GitHub and Homebrew, plus a chart of
+ * GitHub stars since launch. Everything is computed at build time (the site
+ * rebuilds hourly); the small script only adds the hover and keyboard readout.
+ */
+import { stats } from '../data/stats';
+import type { HomeStrings } from '../i18n/types';
+
+interface Props { t: HomeStrings['stats']; locale: string }
+const { t, locale } = Astro.props;
+
+const number = new Intl.NumberFormat(locale);
+const signed = new Intl.NumberFormat(locale, { signDisplay: 'exceptZero' });
+const fill = (template: string, values: Record<string, string>) =>
+  template.replace(/\{(\w+)\}/g, (_, key) => values[key] ?? '');
+const day = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' });
+const parseDay = (d: string) => new Date(`${d}T00:00:00Z`);
+
+const updated = `${new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' }).format(new Date(stats.updatedAt))} UTC`;
+
+interface Tile { label: string; value: string; note?: string }
+const tiles: Tile[] = [];
+if (stats.brew) {
+  tiles.push({ label: t.brewInstalls, value: number.format(stats.brew.installs365d) });
+  if (stats.brew.rank30d && stats.brew.casks30d) {
+    tiles.push({ label: fill(t.brewRank, { total: number.format(stats.brew.casks30d) }), value: `#${number.format(stats.brew.rank30d)}` });
+  }
+}
+tiles.push({
+  label: t.stars,
+  value: number.format(stats.stars),
+  note: stats.stars30d ? fill(t.starsDelta, { count: signed.format(stats.stars30d) }) : undefined,
+});
+if (stats.contributors) tiles.push({ label: t.contributors, value: number.format(stats.contributors) });
+
+// Chart geometry: a 1000 x 400 plot stretched to the box; text and dots are
+// HTML positioned in percentages so they never scale with the drawing.
+const points = stats.starHistory;
+const last = points.at(-1);
+// Y axis: the smallest "nice" step that covers the data in at most 5 gridlines.
+function niceStep(max: number): number {
+  const mag = 10 ** Math.floor(Math.log10(max / 5));
+  return [1, 2, 2.5, 5, 10].map((m) => m * mag).find((step) => Math.ceil(max / step) <= 5) ?? mag * 10;
+}
+const peak = last ? Math.max(...points.map((p) => p.stars)) * 1.05 : 1;
+const yStep = niceStep(peak);
+const yMax = Math.ceil(peak / yStep) * yStep;
+const yTicks = Array.from({ length: Math.round(yMax / yStep) }, (_, i) => (i + 1) * yStep);
+const xy = points.map((p, i) => [
+  points.length > 1 ? (i / (points.length - 1)) * 1000 : 0,
+  400 - (p.stars / yMax) * 400,
+]);
+const line = xy.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join('');
+const area = xy.length ? `${line}L1000 400L0 400Z` : '';
+
+// One tick per month start, thinned to at most 7.
+const monthStarts = points
+  .map((p, i) => ({ p, i }))
+  .filter(({ p, i }) => i > 0 && p.date.slice(0, 7) !== points[i - 1].date.slice(0, 7));
+const every = Math.ceil(monthStarts.length / 7) || 1;
+const month = new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' });
+const xTicks = monthStarts
+  .filter((_, k) => k % every === 0)
+  .map(({ p, i }) => ({ x: i / (points.length - 1), label: month.format(parseDay(p.date)) }));
+
+// Table view: the last value of each month.
+const monthly = points.filter((p, i) => i === points.length - 1 || p.date.slice(0, 7) !== points[i + 1].date.slice(0, 7));
+
+const summary = last
+  ? `${t.chartTitle}: ${number.format(points[0].stars)} (${day.format(parseDay(points[0].date))}) → ${number.format(last.stars)} (${day.format(parseDay(last.date))})`
+  : '';
+---
+<section class="stats wrap" aria-labelledby="stats-title">
+  <div class="head">
+    <h2 id="stats-title">{t.heading}</h2>
+    <p>{t.intro}</p>
+  </div>
+
+  <div class="grid">
+    <div class="figures">
+      <p class="lead">
+        <span class="lead-value">{number.format(stats.downloads)}</span>
+        <span class="lead-label">{t.downloads}</span>
+      </p>
+      <dl class="tiles">
+        {tiles.map((tile) => (
+          <div>
+            <dt>{tile.label}</dt>
+            <dd class="value">{tile.value}</dd>
+            {tile.note && <dd class="note">{tile.note}</dd>}
+          </div>
+        ))}
+      </dl>
+    </div>
+
+    {last && (
+      <figure class="chart">
+        <figcaption>{t.chartTitle}</figcaption>
+        <div
+          class="plot"
+          dir="ltr"
+          tabindex="0"
+          role="group"
+          aria-roledescription="chart"
+          aria-label={summary}
+          data-star-chart
+          data-max={yMax}
+          data-points={JSON.stringify(points.map((p) => [p.date, p.stars]))}
+        >
+          {yTicks.map((v) => (
+            <span class="grid-y" style={`bottom:${(v / yMax) * 100}%`} aria-hidden="true"><span>{number.format(v)}</span></span>
+          ))}
+          <svg viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path class="area" d={area} />
+            <path class="line" d={line} />
+          </svg>
+          {xTicks.map((tick) => (
+            <span class="tick-x" style={`left:${tick.x * 100}%`} aria-hidden="true">{tick.label}</span>
+          ))}
+          <span class="end" style={`bottom:${(last.stars / yMax) * 100}%`} aria-hidden="true">
+            <span class="end-label">{number.format(last.stars)}</span>
+          </span>
+          <span class="cross" aria-hidden="true"></span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="tip" aria-hidden="true"><strong></strong><span></span></span>
+        </div>
+      </figure>
+    )}
+  </div>
+
+  <div class="foot">
+    <p class="updated"><time datetime={stats.updatedAt}>{fill(t.updated, { time: updated })}</time></p>
+    {monthly.length > 0 && (
+      <details class="data">
+        <summary>{t.table}</summary>
+        <table>
+          <caption class="visually-hidden">{t.chartTitle}</caption>
+          <thead><tr><th scope="col">{t.date}</th><th scope="col">{t.stars}</th></tr></thead>
+          <tbody>
+            {monthly.map((p) => (
+              <tr><td>{day.format(parseDay(p.date))}</td><td>{number.format(p.stars)}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </details>
+    )}
+  </div>
+</section>
+
+<script>
+  for (const plot of document.querySelectorAll<HTMLElement>('[data-star-chart]')) {
+    const points = JSON.parse(plot.dataset.points ?? '[]') as [string, number][];
+    const max = Number(plot.dataset.max);
+    if (points.length < 2 || !max) continue;
+    const lang = document.documentElement.lang || 'en';
+    const nf = new Intl.NumberFormat(lang);
+    const df = new Intl.DateTimeFormat(lang, { dateStyle: 'medium', timeZone: 'UTC' });
+    const tip = plot.querySelector<HTMLElement>('.tip')!;
+    const value = tip.querySelector('strong')!;
+    const when = tip.querySelector('span')!;
+    let index = points.length - 1;
+
+    const show = (i: number) => {
+      index = Math.min(Math.max(i, 0), points.length - 1);
+      const [date, stars] = points[index];
+      const x = index / (points.length - 1);
+      plot.style.setProperty('--hx', String(x));
+      plot.style.setProperty('--hy', String(stars / max));
+      value.textContent = nf.format(stars);
+      when.textContent = df.format(new Date(`${date}T00:00:00Z`));
+      tip.dataset.edge = x < 0.15 ? 'start' : x > 0.85 ? 'end' : '';
+      plot.classList.add('active');
+    };
+    const hide = () => plot.classList.remove('active');
+
+    plot.addEventListener('pointermove', (event) => {
+      const box = plot.getBoundingClientRect();
+      const x = Math.min(Math.max((event.clientX - box.left) / box.width, 0), 1);
+      show(Math.round(x * (points.length - 1)));
+    });
+    plot.addEventListener('pointerleave', () => { if (document.activeElement !== plot) hide(); });
+    plot.addEventListener('focus', () => show(index));
+    plot.addEventListener('blur', hide);
+    plot.addEventListener('keydown', (event) => {
+      const moves: Record<string, number> = {
+        ArrowLeft: index - 1,
+        ArrowRight: index + 1,
+        PageDown: index - 7,
+        PageUp: index + 7,
+        Home: 0,
+        End: points.length - 1,
+      };
+      if (event.key in moves) {
+        event.preventDefault();
+        show(moves[event.key]);
+      }
+    });
+  }
+</script>
+
+<style>
+  .stats {
+    padding-block: clamp(4rem, 9vw, 7rem);
+    border-top: 1px solid var(--line);
+  }
+  .head { margin-bottom: clamp(2rem, 5vw, 3.5rem); max-width: 44rem; }
+  .head p { margin-top: 1rem; color: var(--ink-2); font-size: var(--step-1); line-height: 1.5; max-width: 34rem; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(17rem, 0.85fr) 1.4fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+
+  /* Figures: one lead number, then a quiet 2 x 2 of supporting counts. */
+  .lead { display: grid; gap: 0.35rem; padding-bottom: 1.75rem; border-bottom: 1px solid var(--line); }
+  .lead-value {
+    font: 700 clamp(3rem, 2rem + 4vw, 4.5rem) / 1 var(--font-body);
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .lead-label { color: var(--ink-2); font-size: var(--step-1); }
+  .tiles {
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.75rem 1.5rem;
+    padding-top: 1.75rem;
+  }
+  .tiles div { display: flex; flex-direction: column; gap: 0.3rem; }
+  .tiles dt { order: 2; color: var(--ink-2); font-size: 0.95rem; line-height: 1.4; }
+  .tiles .value { order: 1; margin: 0; font: 650 var(--step-2) / 1.1 var(--font-body); color: var(--ink); }
+  .tiles .note { order: 3; margin: 0; font-size: 0.9rem; color: var(--ink-2); }
+
+  /* Chart */
+  .chart {
+    margin: 0;
+    padding: 1.5rem 1.5rem 1.25rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+  }
+  figcaption { font-weight: 600; margin-bottom: 1.5rem; }
+  .plot {
+    position: relative;
+    height: clamp(13rem, 24vw, 18rem);
+    margin: 0.5rem 0.75rem 2rem 3.25rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 22%, transparent);
+    touch-action: pan-y;
+    cursor: crosshair;
+  }
+  .plot:focus-visible { outline-offset: 10px; }
+  .plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .area { fill: var(--series); opacity: 0.1; }
+  .line {
+    fill: none;
+    stroke: var(--series);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+  .grid-y {
+    position: absolute;
+    inset-inline: 0;
+    height: 0;
+    border-top: 1px solid var(--line);
+  }
+  .grid-y span, .tick-x {
+    position: absolute;
+    font-size: 0.78rem;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .grid-y span { right: calc(100% + 0.6rem); transform: translateY(-50%); }
+  .tick-x { top: calc(100% + 0.5rem); transform: translateX(-50%); }
+
+  .end, .dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    margin: 0 0 -5px -5px;
+    border-radius: 50%;
+    background: var(--series);
+    box-shadow: 0 0 0 2px var(--surface);
+  }
+  .end { left: 100%; }
+  .end-label {
+    position: absolute;
+    right: 0.25rem;
+    bottom: 0.9rem;
+    font-weight: 650;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .cross, .dot, .tip { display: none; }
+  .plot.active .cross, .plot.active .dot, .plot.active .tip { display: block; }
+  .plot.active .end-label { visibility: hidden; }
+  .cross {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--hx) * 100%);
+    border-left: 1px solid color-mix(in srgb, var(--ink) 35%, transparent);
+  }
+  .dot { left: calc(var(--hx) * 100%); bottom: calc(var(--hy) * 100%); }
+  .tip {
+    position: absolute;
+    left: calc(var(--hx) * 100%);
+    bottom: calc(var(--hy) * 100% + 1rem);
+    transform: translateX(-50%);
+    padding: 0.45rem 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-s);
+    box-shadow: 0 10px 24px -12px rgb(20 10 70 / 0.45);
+    white-space: nowrap;
+    pointer-events: none;
+    line-height: 1.3;
+  }
+  .tip[data-edge='start'] { transform: none; }
+  .tip[data-edge='end'] { transform: translateX(-100%); }
+  .tip strong { display: block; font-size: 1.05rem; color: var(--ink); }
+  .tip span { font-size: 0.82rem; color: var(--ink-2); }
+
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 1.75rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+  }
+  .data summary { cursor: pointer; color: var(--link); font-weight: 600; }
+  .data table { margin-top: 1rem; border-collapse: collapse; min-width: 16rem; }
+  .data th, .data td { text-align: start; padding: 0.4rem 1.5rem 0.4rem 0; border-bottom: 1px solid var(--line); }
+  .data td:last-child, .data th:last-child { text-align: end; font-variant-numeric: tabular-nums; padding-inline-end: 0; }
+  .data th { color: var(--ink-2); font-weight: 600; }
+
+  @media (max-width: 56rem) {
+    .grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 30rem) {
+    .chart { padding: 1.25rem 1rem 1rem; }
+    .plot { margin-inline: 2.75rem 0.5rem; }
+  }
+  @media (forced-colors: active) {
+    .line { stroke: CanvasText; }
+    .end, .dot { background: CanvasText; }
+  }
+</style>

@@ -5,12 +5,14 @@ import InstallCommand from './InstallCommand.astro';
 import ModuleExplorer, { type ExplorerGroup } from './ModuleExplorer.astro';
 import Faq from './Faq.astro';
 import DownloadBand from './DownloadBand.astro';
+import Stats from './Stats.astro';
 import nightSweepLTR from '../assets/art/night-sweep.jpg';
 import nightSweepRTL from '../assets/art/night-sweep-rtl.jpg';
 import glassRibbonLTR from '../assets/art/glass-ribbon.jpg';
 import glassRibbonRTL from '../assets/art/glass-ribbon-rtl.jpg';
 import { GROUPS, MODULES } from '../data/modules';
 import { release } from '../data/release';
+import { stats } from '../data/stats';
 import { href } from '../lib/url';
 import type { HomeStrings } from '../i18n/types';
 
@@ -101,10 +103,10 @@ const englishSuffix = english ? '' : ` (${t.englishOnly ?? 'English'})`;
   </div>
 </section>
 
-<section class="proof wrap" aria-label="Mac Sai in numbers">
+<section class="proof wrap" aria-label={t.stats.heading}>
   <p>
-    <span>{fill(t.proof.downloads, { count: number.format(release.downloadsFloor) })}</span>
-    <span>{fill(t.proof.stars, { count: number.format(release.starsFloor) })}</span>
+    <span>{fill(t.proof.downloads, { count: number.format(stats.downloads) })}</span>
+    <span>{fill(t.proof.stars, { count: number.format(stats.stars) })}</span>
     <span>{t.proof.languages}</span>
     <span>{t.proof.trackers}</span>
   </p>
@@ -176,6 +178,8 @@ const englishSuffix = english ? '' : ` (${t.englishOnly ?? 'English'})`;
   </div>
   <p class="footnote">{t.compare.footnote} <a href={href('/cleanmymac-alternative/')}>{t.compare.link}{englishSuffix}</a></p>
 </section>
+
+<Stats t={t.stats} locale={locale} />
 
 <Faq heading={t.faq.heading} items={t.faq.items} />
 
