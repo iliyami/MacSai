@@ -30,6 +30,26 @@ const downloadMeta = release.dmgSizeMB
   ? fill(t.hero.downloadMeta, { version: release.version, size: number.format(release.dmgSizeMB) })
   : fill(t.hero.downloadMeta.replace(/,?\s*\{size\}.*$/, ''), { version: release.version });
 
+// The proof strip: each fact gets an icon, and its number is set in bold.
+const NUMBER = /[\d\u06F0-\u06F9]+(?:[,.\u066C\u00A0\u202F ][\d\u06F0-\u06F9]{3})*/;
+const split = (text: string): [string, string, string] => {
+  const m = text.match(NUMBER);
+  if (!m || m.index === undefined) return [text, '', ''];
+  return [text.slice(0, m.index), m[0], text.slice(m.index + m[0].length)];
+};
+const ICONS = {
+  download: 'M12 3.5v11m0 0-4.25-4.25M12 14.5l4.25-4.25M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2',
+  star: 'M12 3.4l2.65 5.37 5.93.86-4.29 4.18 1.01 5.9L12 16.92l-5.3 2.79 1.01-5.9-4.29-4.18 5.93-.86z',
+  globe: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM3 12h18M12 3c2.4 2.5 3.6 5.5 3.6 9s-1.2 6.5-3.6 9c-2.4-2.5-3.6-5.5-3.6-9s1.2-6.5 3.6-9z',
+  shield: 'M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6zM8.8 12.2l2.2 2.2 4.4-4.6',
+};
+const facts = [
+  { icon: ICONS.download, parts: split(fill(t.proof.downloads, { count: number.format(stats.downloads) })) },
+  { icon: ICONS.star, parts: split(fill(t.proof.stars, { count: number.format(stats.stars) })) },
+  { icon: ICONS.globe, parts: split(t.proof.languages) },
+  { icon: ICONS.shield, parts: split(t.proof.trackers) },
+];
+
 const groupShot: Record<string, string> = {
   cleanup: 'system-junk',
   protection: 'malware',
@@ -104,12 +124,16 @@ const englishSuffix = english ? '' : ` (${t.englishOnly ?? 'English'})`;
 </section>
 
 <section class="proof wrap" aria-label={t.stats.heading}>
-  <p>
-    <span>{fill(t.proof.downloads, { count: number.format(stats.downloads) })}</span>
-    <span>{fill(t.proof.stars, { count: number.format(stats.stars) })}</span>
-    <span>{t.proof.languages}</span>
-    <span>{t.proof.trackers}</span>
-  </p>
+  <ul>
+    {facts.map((f) => (
+      <li>
+        <span class="chip" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d={f.icon} /></svg>
+        </span>
+        <span>{f.parts[0]}<strong>{f.parts[1]}</strong>{f.parts[2]}</span>
+      </li>
+    ))}
+  </ul>
 </section>
 
 <section class="trust wrap" aria-labelledby="trust-title">
@@ -248,15 +272,38 @@ const englishSuffix = english ? '' : ` (${t.englishOnly ?? 'English'})`;
     padding-block: 2.25rem;
     border-bottom: 1px solid var(--line);
   }
-  .proof p {
+  .proof ul {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 0.5rem 2.5rem;
-    font: 600 var(--step-1) / 1.3 var(--font-display);
-    color: var(--ink);
+    gap: 1rem clamp(1.5rem, 4vw, 3.25rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font: 500 var(--step-1) / 1.3 var(--font-display);
+    color: var(--ink-2);
   }
-  .proof span { white-space: nowrap; }
+  .proof li { display: flex; align-items: center; gap: 0.7rem; white-space: nowrap; }
+  .proof strong { color: var(--ink); font-weight: 700; }
+  .chip {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #b597ff, #6fdcff);
+    box-shadow: 0 8px 22px -10px rgb(130 110 255 / 0.95), inset 0 1px 0 rgb(255 255 255 / 0.45);
+  }
+  .chip svg {
+    width: 1.35rem;
+    height: 1.35rem;
+    fill: none;
+    stroke: #100b2e;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
   .trust, .modules, .compare { padding-block: clamp(4rem, 9vw, 7rem); }
   .trust {
@@ -349,7 +396,9 @@ const englishSuffix = english ? '' : ` (${t.englishOnly ?? 'English'})`;
     .trust-head { position: static; }
   }
   @media (max-width: 34rem) {
-    .proof p { gap: 0.4rem 1.5rem; font-size: 1.05rem; }
+    .proof ul { display: grid; grid-template-columns: repeat(2, max-content); justify-content: center; gap: 1rem 1.5rem; font-size: 1.02rem; }
+    .chip { width: 2.35rem; height: 2.35rem; }
+    .chip svg { width: 1.15rem; height: 1.15rem; }
     .hero-art { height: 55%; object-position: 82% 30%; opacity: 0.4; }
   }
   h1:is(:lang(fa), :lang(ja), :lang(ko), :lang(zh-Hans), :lang(zh-Hant)) { letter-spacing: 0; }
