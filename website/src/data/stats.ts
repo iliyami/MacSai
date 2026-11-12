@@ -99,6 +99,41 @@ async function allPages<T>(path: string, accept?: string, maxPages = 400): Promi
   return out;
 }
 
+/**
+ * Star dates through GraphQL. The REST stargazers list refuses the GitHub
+ * Actions token, while GraphQL accepts it for public repositories.
+ */
+async function starDates(): Promise<string[]> {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('GraphQL needs GITHUB_TOKEN');
+  const [owner, name] = REPO.split('/');
+  const query = `query($owner: String!, $name: String!, $after: String) {
+    repository(owner: $owner, name: $name) {
+      stargazers(first: 100, after: $after) { pageInfo { hasNextPage endCursor } edges { starredAt } }
+    }
+  }`;
+  const dates: string[] = [];
+  let after: string | null = null;
+  for (let page = 0; page < 400; page++) {
+    const response = await fetch(`${GITHUB_API}graphql`, {
+      method: 'POST',
+      headers: { ...headers(`${GITHUB_API}graphql`, undefined, true), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, variables: { owner, name, after } }),
+    });
+    if (!response.ok) throw new Error(`GraphQL stargazers: HTTP ${response.status}`);
+    const body = (await response.json()) as {
+      errors?: { message: string }[];
+      data?: { repository: { stargazers: { pageInfo: { hasNextPage: boolean; endCursor: string }; edges: { starredAt: string }[] } } };
+    };
+    if (body.errors?.length || !body.data) throw new Error(`GraphQL stargazers: ${body.errors?.[0]?.message ?? 'no data'}`);
+    const { pageInfo, edges } = body.data.repository.stargazers;
+    dates.push(...edges.map((e) => e.starredAt));
+    if (!pageInfo.hasNextPage) break;
+    after = pageInfo.endCursor;
+  }
+  return dates;
+}
+
 interface GHAsset { name: string; download_count: number }
 interface GHRelease { draft: boolean; assets: GHAsset[] }
 
@@ -154,28 +189,26 @@ async function load(): Promise<Stats> {
   if (process.env.OFFLINE_BUILD === '1') return FALLBACK;
   const brew = loadBrew();
   const contributors = optional('contributors', () => allPages<unknown>(`repos/${REPO}/contributors`));
-  const stargazersTask = optional('star history', () =>
-    allPages<{ starred_at: string }>(`repos/${REPO}/stargazers`, 'application/vnd.github.star+json'),
-  );
+  const starsTask = optional('star history', starDates);
   try {
     const [repo, releases] = await Promise.all([
       getJSON<{ stargazers_count: number; forks_count: number }>(`${GITHUB_API}repos/${REPO}`),
       allPages<GHRelease>(`repos/${REPO}/releases`),
     ]);
-    const stargazers = (await stargazersTask) ?? [];
+    const starred = (await starsTask) ?? [];
     const published = releases.filter((r) => !r.draft);
     const downloads = published
       .flatMap((r) => r.assets)
       .filter((a) => a.name.endsWith('.dmg'))
       .reduce((sum, a) => sum + a.download_count, 0);
-    const history = starHistory(stargazers.map((s) => s.starred_at));
+    const history = starHistory(starred);
     const monthAgo = new Date(Date.now() - 30 * 86_400_000).toISOString();
     return {
       updatedAt: new Date().toISOString(),
       live: true,
       downloads: Math.max(downloads, FALLBACK.downloads),
       stars: repo.stargazers_count,
-      stars30d: stargazers.length ? stargazers.filter((s) => s.starred_at >= monthAgo).length : null,
+      stars30d: starred.length ? starred.filter((d) => d >= monthAgo).length : null,
       forks: repo.forks_count,
       contributors: (await contributors)?.length ?? null,
       releases: published.length,
