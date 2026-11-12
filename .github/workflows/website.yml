@@ -55,6 +55,10 @@ jobs:
         run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: a fine-grained token with no permissions (public data
+          # only). GitHub lists stargazers only to user tokens, so with it the
+          # star chart is live; without it, the committed snapshot is used.
+          STATS_TOKEN: ${{ secrets.STATS_TOKEN }}
 
       - name: Check the build output
         run: node scripts/check-dist.mjs

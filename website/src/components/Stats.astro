@@ -47,22 +47,27 @@ const peak = last ? Math.max(...points.map((p) => p.stars)) * 1.05 : 1;
 const yStep = niceStep(peak);
 const yMax = Math.ceil(peak / yStep) * yStep;
 const yTicks = Array.from({ length: Math.round(yMax / yStep) }, (_, i) => (i + 1) * yStep);
-const xy = points.map((p, i) => [
-  points.length > 1 ? (i / (points.length - 1)) * 1000 : 0,
-  400 - (p.stars / yMax) * 400,
-]);
+// X is time, so uneven gaps between points (a snapshot, then today) stay honest.
+const t0 = last ? parseDay(points[0].date).getTime() : 0;
+const span = last ? Math.max(parseDay(last.date).getTime() - t0, 1) : 1;
+const xOf = (date: string) => (parseDay(date).getTime() - t0) / span;
+const xy = points.map((p) => [xOf(p.date) * 1000, 400 - (p.stars / yMax) * 400]);
 const line = xy.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join('');
 const area = xy.length ? `${line}L1000 400L0 400Z` : '';
 
 // One tick per month start, thinned to at most 7.
-const monthStarts = points
-  .map((p, i) => ({ p, i }))
-  .filter(({ p, i }) => i > 0 && p.date.slice(0, 7) !== points[i - 1].date.slice(0, 7));
+const monthStarts: string[] = [];
+if (last) {
+  const d = parseDay(`${points[0].date.slice(0, 7)}-01`);
+  for (d.setUTCMonth(d.getUTCMonth() + 1); d <= parseDay(last.date); d.setUTCMonth(d.getUTCMonth() + 1)) {
+    monthStarts.push(d.toISOString().slice(0, 10));
+  }
+}
 const every = Math.ceil(monthStarts.length / 7) || 1;
 const month = new Intl.DateTimeFormat(locale, { month: 'short', timeZone: 'UTC' });
 const xTicks = monthStarts
   .filter((_, k) => k % every === 0)
-  .map(({ p, i }) => ({ x: i / (points.length - 1), label: month.format(parseDay(p.date)) }));
+  .map((date) => ({ x: xOf(date), label: month.format(parseDay(date)) }));
 
 // Table view: the last value of each month.
 const monthly = points.filter((p, i) => i === points.length - 1 || p.date.slice(0, 7) !== points[i + 1].date.slice(0, 7));
@@ -106,7 +111,7 @@ const summary = last
           aria-label={summary}
           data-star-chart
           data-max={yMax}
-          data-points={JSON.stringify(points.map((p) => [p.date, p.stars]))}
+          data-points={JSON.stringify(points.map((p) => [p.date, p.stars, Number(xOf(p.date).toFixed(4))]))}
         >
           {yTicks.map((v) => (
             <span class="grid-y" style={`bottom:${(v / yMax) * 100}%`} aria-hidden="true"><span>{number.format(v)}</span></span>
@@ -150,7 +155,7 @@ const summary = last
 
 <script>
   for (const plot of document.querySelectorAll<HTMLElement>('[data-star-chart]')) {
-    const points = JSON.parse(plot.dataset.points ?? '[]') as [string, number][];
+    const points = JSON.parse(plot.dataset.points ?? '[]') as [string, number, number][];
     const max = Number(plot.dataset.max);
     if (points.length < 2 || !max) continue;
     const lang = document.documentElement.lang || 'en';
@@ -163,8 +168,7 @@ const summary = last
 
     const show = (i: number) => {
       index = Math.min(Math.max(i, 0), points.length - 1);
-      const [date, stars] = points[index];
-      const x = index / (points.length - 1);
+      const [date, stars, x] = points[index];
       plot.style.setProperty('--hx', String(x));
       plot.style.setProperty('--hy', String(stars / max));
       value.textContent = nf.format(stars);
@@ -177,7 +181,9 @@ const summary = last
     plot.addEventListener('pointermove', (event) => {
       const box = plot.getBoundingClientRect();
       const x = Math.min(Math.max((event.clientX - box.left) / box.width, 0), 1);
-      show(Math.round(x * (points.length - 1)));
+      let nearest = 0;
+      points.forEach((p, i) => { if (Math.abs(p[2] - x) < Math.abs(points[nearest][2] - x)) nearest = i; });
+      show(nearest);
     });
     plot.addEventListener('pointerleave', () => { if (document.activeElement !== plot) hide(); });
     plot.addEventListener('focus', () => show(index));

@@ -7,6 +7,10 @@
  * hidden) or, for the two headline counts, to conservative published figures.
  */
 
+import starSnapshot from './star-history.json';
+
+const snapshot = starSnapshot as { daily: [string, number][] };
+
 const REPO = 'iliyami/MacSai';
 const CASK = 'mac-sai';
 
@@ -28,7 +32,7 @@ export interface Stats {
   forks: number | null;
   contributors: number | null;
   releases: number | null;
-  /** Cumulative stars, one point per day (thinned for long histories). */
+  /** Cumulative stars by date, oldest first. Points need not be evenly spaced. */
   starHistory: StarPoint[];
   brew: {
     installs365d: number;
@@ -100,12 +104,13 @@ async function allPages<T>(path: string, accept?: string, maxPages = 400): Promi
 }
 
 /**
- * Star dates through GraphQL. The REST stargazers list refuses the GitHub
- * Actions token, while GraphQL accepts it for public repositories.
+ * Star dates through GraphQL. GitHub only lists stargazers to a user token:
+ * the Actions token is refused, so CI passes a read-only STATS_TOKEN secret
+ * when one is set. Without it, the committed snapshot below is used.
  */
 async function starDates(): Promise<string[]> {
-  const token = process.env.GITHUB_TOKEN;
-  if (!token) throw new Error('GraphQL needs GITHUB_TOKEN');
+  const token = process.env.STATS_TOKEN || process.env.GITHUB_TOKEN;
+  if (!token) throw new Error('needs STATS_TOKEN or GITHUB_TOKEN');
   const [owner, name] = REPO.split('/');
   const query = `query($owner: String!, $name: String!, $after: String) {
     repository(owner: $owner, name: $name) {
@@ -117,7 +122,12 @@ async function starDates(): Promise<string[]> {
   for (let page = 0; page < 400; page++) {
     const response = await fetch(`${GITHUB_API}graphql`, {
       method: 'POST',
-      headers: { ...headers(`${GITHUB_API}graphql`, undefined, true), 'Content-Type': 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'macsai-website-build',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({ query, variables: { owner, name, after } }),
     });
     if (!response.ok) throw new Error(`GraphQL stargazers: HTTP ${response.status}`);
@@ -158,6 +168,26 @@ function starHistory(starredAt: string[]): StarPoint[] {
   return points.filter((_, i) => i % step === 0 || i === points.length - 1);
 }
 
+/**
+ * Star history from the committed snapshot (scripts/update-star-history.mjs),
+ * extended to today with the live star count.
+ */
+function fromSnapshot(liveStars: number): StarPoint[] {
+  const points: StarPoint[] = snapshot.daily.map(([date, stars]) => ({ date, stars }));
+  const today = new Date().toISOString().slice(0, 10);
+  const lastPoint = points.at(-1);
+  if (lastPoint && lastPoint.date < today) points.push({ date: today, stars: liveStars });
+  return points;
+}
+
+/** Stars gained since a day, if the history is known at that day. */
+function gainSince(history: StarPoint[], day: string, knownUntil: string): number | null {
+  const before = history.filter((p) => p.date <= day).at(-1);
+  const lastPoint = history.at(-1);
+  if (!before || !lastPoint || knownUntil < day) return null;
+  return lastPoint.stars - before.stars;
+}
+
 async function loadBrew(): Promise<Stats['brew']> {
   try {
     const cask = await getJSON<{ analytics?: { install?: Record<string, Record<string, number>> } }>(
@@ -196,19 +226,21 @@ async function load(): Promise<Stats> {
       allPages<GHRelease>(`repos/${REPO}/releases`),
     ]);
     const starred = (await starsTask) ?? [];
+    const history = starred.length ? starHistory(starred) : fromSnapshot(repo.stargazers_count);
     const published = releases.filter((r) => !r.draft);
     const downloads = published
       .flatMap((r) => r.assets)
       .filter((a) => a.name.endsWith('.dmg'))
       .reduce((sum, a) => sum + a.download_count, 0);
-    const history = starHistory(starred);
     const monthAgo = new Date(Date.now() - 30 * 86_400_000).toISOString();
     return {
       updatedAt: new Date().toISOString(),
       live: true,
       downloads: Math.max(downloads, FALLBACK.downloads),
       stars: repo.stargazers_count,
-      stars30d: starred.length ? starred.filter((d) => d >= monthAgo).length : null,
+      stars30d: starred.length
+        ? starred.filter((d) => d >= monthAgo).length
+        : gainSince(history, monthAgo.slice(0, 10), snapshot.daily.at(-1)?.[0] ?? ''),
       forks: repo.forks_count,
       contributors: (await contributors)?.length ?? null,
       releases: published.length,
