@@ -29,6 +29,12 @@ export const ja: HomeStrings = {
     languages: '13 言語に対応',
     trackers: 'トラッカー 0',
   },
+  showcase: {
+    heading: "44 秒でわかる Mac Sai",
+    body: "実際のアプリ画面で、各ツールを手短に紹介します。",
+    play: "ツアーを再生",
+    note: "動画は英語です。",
+  },
   stats: {
     heading: "数字で見る Mac Sai",
     intro: "GitHub と Homebrew の数値です。サイトは 1 時間ごとに更新されます。",

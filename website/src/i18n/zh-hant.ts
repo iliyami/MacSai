@@ -29,6 +29,12 @@ export const zhHant: HomeStrings = {
     languages: '13 種語言',
     trackers: '0 個追蹤器',
   },
+  showcase: {
+    heading: "44 秒認識 Mac Sai",
+    body: "快速瀏覽各項工具，畫面皆來自 App 本身。",
+    play: "播放影片",
+    note: "影片為英文。",
+  },
   stats: {
     heading: "Mac Sai 數據一覽",
     intro: "數據來自 GitHub 與 Homebrew，網站每小時更新一次。",

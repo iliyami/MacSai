@@ -29,6 +29,12 @@ export const ru: HomeStrings = {
     languages: '13 языков',
     trackers: '0 трекеров',
   },
+  showcase: {
+    heading: "Mac Sai за 44 секунды",
+    body: "Короткий обзор инструментов с настоящими экранами приложения.",
+    play: "Смотреть обзор",
+    note: "Видео на английском.",
+  },
   stats: {
     heading: "Mac Sai в цифрах",
     intro: "Данные GitHub и Homebrew. Сайт обновляет эти цифры каждый час.",

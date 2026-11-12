@@ -29,6 +29,12 @@ export const fr: HomeStrings = {
     languages: "13 langues",
     trackers: "0 traqueur",
   },
+  showcase: {
+    heading: "Mac Sai en 44 secondes",
+    body: "Un petit tour des outils, avec de vrais écrans de l’app.",
+    play: "Lancer la visite",
+    note: "Vidéo en anglais.",
+  },
   stats: {
     heading: "Mac Sai en chiffres",
     intro: "Comptés sur GitHub et Homebrew. Le site met ces chiffres à jour toutes les heures.",

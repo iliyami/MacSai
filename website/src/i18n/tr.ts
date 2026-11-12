@@ -29,6 +29,12 @@ export const tr: HomeStrings = {
     languages: "13 dil",
     trackers: "0 izleyici",
   },
+  showcase: {
+    heading: "44 saniyede Mac Sai",
+    body: "Uygulamanın gerçek ekranlarıyla araçlara kısa bir bakış.",
+    play: "Turu oynat",
+    note: "Video İngilizcedir.",
+  },
   stats: {
     heading: "Rakamlarla Mac Sai",
     intro: "GitHub ve Homebrew'dan sayılır. Site bu rakamları her saat günceller.",

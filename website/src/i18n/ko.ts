@@ -29,6 +29,12 @@ export const ko: HomeStrings = {
     languages: '13개 언어',
     trackers: '추적기 0개',
   },
+  showcase: {
+    heading: "44초 만에 보는 Mac Sai",
+    body: "실제 앱 화면으로 도구를 짧게 둘러봅니다.",
+    play: "투어 재생",
+    note: "영상은 영어입니다.",
+  },
   stats: {
     heading: "숫자로 보는 Mac Sai",
     intro: "GitHub와 Homebrew에서 집계한 숫자입니다. 사이트가 매시간 갱신합니다.",

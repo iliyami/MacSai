@@ -48,3 +48,18 @@ export function breadcrumbs(items: { name: string; path: string }[]) {
     })),
   };
 }
+
+/** The 44-second tour on the home page, so search engines can show it as a video result. */
+export function tourVideo(name: string, description: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name,
+    description,
+    thumbnailUrl: absolute('/video/mac-sai-tour.jpg'),
+    contentUrl: absolute('/video/mac-sai-tour.mp4'),
+    uploadDate: '2026-11-12',
+    duration: 'PT44S',
+    inLanguage: 'en',
+  };
+}

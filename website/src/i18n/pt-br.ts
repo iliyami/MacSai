@@ -29,6 +29,12 @@ export const ptBR: HomeStrings = {
     languages: '13 idiomas',
     trackers: '0 rastreadores',
   },
+  showcase: {
+    heading: "Mac Sai em 44 segundos",
+    body: "Um tour rápido pelas ferramentas, com telas reais do app.",
+    play: "Ver o tour",
+    note: "Vídeo em inglês.",
+  },
   stats: {
     heading: "Mac Sai em números",
     intro: "Contados no GitHub e no Homebrew. O site atualiza estes números a cada hora.",

@@ -29,6 +29,12 @@ export const zhCN: HomeStrings = {
     languages: '13 种语言',
     trackers: '0 个追踪器',
   },
+  showcase: {
+    heading: "44 秒了解 Mac Sai",
+    body: "快速浏览各项工具，画面均来自应用本身。",
+    play: "播放视频",
+    note: "视频为英文。",
+  },
   stats: {
     heading: "Mac Sai 数据一览",
     intro: "数据来自 GitHub 和 Homebrew，网站每小时更新一次。",

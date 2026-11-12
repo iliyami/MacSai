@@ -22,6 +22,8 @@ export interface HomeStrings {
     shotAlt: string;
   };
   proof: { downloads: string; stars: string; languages: string; trackers: string };
+  /** The video tour. `note` tells non-English visitors the video is in English. */
+  showcase: { heading: string; body: string; play: string; note?: string };
   /** The live numbers section. {total}, {count} and {time} are filled in at build time. */
   stats: {
     heading: string;

@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Home from '../components/Home.astro';
 import { en } from '../i18n/en';
 import { homeAlternates } from '../i18n/alternates';
-import { softwareApplication, faqPage } from '../lib/schema';
+import { softwareApplication, faqPage, tourVideo } from '../lib/schema';
 
 const t = en;
 ---
@@ -12,7 +12,7 @@ const t = en;
   description={t.meta.description}
   path="/"
   alternates={homeAlternates}
-  jsonld={[softwareApplication(t.meta.description), faqPage(t.faq.items)]}
+  jsonld={[softwareApplication(t.meta.description), faqPage(t.faq.items), tourVideo(t.showcase.heading, t.showcase.body)]}
   overlayHeader
   nav={t.nav}
   footer={t.footer}

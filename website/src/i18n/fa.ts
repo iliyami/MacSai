@@ -29,6 +29,12 @@ export const fa: HomeStrings = {
     languages: '۱۳ زبان',
     trackers: '۰ ردیاب',
   },
+  showcase: {
+    heading: "Mac Sai در ۴۴ ثانیه",
+    body: "گشتی کوتاه در ابزارها، با صفحه‌های واقعی برنامه.",
+    play: "پخش ویدیو",
+    note: "ویدیو به زبان انگلیسی است.",
+  },
   stats: {
     heading: "Mac Sai به زبان اعداد",
     intro: "این اعداد از GitHub و Homebrew شمرده می‌شوند و سایت هر ساعت آن‌ها را به‌روز می‌کند.",

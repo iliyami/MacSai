@@ -6,6 +6,7 @@ import ModuleExplorer, { type ExplorerGroup } from './ModuleExplorer.astro';
 import Faq from './Faq.astro';
 import DownloadBand from './DownloadBand.astro';
 import Stats from './Stats.astro';
+import Showcase from './Showcase.astro';
 import nightSweepLTR from '../assets/art/night-sweep.jpg';
 import nightSweepRTL from '../assets/art/night-sweep-rtl.jpg';
 import glassRibbonLTR from '../assets/art/glass-ribbon.jpg';
@@ -135,6 +136,8 @@ const englishSuffix = english ? '' : ` (${t.englishOnly ?? 'English'})`;
     ))}
   </ul>
 </section>
+
+<Showcase t={t.showcase} />
 
 <section class="trust wrap" aria-labelledby="trust-title">
   <div class="trust-head">
