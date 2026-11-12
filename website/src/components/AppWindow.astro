@@ -1,0 +1,42 @@
+---
+import { Picture } from 'astro:assets';
+import { shot } from '../lib/shots';
+
+interface Props {
+  name: string;
+  alt: string;
+  priority?: boolean;
+  sizes?: string;
+  class?: string;
+}
+
+const { name, alt, priority = false, sizes = '(min-width: 72rem) 1000px, 92vw', class: className } = Astro.props;
+const image = shot(name);
+---
+<figure class:list={['app-window', className]}>
+  <Picture
+    src={image}
+    alt={alt}
+    formats={['avif', 'webp']}
+    fallbackFormat="webp"
+    widths={[480, 760, 1000, image.width]}
+    sizes={sizes}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding={priority ? 'sync' : 'async'}
+  />
+</figure>
+
+<style>
+  .app-window {
+    margin: 0;
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.08),
+      0 2px 6px rgb(5 3 20 / 0.35),
+      0 40px 90px -30px rgb(5 3 20 / 0.75);
+    overflow: hidden;
+    background: #1b1640;
+  }
+  .app-window :global(img) { width: 100%; height: auto; }
+</style>

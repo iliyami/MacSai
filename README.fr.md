@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/fr/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>

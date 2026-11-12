@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import Home from '../components/Home.astro';
+import { en } from '../i18n/en';
+import { homeAlternates } from '../i18n/alternates';
+import { softwareApplication, faqPage } from '../lib/schema';
+
+const t = en;
+---
+<Base
+  title={t.meta.title}
+  description={t.meta.description}
+  path="/"
+  alternates={homeAlternates}
+  jsonld={[softwareApplication(t.meta.description), faqPage(t.faq.items)]}
+  overlayHeader
+  nav={t.nav}
+  footer={t.footer}
+>
+  <Home t={t} locale="en" />
+</Base>

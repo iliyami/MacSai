@@ -1,0 +1,30 @@
+---
+import Base from '../../layouts/Base.astro';
+import Home from '../../components/Home.astro';
+import { STRINGS } from '../../i18n';
+import { LOCALES } from '../../i18n/locales.mjs';
+import { homeAlternates } from '../../i18n/alternates';
+import { softwareApplication, faqPage } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return LOCALES.filter((l) => l.code !== 'en').map((locale) => ({ params: { lang: locale.code }, props: { locale } }));
+}
+
+const { locale } = Astro.props;
+const t = STRINGS[locale.code];
+---
+<Base
+  title={t.meta.title}
+  description={t.meta.description}
+  path={`/${locale.code}/`}
+  lang={locale.hreflang}
+  dir={locale.dir as 'ltr' | 'rtl'}
+  alternates={homeAlternates}
+  jsonld={[softwareApplication(t.meta.description, locale.hreflang), faqPage(t.faq.items)]}
+  overlayHeader
+  nav={t.nav}
+  footer={t.footer}
+  homePath={`/${locale.code}/`}
+>
+  <Home t={t} locale={locale.hreflang} rtl={locale.dir === 'rtl'} />
+</Base>

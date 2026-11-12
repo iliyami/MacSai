@@ -1,0 +1,216 @@
+/*
+ * Mac Sai website styles.
+ *
+ * The palette comes from the app icon: an indigo night, a violet-to-cyan
+ * crescent. The hero and download bands stay at night in both themes; the
+ * reading surfaces follow the visitor's light or dark preference.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Night (always dark bands) */
+  --night: #0d0a26;
+  --night-raised: #17123b;
+  --night-line: rgb(196 186 255 / 0.16);
+  --starlight: #f0eefc;
+  --starlight-dim: #b5b0dc;
+  --violet: #a587ff;
+  --cyan: #63dbff;
+
+  /* Reading surfaces, light */
+  --bg: #f7f6fd;
+  --surface: #ffffff;
+  --ink: #18143d;
+  --ink-2: #4e4975;
+  --line: rgb(40 30 110 / 0.12);
+  --accent: #5a3fd8;
+  --accent-ink: #ffffff;
+  --link: #4b31c9;
+  --code-bg: #efedfb;
+
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-body: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  --font-code: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Type scale: a perfect fourth, from 17px body */
+  --step--1: 0.875rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
+  --step-3: clamp(1.875rem, 1.4rem + 2vw, 2.625rem);
+  --step-4: clamp(2.5rem, 1.6rem + 3.8vw, 4.5rem);
+
+  --measure: 66ch;
+  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
+  --page: 72rem;
+  --radius-s: 8px;
+  --radius-m: 14px;
+  --radius-l: 22px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #110d2c;
+    --surface: #18133b;
+    --ink: #ecebfa;
+    --ink-2: #aaa6cf;
+    --line: rgb(196 186 255 / 0.13);
+    --accent: #a587ff;
+    --accent-ink: #120d33;
+    --link: #b9a2ff;
+    --code-bg: #1e1847;
+  }
+}
+:root[data-theme='dark'] {
+  --bg: #110d2c;
+  --surface: #18133b;
+  --ink: #ecebfa;
+  --ink-2: #aaa6cf;
+  --line: rgb(196 186 255 / 0.13);
+  --accent: #a587ff;
+  --accent-ink: #120d33;
+  --link: #b9a2ff;
+  --code-bg: #1e1847;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+img, svg, video { display: block; max-width: 100%; height: auto; }
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: var(--step-4); font-weight: 700; letter-spacing: -0.03em; }
+h2 { font-size: var(--step-3); font-weight: 650; }
+h3 { font-size: var(--step-1); font-weight: 600; line-height: 1.25; letter-spacing: 0; }
+p { margin: 0; text-wrap: pretty; }
+
+/* Scripts that join letters or have no word spaces: no negative tracking,
+   and break Japanese headings at phrase boundaries. */
+:lang(fa) :is(h1, h2, h3, dt), :lang(ja) :is(h1, h2, h3), :lang(zh-Hans) :is(h1, h2, h3),
+:lang(zh-Hant) :is(h1, h2, h3), :lang(ko) :is(h1, h2, h3) { letter-spacing: 0; }
+:lang(ja) :is(h1, h2, h3), :lang(ko) :is(h1, h2, h3) { word-break: auto-phrase; }
+:lang(ko) :is(h1, h2, h3, p) { word-break: keep-all; }
+
+a { color: var(--link); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 3px solid var(--cyan);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+code, kbd, pre { font-family: var(--font-code); font-size: 0.9em; }
+:not(pre) > code {
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 5px;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--page));
+  margin-inline: auto;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: -4rem;
+  z-index: 100;
+  background: var(--starlight);
+  color: var(--night);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-s);
+}
+.skip-link:focus { top: 1rem; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  padding: 0.7rem 1.35rem;
+  border-radius: 999px;
+  font: 600 var(--step-0) / 1.2 var(--font-body);
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+.btn:hover { text-decoration: none; }
+.btn:active { transform: translateY(1px); }
+.btn svg { width: 1.15em; height: 1.15em; flex: none; }
+.btn-primary {
+  background: linear-gradient(135deg, #b597ff, #6fdcff);
+  color: #100b2e;
+  box-shadow: 0 10px 30px -12px rgb(130 110 255 / 0.9);
+}
+.btn-primary:hover { box-shadow: 0 14px 34px -12px rgb(110 200 255 / 0.95); }
+.btn-ghost {
+  background: rgb(255 255 255 / 0.06);
+  color: var(--starlight);
+  border-color: var(--night-line);
+}
+.btn-ghost:hover { background: rgb(255 255 255 / 0.12); }
+
+/* Night bands keep their own palette in both themes */
+.night {
+  background: var(--night);
+  color: var(--starlight);
+  --ink: var(--starlight);
+  --ink-2: var(--starlight-dim);
+  --line: var(--night-line);
+  --link: #c7b6ff;
+  --code-bg: rgb(255 255 255 / 0.08);
+}
+
+/* Prose blocks on feature and info pages */
+.prose { max-width: var(--measure); }
+.prose > * + * { margin-top: 1.1em; }
+.prose h2 { margin-top: 2.2em; font-size: var(--step-2); }
+.prose ul { padding-inline-start: 1.2em; }
+.prose li + li { margin-top: 0.35em; }
+.prose li::marker { color: var(--accent); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
