@@ -1,0 +1,63 @@
+---
+import { Image } from 'astro:assets';
+import InstallCommand from './InstallCommand.astro';
+import crescentLTR from '../assets/art/crescent.jpg';
+import crescentRTL from '../assets/art/crescent-rtl.jpg';
+import { release } from '../data/release';
+
+interface Props {
+  heading: string;
+  body: string;
+  download: string;
+  meta: string;
+  copy: string;
+  copied: string;
+  brewLabel: string;
+  rtl?: boolean;
+}
+const { heading, body, download, meta, copy, copied, brewLabel, rtl = false } = Astro.props;
+const crescent = rtl ? crescentRTL : crescentLTR;
+---
+<section class="band night" aria-labelledby="download-title">
+  <Image src={crescent} alt="" class:list={['art', { rtl }]} widths={[960, 1600, 2560]} sizes="100vw" format="webp" quality={75} />
+  <div class="wrap inner">
+    <h2 id="download-title">{heading}</h2>
+    <p>{body}</p>
+    <div class="row">
+      <a class="btn btn-primary" href={release.dmgURL}>{download}</a>
+      <span class="meta">{meta}</span>
+    </div>
+    <div class="brew">
+      <InstallCommand copyLabel={copy} copiedLabel={copied} label={brewLabel} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding-block: clamp(5rem, 12vw, 9rem);
+  }
+  .art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 72% 50%;
+    z-index: -1;
+  }
+  .art.rtl { object-position: 28% 50%; }
+  .inner { max-width: var(--page); }
+  h2 { font-size: var(--step-4); max-width: 14ch; letter-spacing: -0.03em; }
+  p { margin-top: 1rem; max-width: 30rem; color: var(--starlight-dim); font-size: var(--step-1); line-height: 1.5; }
+  .row { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
+  .meta { color: var(--starlight-dim); font-size: 0.9rem; }
+  .brew { margin-top: 1.25rem; }
+  @media (max-width: 40rem) {
+    .art { opacity: 0.45; }
+  }
+  h2:is(:lang(fa), :lang(ja), :lang(ko), :lang(zh-Hans), :lang(zh-Hant)) { letter-spacing: 0; }
+</style>

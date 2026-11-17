@@ -7,14 +7,15 @@
 <p align="center">
   <strong>Открытый инструмент для очистки, оптимизации и поиска вредоносных программ на Mac.</strong><br>
   Бесплатная, заверенная Apple альтернатива CleanMyMac, созданная на Swift 6 и SwiftUI.<br>
-  <sub>Более 100 000 загрузок. Бесплатно навсегда, без телеметрии.</sub>
+  <sub>Более 125 000 загрузок. Бесплатно навсегда, без телеметрии.</sub>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <strong>Русский</strong>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <strong>Русский</strong> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/ru/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -227,7 +228,7 @@ brew install --cask mac-sai
 
 ## Языки интерфейса
 
-Выберите Системный, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 или 한국어 в Настройки → Язык интерфейса. Английский, упрощённый китайский и русский охватывают весь интерфейс. Остальные языки переводят статические строки интерфейса; сообщения с подставляемыми значениями пока остаются на английском и следуют английским правилам множественного числа (традиционный китайский использует упрощённый в качестве запасного варианта). Главное окно и виджет строки меню используют общую настройку языка.
+Выберите Системный, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 или فارسی в Настройки → Язык интерфейса. Английский, упрощённый китайский и русский охватывают весь интерфейс. Остальные языки переводят статические строки интерфейса; сообщения с подставляемыми значениями пока остаются на английском и следуют английским правилам множественного числа (традиционный китайский использует упрощённый в качестве запасного варианта). Главное окно и виджет строки меню используют общую настройку языка. На персидском интерфейс отображается справа налево.
 
 ---
 
@@ -488,10 +489,10 @@ Mac Sai бесплатен и останется бесплатным: без п
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100 000+</h3><sub>загрузок</sub></td>
+    <td align="center" width="25%"><h3>125 000+</h3><sub>загрузок</sub></td>
     <td align="center" width="25%"><h3>2 000+</h3><sub>звёзд на GitHub</sub></td>
-    <td align="center" width="25%"><h3>17 000</h3><sub>просмотров в месяц</sub></td>
-    <td align="center" width="25%"><h3>6</h3><sub>языков README</sub></td>
+    <td align="center" width="25%"><h3>23 000</h3><sub>просмотров в месяц</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>языков README</sub></td>
   </tr>
 </table>
 </div>

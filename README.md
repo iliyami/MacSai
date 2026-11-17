@@ -11,10 +11,11 @@
 </p>
 
 <p align="center">
-  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a>
+  <strong>English</strong> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -238,7 +239,7 @@ treated as an empty archive folder.
 
 ## Interface languages
 
-Choose System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, or 한국어 in Settings → Interface Language. English, Simplified Chinese, and Russian cover the whole interface. The other languages translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference.
+Choose System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어, or فارسی in Settings → Interface Language. English, Simplified Chinese, and Russian cover the whole interface. The other languages translate static interface strings; interpolated messages retain the English wording and plural rules for now (Traditional Chinese falls back to Simplified). The main window and menu-bar widget share the language preference. Farsi uses a right-to-left layout.
 
 ## Installation
 
@@ -500,7 +501,7 @@ Mac Sai has **one** sponsor slot, shown here and at the top of this page, in eve
     <td align="center" width="25%"><h3>125,000+</h3><sub>downloads</sub></td>
     <td align="center" width="25%"><h3>2,000+</h3><sub>GitHub stars</sub></td>
     <td align="center" width="25%"><h3>23,000</h3><sub>page views a month</sub></td>
-    <td align="center" width="25%"><h3>6</h3><sub>README languages</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README languages</sub></td>
   </tr>
 </table>
 </div>

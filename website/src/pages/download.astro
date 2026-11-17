@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import InstallCommand from '../components/InstallCommand.astro';
+import { release, REPO_URL, RELEASES_URL } from '../data/release';
+import { softwareApplication, breadcrumbs } from '../lib/schema';
+
+const title = 'Download Mac Sai for macOS, free';
+const description = `Download Mac Sai ${release.version}, the free and open-source Mac cleaner. Notarized by Apple, for macOS 14 or later on Apple silicon and Intel.`;
+const crumbs = [{ name: 'Home', path: '/' }, { name: 'Download', path: '/download/' }];
+const installer = 'curl -fsSL https://raw.githubusercontent.com/iliyami/MacSai/main/scripts/install.sh | bash';
+const dateText = new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${release.publishedAt}T00:00:00Z`));
+---
+<Base title={title} description={description} path="/download/" jsonld={[softwareApplication(description), breadcrumbs(crumbs)]}>
+  <PageHero
+    title="Download Mac Sai"
+    lede="Free, signed with an Apple Developer ID and notarized by Apple. It opens like any other app: no warnings, no right-click tricks, no Terminal."
+    crumbs={crumbs}
+  >
+    <div class="cta">
+      <a class="btn btn-primary" href={release.dmgURL}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        Download Mac Sai {release.version}
+      </a>
+      <p class="meta">
+        {release.dmgSizeMB && <>{release.dmgSizeMB} MB disk image, </>}released {dateText}.<br />
+        macOS 14 Sonoma or later, Apple silicon and Intel.
+      </p>
+    </div>
+  </PageHero>
+
+  <div class="wrap grid">
+    <section aria-labelledby="dmg">
+      <h2 id="dmg">Install from the disk image</h2>
+      <ol class="steps">
+        <li>Open <strong>MacSai-{release.version}.dmg</strong> from your Downloads folder.</li>
+        <li>Drag <strong>Mac Sai</strong> onto the Applications folder.</li>
+        <li>Open Mac Sai from Applications or Spotlight.</li>
+      </ol>
+      <p class="hint">Updating from an older version? Quit Mac Sai first, then replace the old copy. From version 1.32, Mac Sai can update itself from inside the app.</p>
+    </section>
+
+    <section aria-labelledby="brew">
+      <h2 id="brew">Install with Homebrew</h2>
+      <p>Mac Sai is in the official Homebrew cask, so no tap is needed.</p>
+      <InstallCommand />
+      <p class="hint">Update later with <code>brew upgrade --cask mac-sai</code>. Homebrew usually picks up a new release within a day or two.</p>
+    </section>
+
+    <section aria-labelledby="script">
+      <h2 id="script">One-line installer</h2>
+      <p>Downloads the latest disk image and installs Mac Sai to Applications. <a href={`${REPO_URL}/blob/main/scripts/install.sh`} rel="noopener">Read the script</a> before you run it.</p>
+      <InstallCommand command={installer} label="Install with the script" />
+    </section>
+
+    <section aria-labelledby="fda">
+      <h2 id="fda">Full Disk Access, if you want it</h2>
+      <p>Mail Attachments, Privacy and Malware Removal look inside folders macOS protects. To let them:</p>
+      <ol class="steps">
+        <li>Open System Settings, then Privacy &amp; Security, then Full Disk Access.</li>
+        <li>Click the add button and choose Mac Sai in Applications.</li>
+        <li>Quit and reopen Mac Sai.</li>
+      </ol>
+      <p class="hint">Everything else works without it.</p>
+    </section>
+
+    <section aria-labelledby="verify">
+      <h2 id="verify">Check the signature yourself</h2>
+      <p>macOS checks this every time you open the app. To see it for yourself, run:</p>
+      <InstallCommand command={'spctl --assess --type execute -vv "/Applications/Mac Sai.app"'} label="Check the notarization" />
+      <p class="hint">The answer should include <code>accepted</code> and <code>source=Notarized Developer ID</code>.</p>
+    </section>
+
+    <section aria-labelledby="remove">
+      <h2 id="remove">Uninstall</h2>
+      <p>With Homebrew:</p>
+      <InstallCommand command="brew uninstall --zap --cask mac-sai" label="Uninstall with Homebrew" />
+      <p>Otherwise, run the uninstall script. It removes the app and its preferences, caches, logs and database.</p>
+      <InstallCommand command="curl -fsSL https://raw.githubusercontent.com/iliyami/MacSai/main/scripts/uninstall.sh | bash" label="Uninstall with the script" />
+    </section>
+  </div>
+
+  <section class="wrap more" aria-label="More downloads">
+    <p>
+      <a href={RELEASES_URL} rel="noopener">Release notes for {release.version}</a>
+      <a href={`${REPO_URL}/releases`} rel="noopener">All versions</a>
+      <a href={`${REPO_URL}#installation`} rel="noopener">Build from source</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 2rem; }
+  .meta { color: var(--starlight-dim); font-size: 0.9rem; line-height: 1.5; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(2.5rem, 6vw, 4rem) clamp(2rem, 6vw, 5rem);
+    padding-block: clamp(3.5rem, 8vw, 5.5rem);
+  }
+  section h2 { font-size: var(--step-2); margin-bottom: 1rem; }
+  section > p { color: var(--ink-2); margin-bottom: 1rem; }
+  section > p:last-child { margin-bottom: 0; }
+  .steps { margin: 0 0 1rem; padding-inline-start: 1.4em; display: grid; gap: 0.5rem; }
+  .steps li::marker { color: var(--accent); font-weight: 700; }
+  .hint { margin-top: 1rem; font-size: 0.93rem; }
+  .more { padding-bottom: clamp(4rem, 8vw, 6rem); }
+  .more p { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .more a { font-weight: 600; }
+  @media (max-width: 52rem) { .grid { grid-template-columns: 1fr; } }
+</style>

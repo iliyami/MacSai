@@ -7,14 +7,15 @@
 <p align="center">
   <strong>Le nettoyeur, optimiseur et scanner de logiciels malveillants open source pour Mac.</strong><br>
   Une alternative gratuite et notariée par Apple à CleanMyMac, conçue avec Swift 6 et SwiftUI.<br>
-  <sub>Téléchargé plus de 100 000 fois. Gratuit pour toujours, sans télémétrie.</sub>
+  <sub>Téléchargé plus de 125 000 fois. Gratuit pour toujours, sans télémétrie.</sub>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <strong>Français</strong> | <a href="README.ru.md">Русский</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.de.md">Deutsch</a> | <strong>Français</strong> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/fr/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -227,7 +228,7 @@ Un widget de barre des menus au style glassmorphisme qui met les constantes vita
 
 ## Langues de l'interface
 
-Choisissez Selon le système, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 ou 한국어 dans Paramètres → Langue de l'interface. L'anglais, le chinois simplifié et le russe couvrent toute l'interface. Les autres langues traduisent les textes statiques de l'interface ; les messages interpolés conservent pour l'instant le texte anglais et ses règles de pluriel (le chinois traditionnel se rabat sur le simplifié). La fenêtre principale et le widget de la barre des menus partagent le réglage de langue.
+Choisissez Selon le système, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 ou فارسی dans Paramètres → Langue de l'interface. L'anglais, le chinois simplifié et le russe couvrent toute l'interface. Les autres langues traduisent les textes statiques de l'interface ; les messages interpolés conservent pour l'instant le texte anglais et ses règles de pluriel (le chinois traditionnel se rabat sur le simplifié). La fenêtre principale et le widget de la barre des menus partagent le réglage de langue. En persan, l'interface s'affiche de droite à gauche.
 
 ## Installation
 
@@ -486,10 +487,10 @@ Mac Sai propose **un seul** emplacement sponsor, affiché ici et en haut de cett
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100 000+</h3><sub>téléchargements</sub></td>
+    <td align="center" width="25%"><h3>125 000+</h3><sub>téléchargements</sub></td>
     <td align="center" width="25%"><h3>2 000+</h3><sub>étoiles GitHub</sub></td>
-    <td align="center" width="25%"><h3>17 000</h3><sub>pages vues par mois</sub></td>
-    <td align="center" width="25%"><h3>6</h3><sub>langues du README</sub></td>
+    <td align="center" width="25%"><h3>23 000</h3><sub>pages vues par mois</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>langues du README</sub></td>
   </tr>
 </table>
 </div>

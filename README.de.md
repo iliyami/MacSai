@@ -7,14 +7,15 @@
 <p align="center">
   <strong>Der quelloffene Mac-Reiniger, Optimierer und Malware-Scanner.</strong><br>
   Eine kostenlose, von Apple notarisierte Alternative zu CleanMyMac, gebaut mit Swift 6 und SwiftUI.<br>
-  <sub>Über 100.000 Mal heruntergeladen. Für immer kostenlos, ohne Telemetrie.</sub>
+  <sub>Über 125.000 Mal heruntergeladen. Für immer kostenlos, ohne Telemetrie.</sub>
 </p>
 
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <strong>Deutsch</strong> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a>
+  <a href="README.md">English</a> | <a href="README.zh-CN.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <strong>Deutsch</strong> | <a href="README.fr.md">Français</a> | <a href="README.ru.md">Русский</a> | <a href="README.es.md">Español</a> | <a href="README.it.md">Italiano</a> | <a href="README.pt-BR.md">Português (Brasil)</a> | <a href="README.ja.md">日本語</a> | <a href="README.ko.md">한국어</a> | <a href="README.tr.md">Türkçe</a> | <a href="README.fa.md">فارسی</a>
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/de/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -227,7 +228,7 @@ Ein Menüleisten-Widget im Glasmorphismus-Stil, das die Vitalwerte deines Macs e
 
 ## Oberflächensprachen
 
-Wähle in Einstellungen → Sprache der Oberfläche zwischen System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語 oder 한국어. Englisch, vereinfachtes Chinesisch und Russisch decken die gesamte Oberfläche ab. Die übrigen Sprachen übersetzen die statischen Oberflächentexte; interpolierte Meldungen behalten vorerst den englischen Wortlaut und die Pluralregeln (traditionelles Chinesisch fällt auf Vereinfachtes zurück). Das Hauptfenster und das Menüleisten-Widget teilen sich die Sprachauswahl.
+Wähle in Einstellungen → Sprache der Oberfläche zwischen System, English, 简体中文, 繁體中文, Русский, Deutsch, Français, Español, Italiano, Português (Brasil), Türkçe, 日本語, 한국어 oder فارسی. Englisch, vereinfachtes Chinesisch und Russisch decken die gesamte Oberfläche ab. Die übrigen Sprachen übersetzen die statischen Oberflächentexte; interpolierte Meldungen behalten vorerst den englischen Wortlaut und die Pluralregeln (traditionelles Chinesisch fällt auf Vereinfachtes zurück). Das Hauptfenster und das Menüleisten-Widget teilen sich die Sprachauswahl. Auf Farsi wird die Oberfläche von rechts nach links dargestellt.
 
 ## Installation
 
@@ -486,10 +487,10 @@ Mac Sai hat **einen einzigen** Sponsorenplatz, hier und oben auf dieser Seite, i
 <div align="center">
 <table>
   <tr>
-    <td align="center" width="25%"><h3>100.000+</h3><sub>Downloads</sub></td>
+    <td align="center" width="25%"><h3>125.000+</h3><sub>Downloads</sub></td>
     <td align="center" width="25%"><h3>2.000+</h3><sub>GitHub-Sterne</sub></td>
-    <td align="center" width="25%"><h3>17.000</h3><sub>Seitenaufrufe pro Monat</sub></td>
-    <td align="center" width="25%"><h3>6</h3><sub>README-Sprachen</sub></td>
+    <td align="center" width="25%"><h3>23.000</h3><sub>Seitenaufrufe pro Monat</sub></td>
+    <td align="center" width="25%"><h3>13</h3><sub>README-Sprachen</sub></td>
   </tr>
 </table>
 </div>

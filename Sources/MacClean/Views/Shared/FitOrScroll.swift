@@ -10,7 +10,7 @@ struct FitOrScroll<Content: View>: View {
 
     var body: some View {
         GeometryReader { proxy in
-            ScrollView(.vertical) {
+            DirectionalScrollView(.vertical) {
                 content
                     .frame(maxWidth: .infinity, minHeight: proxy.size.height)
             }

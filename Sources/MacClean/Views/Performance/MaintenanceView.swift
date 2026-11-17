@@ -39,7 +39,7 @@ struct MaintenanceView: View {
             .padding(.horizontal, 24)
             .padding(.vertical, 16)
 
-            ScrollView {
+            DirectionalScrollView {
                 LazyVStack(spacing: 6) {
                     ForEach(MaintenanceTask.allCases) { task in
                         taskRow(task)

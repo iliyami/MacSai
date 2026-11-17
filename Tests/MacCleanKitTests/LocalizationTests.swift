@@ -369,7 +369,7 @@ final class LocalizationTests: AppLanguageTestCase {
             ("清除", "Clear", "Очистить"),
             ("这只会忘掉恢复记录，废纸篓里的文件不会被动。之后就不能一键恢复这些清理了。", "This only forgets the restore list. Nothing in the Trash is touched, but these cleans can no longer be restored in one click.", "Это"),
         ]
-        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .fa] {
             AppLanguage.current = language
             for (zh, en, ru) in strings {
                 let value = L10n.tr(zh, en, ru)
@@ -474,6 +474,87 @@ final class LocalizationTests: AppLanguageTestCase {
         }
     }
 
+    func testFarsiLanguageSelectionAndRegionalIdentifiers() {
+        XCTAssertTrue(AppLanguage.allCases.contains(.fa))
+        XCTAssertEqual(AppLanguage.fa.rawValue, "fa")
+        XCTAssertEqual(AppLanguage.fa.pickerLabel, "فارسی")
+        XCTAssertEqual(AppLanguage.fa.localeIdentifier, "fa")
+        for identifier in ["fa", "fa-IR", "fa_IR", "FA-af", "prs", "pes-IR"] {
+            XCTAssertEqual(AppLanguage.preferredLanguage(for: identifier), .fa, identifier)
+        }
+    }
+
+    func testOnlyFarsiUsesARightToLeftLayout() {
+        for language in AppLanguage.allCases where language != .system {
+            XCTAssertEqual(language.isRightToLeft, language == .fa, "\(language)")
+        }
+    }
+
+    func testFarsiUsesEveryTranslationOverload() {
+        AppLanguage.current = .fa
+        XCTAssertEqual(L10n.tr("设置", "Settings"), "تنظیمات")
+        XCTAssertEqual(L10n.tr("设置", "Settings", "Настройки"), "تنظیمات")
+        XCTAssertEqual(L10n.tr("设置"), "تنظیمات")
+        XCTAssertEqual(MaintenanceTask.freeUpRAM.title, "آزاد کردن RAM")
+        XCTAssertEqual(ScanCategory.userCaches.displayName, "فایل\u{200C}های حافظهٔ نهان کاربر")
+        XCTAssertEqual(FileListSort.sizeDescending.label, "از بزرگ به کوچک")
+    }
+
+    func testUntranslatedStringFallsBackToEnglishInFarsi() {
+        AppLanguage.current = .fa
+        XCTAssertEqual(L10n.tr("新功能", "New feature"), "New feature")
+        XCTAssertEqual(L10n.tr("未翻译", "New feature", "Russian"), "New feature")
+    }
+
+    func testFarsiLanguageResourcesCannotBeOfferedForCleanup() {
+        for folder in ["fa.lproj", "fa-IR.lproj", "fa_IR.lproj", "fa-AF.lproj", "Persian.lproj"] {
+            XCTAssertTrue(LanguagePreferences.alwaysKept.contains(folder), folder)
+        }
+    }
+
+    func testFarsiTrashAndCleanupCounts() {
+        AppLanguage.current = .fa
+        XCTAssertEqual(L10n.tr("移到废纸篓", "Move to Trash", "?"), "انتقال به سطل زباله")
+        XCTAssertEqual(L10n.tr("清空废纸篓", "Empty Trash", "?"), "خالی کردن سطل زباله")
+        let three = 3.formatted()
+        XCTAssertEqual(CleanupStrings.itemCount(3), "\(three) مورد")
+        XCTAssertEqual(CleanupStrings.confirmationTitle(count: 3), "\(three) مورد پاک\u{200C}سازی شود؟")
+    }
+
+    /// A line that starts with a Latin name ("Mac", "Docker") would otherwise
+    /// be laid out left to right; a leading right-to-left mark keeps it Persian.
+    func testFarsiLinesStartingWithALatinNameKeepRightToLeftDirection() {
+        AppLanguage.current = .fa
+        XCTAssertTrue(L10n.tr("你的 Mac 很干净！", "Your Mac is clean!").hasPrefix("\u{200F}Mac"))
+        XCTAssertTrue(L10n.tr("未找到 Docker", "Docker not found").hasPrefix("\u{200F}Docker"))
+        XCTAssertFalse(L10n.tr("设置", "Settings").hasPrefix("\u{200F}"))
+    }
+
+    /// Persian text must use the Persian yeh and kaf (U+06CC, U+06A9), not the
+    /// Arabic letters that look alike but break search and sorting.
+    func testFarsiDictionaryUsesPersianLettersAndNoEmDashes() throws {
+        let source = try String(
+            contentsOf: URL(filePath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+                .appending(path: "Sources/MacCleanKit/Localization.swift"),
+            encoding: .utf8)
+        let start = try XCTUnwrap(source.range(of: "private static let persianFallbacks: [String: String] = ["))
+        let end = try XCTUnwrap(source.range(of: "\n    ]\n", range: start.upperBound..<source.endIndex))
+        // Only the Farsi values: some Chinese lookup keys contain em dashes.
+        let values = source[start.upperBound..<end.lowerBound]
+            .components(separatedBy: "\n")
+            .compactMap { line -> Substring? in
+                guard let separator = line.range(of: "\": \"") else { return nil }
+                return line[separator.upperBound...]
+            }
+        XCTAssertGreaterThan(values.count, 700, "the Farsi dictionary looks incomplete")
+        for value in values {
+            for forbidden in ["\u{064A}", "\u{0643}", "\u{2014}"] {
+                XCTAssertFalse(value.contains(forbidden), "U+\(String(forbidden.unicodeScalars.first!.value, radix: 16, uppercase: true)) in: \(value)")
+            }
+        }
+    }
+
     func testJapaneseLanguageSelectionAndRegionalIdentifiers() {
         XCTAssertTrue(AppLanguage.allCases.contains(.ja))
         XCTAssertEqual(AppLanguage.ja.rawValue, "ja")
@@ -523,6 +604,7 @@ final class LocalizationTests: AppLanguageTestCase {
             .ja: "コーヒーをおごる",
             .ko: "커피 한 잔 후원하기",
             .tr: "Bana bir kahve ısmarla",
+            .fa: "برایم یک قهوه بخرید",
             .zhHant: "請我喝杯咖啡",
             .ru: "Угостить кофе",
         ]
@@ -544,7 +626,7 @@ final class LocalizationTests: AppLanguageTestCase {
         let sameAsSimplified: Set<String> = [
             "容器", "卷", "大小", "取消", "永久清理", "清理完成", "未能完成", "已停止",
         ]
-        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .ru] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .fa, .ru] {
             AppLanguage.current = language
             for (index, value) in DiskHogsText.all.enumerated() where !sameAsEnglish.contains(english[index]) || language == .ru {
                 XCTAssertNotEqual(value, english[index], "\(language) is missing: \(english[index])")
@@ -574,7 +656,7 @@ final class LocalizationTests: AppLanguageTestCase {
             ("正在查找项目…", "Finding projects…", "Поиск проектов…"),
             ("正在计算文件夹大小…", "Measuring folders…", "Подсчёт размера папок…"),
         ]
-        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .zhHant, .ru] {
+        for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .fa, .zhHant, .ru] {
             AppLanguage.current = language
             for s in strings {
                 let text = L10n.tr(s.zh, s.en, s.ru)
@@ -618,7 +700,7 @@ final class LocalizationTests: AppLanguageTestCase {
         let sameInTraditional: Set<String> = ["未知"]
 
         for (zh, english) in strings {
-            for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr] {
+            for language in [AppLanguage.de, .fr, .it, .es, .ptBR, .ja, .ko, .tr, .fa] {
                 AppLanguage.current = language
                 XCTAssertNotEqual(L10n.tr(zh, english), english, "\(language) is missing \"\(english)\"")
             }

@@ -4,6 +4,7 @@ import MacCleanKit
 
 struct UninstallerView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.layoutDirection) private var layoutDirection
     @AppStorage("removeBackgroundColors") private var removeBackgroundColors = false
     @State private var apps: [AppInfo] = []
     @State private var selectedApp: AppInfo?
@@ -31,6 +32,45 @@ struct UninstallerView: View {
     private let discovery = AppDiscovery()
     private let pathFinder = AppPathFinder()
     private let safetyGuard = SafetyGuard()
+
+    /// HSplitView wraps NSSplitView, which ignores SwiftUI's right-to-left
+    /// layout: in Farsi it squeezed the details pane into a thin column. A
+    /// plain HStack mirrors correctly, so right-to-left languages use that.
+    @ViewBuilder
+    private var splitPanes: some View {
+        if layoutDirection == .rightToLeft {
+            HStack(spacing: 0) {
+                appList
+                    .frame(minWidth: 240, idealWidth: 300, maxWidth: 340)
+                Divider()
+                detailPane
+                    .frame(maxWidth: .infinity)
+            }
+        } else {
+            HSplitView {
+                appList
+                    .frame(minWidth: 240)
+                detailPane
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var detailPane: some View {
+        if let app = selectedApp {
+            appDetailView(app)
+                .frame(minWidth: 280)
+        } else {
+            VStack {
+                Spacer()
+                Text(L10n.tr("选择一个应用以查看相关文件", "Select an app to see its files", "Выберите приложение, чтобы увидеть связанные с ним файлы"))
+                    .foregroundStyle(.primary.opacity(0.4))
+                    .font(.system(size: 13))
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -76,24 +116,7 @@ struct UninstallerView: View {
                 .padding(.horizontal, 24)
                 .padding(.bottom, 10)
 
-                HSplitView {
-                    appList
-                        .frame(minWidth: 240)
-
-                    if let app = selectedApp {
-                        appDetailView(app)
-                            .frame(minWidth: 280)
-                    } else {
-                        VStack {
-                            Spacer()
-                            Text(L10n.tr("选择一个应用以查看相关文件", "Select an app to see its files", "Выберите приложение, чтобы увидеть связанные с ним файлы"))
-                                .foregroundStyle(.primary.opacity(0.4))
-                                .font(.system(size: 13))
-                            Spacer()
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
+                splitPanes
                 .background {
                     if removeBackgroundColors { Color.clear }
                     else { Rectangle().fill(.ultraThinMaterial) }

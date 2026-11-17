@@ -211,7 +211,7 @@ struct DuplicatesView: View {
                     .animation(.easeInOut(duration: 0.2), value: scanPhase)
 
                 Text(L10n.tr("已用时：\(formatElapsed(elapsedSeconds))", "Elapsed: \(formatElapsed(elapsedSeconds))", "Прошло: \(formatElapsed(elapsedSeconds))"))
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(.system(size: 12, design: .monospacedUnlessRightToLeft))
                     .foregroundStyle(.primary.opacity(0.6))
             }
 

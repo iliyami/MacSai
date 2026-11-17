@@ -16,6 +16,14 @@ struct ContentView: View {
     @State private var selfUpdater = SelfUpdateController.shared
     @Environment(\.scenePhase) private var scenePhase
 
+    /// Right-to-left applies inside the sidebar and the module panes, not to
+    /// the NavigationSplitView itself: its AppKit split view always lays out
+    /// left to right, and a mirrored SwiftUI frame on top of it pushed the
+    /// sidebar out of the window once the window was resized.
+    private var contentDirection: LayoutDirection {
+        AppLanguage.current.isRightToLeft ? .rightToLeft : .leftToRight
+    }
+
     var body: some View {
         @Bindable var state = appState
 
@@ -25,6 +33,7 @@ struct ContentView: View {
                 // shown, so the toolbar's collapse-sidebar button is just
                 // dead weight (#21.4). Remove it.
                 .toolbar(removing: .sidebarToggle)
+                .environment(\.layoutDirection, contentDirection)
         } detail: {
             ZStack {
                 if let item = appState.selectedSidebarItem {
@@ -70,6 +79,7 @@ struct ContentView: View {
                 .allowsHitTesting(false)
             }
             .toolbarBackground(.hidden, for: .windowToolbar)
+            .environment(\.layoutDirection, contentDirection)
         }
         .disabled(selfUpdater.isPreparingInstallation)
         .overlay {
@@ -77,6 +87,7 @@ struct ContentView: View {
                 SelfUpdatePreparationOverlay(
                     canCancel: selfUpdater.canCancelPreparation,
                     onCancel: { selfUpdater.cancelPreparation() })
+                .environment(\.layoutDirection, contentDirection)
             }
         }
         .background(TitleBarConfigurator())

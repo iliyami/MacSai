@@ -1,0 +1,55 @@
+---
+import type { FAQ } from '../data/pages';
+interface Props { items: FAQ[]; heading: string; id?: string }
+const { items, heading, id = 'faq' } = Astro.props;
+---
+<section class="faq wrap" aria-labelledby={`${id}-title`}>
+  <h2 id={`${id}-title`}>{heading}</h2>
+  <div class="list">
+    {items.map((f) => (
+      <details>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(14rem, 1fr) 2fr;
+    gap: 2rem clamp(2rem, 6vw, 5rem);
+    padding-block: clamp(4rem, 9vw, 7rem);
+  }
+  .list { border-top: 1px solid var(--line); }
+  details { border-bottom: 1px solid var(--line); }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 0;
+    font-weight: 600;
+    font-size: var(--step-1);
+    line-height: 1.35;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: '';
+    flex: none;
+    width: 0.65rem;
+    height: 0.65rem;
+    margin-top: 0.45rem;
+    border-right: 2px solid var(--ink-2);
+    border-bottom: 2px solid var(--ink-2);
+    transform: rotate(45deg);
+    transition: transform 180ms ease;
+  }
+  details[open] summary::after { transform: rotate(225deg); }
+  details p { padding: 0 0 1.4rem; color: var(--ink-2); max-width: var(--measure); }
+  @media (max-width: 52rem) {
+    .faq { grid-template-columns: 1fr; }
+  }
+</style>
