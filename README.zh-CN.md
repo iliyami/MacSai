@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/zh-cn/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="播放视频: 44 秒了解 Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/zh-cn/#showcase-title"><strong>44 秒了解 Mac Sai</strong></a>。快速浏览各项工具，画面均来自应用本身。 视频为英文。</sub>
+</p>
+
+<p align="center">
   <strong>一条命令即可安装：</strong>
 </p>
 

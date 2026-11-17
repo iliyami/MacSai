@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/tr/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Turu oynat: 44 saniyede Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/tr/#showcase-title"><strong>44 saniyede Mac Sai</strong></a>. Uygulamanın gerçek ekranlarıyla araçlara kısa bir bakış. Video İngilizcedir.</sub>
+</p>
+
+<p align="center">
   <strong>Tek komutla kurun:</strong>
 </p>
 

@@ -35,6 +35,11 @@
 </p>
 
 <p align="center" dir="rtl">
+  <a href="https://iliyami.github.io/MacSai/fa/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="پخش ویدیو: Mac Sai در ۴۴ ثانیه" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/fa/#showcase-title"><strong>Mac Sai در ۴۴ ثانیه</strong></a>. گشتی کوتاه در ابزارها، با صفحه‌های واقعی برنامه. ویدیو به زبان انگلیسی است.</sub>
+</p>
+
+<p align="center" dir="rtl">
   <strong>نصب با یک دستور:</strong>
 </p>
 

@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/zh-hant/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="播放影片: 44 秒認識 Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/zh-hant/#showcase-title"><strong>44 秒認識 Mac Sai</strong></a>。快速瀏覽各項工具，畫面皆來自 App 本身。 影片為英文。</sub>
+</p>
+
+<p align="center">
   <strong>一條命令即可安裝：</strong>
 </p>
 
