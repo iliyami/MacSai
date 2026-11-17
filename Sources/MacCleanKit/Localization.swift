@@ -892,6 +892,11 @@ public enum L10n {
         "验证启动磁盘": "Verificar disco de inicialização",
         "高级": "AVANÇADO",
         "麦克风": "Microfone",
+        "扫描未完成：部分文件夹无法读取": "Verificação incompleta: algumas pastas não puderam ser lidas",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Pastas protegidas, incluindo os arquivos da Área de Transferência Universal, exigem Acesso Total ao Disco. Conceda-o a esta cópia do Mac Sai, reinicie o aplicativo e verifique novamente.",
+        "通用剪贴板归档": "Arquivos da Área de Transferência Universal",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Cópias temporárias de arquivos para colar entre dispositivos. Revise antes de limpar.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "Os arquivos originais permanecem onde estão. A idade não prova que um arquivo está sem uso: termine cópias e transferências entre dispositivos primeiro. Limpar pode interromper uma colagem pendente.",
         "清理权限": "Permissões de limpeza",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Permite que o Mac Sai verifique o Mail, os dados dos navegadores e outras pastas protegidas. Adicione o Mac Sai e ative o acesso nos Ajustes do Sistema, depois reinicie o aplicativo e verifique novamente.",
         "打开完全磁盘访问设置": "Abrir ajustes de Acesso Total ao Disco",
@@ -1616,6 +1621,11 @@ public enum L10n {
         "验证启动磁盘": "시동 디스크 확인",
         "高级": "고급",
         "麦克风": "마이크",
+        "扫描未完成：部分文件夹无法读取": "검사 미완료: 일부 폴더를 읽을 수 없습니다",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "범용 클립보드 보관 파일을 포함한 보호된 폴더에는 전체 디스크 접근 권한이 필요합니다. 이 Mac Sai에 권한을 부여하고 앱을 다시 시작한 다음 다시 검사하세요.",
+        "通用剪贴板归档": "범용 클립보드 보관 파일",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "기기 간 붙여넣기를 위한 임시 파일 사본입니다. 정리하기 전에 검토하세요.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "원본 파일은 그대로 유지됩니다. 오래되었다고 해서 사용하지 않는 것은 아닙니다. 기기 간 복사와 전송을 먼저 끝내세요. 정리하면 대기 중인 붙여넣기가 중단될 수 있습니다.",
         "清理权限": "정리 권한",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Mac Sai가 Mail, 브라우저 데이터 및 기타 보호된 폴더를 검사할 수 있도록 허용합니다. 시스템 설정에서 Mac Sai를 추가하고 권한을 켠 다음 앱을 다시 시작하고 다시 검사하세요.",
         "打开完全磁盘访问设置": "전체 디스크 접근 권한 설정 열기",
@@ -1762,6 +1772,11 @@ public enum L10n {
     /// back to the Simplified string, which is still readable Chinese. Native
     /// review is welcome to refine wording.
     private static let traditionalChineseFallbacks: [String: String] = [
+        "扫描未完成：部分文件夹无法读取": "掃描未完成：部分資料夾無法讀取",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "受保護的資料夾（包括通用剪貼簿封存）需要完全磁碟訪問權限。請為此 Mac Sai 副本授權，重新啟動應用程式並再次掃描。",
+        "通用剪贴板归档": "通用剪貼簿封存",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "用於裝置間複製貼上的暫存檔案副本；清理前請檢查。",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "原始檔案會保留。時間不代表未使用：請先完成複製和裝置間傳輸。清理可能中斷待執行的貼上。",
         // Batch cleanup and shared permissions
         "清理权限": "清理權限",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "允許 Mac Sai 掃描郵件、瀏覽器資料和其他受保護的資料夾。在系統設定中加入 Mac Sai 並開啟權限，然後重新啟動應用程式並重新掃描。",
@@ -2433,6 +2448,11 @@ public enum L10n {
     
     private static let frenchFallbacks: [String: String] = [
         // Batch cleanup and shared permissions
+        "扫描未完成：部分文件夹无法读取": "Analyse incomplète : certains dossiers sont illisibles",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Les dossiers protégés, dont les archives du presse-papiers universel, nécessitent l'accès complet au disque. Accordez-le à cette copie de Mac Sai, redémarrez l'app et relancez l'analyse.",
+        "通用剪贴板归档": "Archives du presse-papiers universel",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Copies temporaires de fichiers pour coller d'un appareil à l'autre. À vérifier avant le nettoyage.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "Les fichiers originaux restent en place. L'ancienneté ne prouve pas qu'une archive est inutilisée : terminez d'abord les copies et transferts entre appareils. Le nettoyage peut interrompre un collage en attente.",
         "清理权限": "Autorisations de nettoyage",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Permet à Mac Sai d'analyser Mail, les données des navigateurs et d'autres dossiers protégés. Ajoutez Mac Sai dans Réglages Système et activez son accès, puis redémarrez l'app et relancez l'analyse.",
         "打开完全磁盘访问设置": "Ouvrir les réglages d'accès complet au disque",
@@ -3124,6 +3144,11 @@ public enum L10n {
     ]
 
     private static let germanFallbacks: [String: String] = [
+        "扫描未完成：部分文件夹无法读取": "Scan unvollständig: Einige Ordner konnten nicht gelesen werden",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Geschützte Ordner, darunter Archive der universellen Zwischenablage, benötigen Festplattenvollzugriff. Erteile ihn dieser Kopie von Mac Sai, starte die App neu und scanne erneut.",
+        "通用剪贴板归档": "Archive der universellen Zwischenablage",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Temporäre Dateikopien zum Einfügen auf anderen Geräten. Vor dem Bereinigen prüfen.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "Die Originaldateien bleiben erhalten. Das Alter beweist nicht, dass ein Archiv unbenutzt ist: Kopieren und Übertragungen zwischen Geräten zuerst abschließen. Das Bereinigen kann ausstehendes Einfügen unterbrechen.",
         // Batch cleanup and shared permissions
         "清理权限": "Berechtigungen für die Bereinigung",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Lässt Mac Sai Mail, Browserdaten und andere geschützte Ordner scannen. Füge Mac Sai in den Systemeinstellungen hinzu und aktiviere den Zugriff. Starte die App danach neu und scanne erneut.",
@@ -3850,6 +3875,11 @@ public enum L10n {
 
     private static let italianFallbacks: [String: String] = [
         // Batch cleanup and shared permissions
+        "扫描未完成：部分文件夹无法读取": "Scansione incompleta: alcune cartelle non sono leggibili",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Le cartelle protette, compresi gli archivi degli Appunti universali, richiedono l'accesso completo al disco. Concedilo a questa copia di Mac Sai, riavvia l'app e ripeti la scansione.",
+        "通用剪贴板归档": "Archivi degli Appunti universali",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Copie temporanee di file per incollare tra dispositivi. Controlla prima di pulire.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "I file originali restano al loro posto. L'età non dimostra che un archivio sia inutilizzato: completa prima copie e trasferimenti tra dispositivi. La pulizia può interrompere un incolla in sospeso.",
         "清理权限": "Permessi per la pulizia",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Consente a Mac Sai di scansionare Mail, i dati dei browser e altre cartelle protette. Aggiungi Mac Sai e abilita l'accesso in Impostazioni di Sistema, poi riavvia l'app e ripeti la scansione.",
         "打开完全磁盘访问设置": "Apri le impostazioni di accesso completo al disco",
@@ -4597,6 +4627,11 @@ public enum L10n {
         "等待并退出": "Esperar y salir",
         "留在应用中": "Permanecer en la aplicación",
         "暂时无法退出": "Aún no se puede salir",
+        "扫描未完成：部分文件夹无法读取": "Análisis incompleto: no se pudieron leer algunas carpetas",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Las carpetas protegidas, incluidos los archivos del Portapapeles universal, requieren acceso total al disco. Concédelo a esta copia de Mac Sai, reinicia la aplicación y vuelve a analizar.",
+        "通用剪贴板归档": "Archivos del Portapapeles universal",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Copias temporales de archivos para pegar entre dispositivos. Revísalas antes de limpiar.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "Los archivos originales se conservan. La antigüedad no demuestra que un archivo esté sin usar: termina primero las copias y transferencias entre dispositivos. Limpiar puede interrumpir un pegado pendiente.",
         "清理权限": "Permisos de limpieza",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Permite que Mac Sai analice Mail, los datos de los navegadores y otras carpetas protegidas. Añade Mac Sai y activa el acceso en Ajustes del Sistema; después, reinicia la aplicación y vuelve a analizar.",
         "打开完全磁盘访问设置": "Abrir ajustes de Acceso total al disco",
@@ -5322,6 +5357,11 @@ public enum L10n {
         "等待并退出": "完了を待って終了",
         "留在应用中": "アプリの使用を続ける",
         "暂时无法退出": "まだ終了できません",
+        "扫描未完成：部分文件夹无法读取": "スキャン未完了: 一部のフォルダを読み取れませんでした",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "ユニバーサルクリップボードのアーカイブを含む保護されたフォルダには、フルディスクアクセスが必要です。この Mac Sai にアクセスを許可し、アプリを再起動してもう一度スキャンしてください。",
+        "通用剪贴板归档": "ユニバーサルクリップボードのアーカイブ",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "デバイス間でペーストするための一時的なファイルのコピーです。クリーンアップの前に確認してください。",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "元のファイルはそのまま残ります。古いからといって未使用とは限りません。先にデバイス間のコピーと転送を完了してください。クリーンアップすると、保留中のペーストが中断されることがあります。",
         "清理权限": "クリーンアップの権限",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Mac Sai がメール、ブラウザのデータ、その他の保護されたフォルダをスキャンできるようにします。システム設定で Mac Sai を追加してアクセスを許可したあと、アプリを再起動してもう一度スキャンしてください。",
         "打开完全磁盘访问设置": "フルディスクアクセスの設定を開く",
@@ -6047,6 +6087,11 @@ public enum L10n {
         "等待并退出": "Bekle ve Çık",
         "留在应用中": "Uygulamada Kal",
         "暂时无法退出": "Henüz çıkılamıyor",
+        "扫描未完成：部分文件夹无法读取": "Tarama tamamlanmadı: bazı klasörler okunamadı",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "Evrensel Pano arşivleri dahil korumalı klasörler Tam Disk Erişimi gerektirir. Bu Mac Sai kopyasına izin verin, uygulamayı yeniden başlatın ve tekrar tarayın.",
+        "通用剪贴板归档": "Evrensel Pano Arşivleri",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "Cihazlar arasında yapıştırma için geçici dosya kopyaları. Temizlemeden önce gözden geçirin.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "Orijinal dosyalar yerinde kalır. Eski olması bir arşivin kullanılmadığını kanıtlamaz: önce cihazlar arası kopyalama ve aktarımları tamamlayın. Temizlemek bekleyen bir yapıştırmayı yarıda kesebilir.",
         "清理权限": "Temizleme İzinleri",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "Mac Sai'nin Mail'i, tarayıcı verilerini ve diğer korumalı klasörleri taramasına izin verir. Sistem Ayarları'nda Mac Sai'yi ekleyip erişimi açın, ardından uygulamayı yeniden başlatıp tekrar tarayın.",
         "打开完全磁盘访问设置": "Tam Disk Erişimi Ayarlarını Aç",
@@ -6770,6 +6815,11 @@ public enum L10n {
         "等待并退出": "صبر و خروج",
         "留在应用中": "ماندن در برنامه",
         "暂时无法退出": "هنوز نمی‌توان خارج شد",
+        "扫描未完成：部分文件夹无法读取": "اسکن کامل نشد: برخی پوشه‌ها خوانده نشدند",
+        "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。": "پوشه‌های محافظت‌شده، از جمله بایگانی‌های کلیپ‌بورد جهانی، به دسترسی کامل به دیسک نیاز دارند. این دسترسی را به همین نسخهٔ Mac Sai بدهید، برنامه را دوباره باز کنید و دوباره اسکن کنید.",
+        "通用剪贴板归档": "بایگانی‌های کلیپ‌بورد جهانی",
+        "用于设备间复制粘贴的临时文件副本；清理前请检查。": "نسخه‌های موقت فایل برای چسباندن بین دستگاه‌ها. پیش از پاک‌سازی بررسی کنید.",
+        "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。": "فایل‌های اصلی سر جایشان می‌مانند. قدیمی بودن ثابت نمی‌کند که بایگانی بی‌استفاده است: اول کپی و انتقال بین دستگاه‌ها را تمام کنید. پاک‌سازی ممکن است چسباندنی را که در انتظار است قطع کند.",
         "清理权限": "مجوزهای پاک‌سازی",
         "允许 Mac Sai 扫描邮件、浏览器数据和其他受保护的文件夹。在系统设置中添加 Mac Sai 并开启权限，然后重新启动应用并重新扫描。": "به Mac Sai اجازه می‌دهد Mail، داده‌های مرورگر و دیگر پوشه‌های محافظت‌شده را اسکن کند. Mac Sai را در تنظیمات سیستم اضافه و فعال کنید، سپس برنامه را دوباره باز کنید و دوباره اسکن کنید.",
         "打开完全磁盘访问设置": "باز کردن تنظیمات دسترسی کامل به دیسک",

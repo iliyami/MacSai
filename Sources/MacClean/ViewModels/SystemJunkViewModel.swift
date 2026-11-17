@@ -19,6 +19,7 @@ final class SystemJunkViewModel {
     var selectedItems: Set<URL> = [] {
         didSet { recomputeSelectedSize() }
     }
+    var permissionDeniedPaths: [URL] = []
     var filesFound: Int = 0
     var scanPhase: String = L10n.tr("正在扫描...", "Scanning...", "Сканирование...")
     /// Held so the View's Cancel button can stop an in-flight cleanup.
@@ -63,6 +64,7 @@ final class SystemJunkViewModel {
 
     func startScan() {
         state = .scanning(progress: 0)
+        permissionDeniedPaths = []
         filesFound = 0
         results = []
         selectedItems = []
@@ -78,7 +80,7 @@ final class SystemJunkViewModel {
             scanPhase = L10n.tr("正在扫描系统日志...", "Scanning system logs...", "Сканирование системных журналов...")
             state = .scanning(progress: 0.25)
 
-            async let scanTask = module.scan()
+            async let scanTask = module.scanReportingPermissions()
 
             try? await Task.sleep(for: .milliseconds(400))
             scanPhase = L10n.tr("正在检查语言文件...", "Checking language files...", "Проверка файлов локализации...")
@@ -92,7 +94,9 @@ final class SystemJunkViewModel {
             scanPhase = L10n.tr("正在检查登录项...", "Checking login items...", "Проверка объектов входа...")
             state = .scanning(progress: 0.7)
 
-            let scanResults = await scanTask
+            let outcome = await scanTask
+            let scanResults = outcome.results
+            permissionDeniedPaths = outcome.permissionDeniedPaths
 
             scanPhase = L10n.tr("正在分析结果...", "Analyzing results...", "Анализ результатов...")
             state = .scanning(progress: 0.9)
@@ -160,6 +164,7 @@ final class SystemJunkViewModel {
         state = .idle
         results = []
         selectedItems = []
+        permissionDeniedPaths = []
         filesFound = 0
         cleanTask = nil
     }
@@ -167,7 +172,8 @@ final class SystemJunkViewModel {
     // MARK: - Navigation persistence
 
     /// Rehydrate from a previously-cached scan (preserved across navigation).
-    func restore(results: [ScanResult], selection: Set<URL>, scanComplete: Bool) {
+    func restore(results: [ScanResult], selection: Set<URL>, scanComplete: Bool, permissionDeniedPaths: [URL] = []) {
+        self.permissionDeniedPaths = permissionDeniedPaths
         self.results = results
         self.selectedItems = selection
         self.filesFound = results.reduce(0) { $0 + $1.fileCount }

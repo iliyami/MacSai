@@ -53,4 +53,13 @@ final class ScanResultsStoreTests: XCTestCase {
     func testAbsentLookupIsNil() {
         XCTAssertNil(ScanResultsStore().entry(for: .duplicates))
     }
+    func testDeniedPathsSurviveNavigationAlongsideResults() {
+        let store = ScanResultsStore()
+        let path = URL(filePath: "/fixture/shared-pasteboard/archives")
+        store.save(results: [], selection: [], scanComplete: true, for: .systemJunk,
+                   permissionDeniedPaths: [path])
+        XCTAssertEqual(store.entry(for: .systemJunk)?.permissionDeniedPaths, [path])
+        store.clear(.systemJunk)
+        XCTAssertNil(store.entry(for: .systemJunk))
+    }
 }

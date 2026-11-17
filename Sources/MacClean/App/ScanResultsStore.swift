@@ -10,11 +10,13 @@ public final class ScanResultsStore {
     public struct Entry {
         public var results: [ScanResult]
         public var selection: Set<URL>
+        public var permissionDeniedPaths: [URL]
         public var scanComplete: Bool
-        public init(results: [ScanResult], selection: Set<URL>, scanComplete: Bool) {
+        public init(results: [ScanResult], selection: Set<URL>, scanComplete: Bool, permissionDeniedPaths: [URL] = []) {
             self.results = results
             self.selection = selection
             self.scanComplete = scanComplete
+            self.permissionDeniedPaths = permissionDeniedPaths
         }
     }
 
@@ -26,8 +28,8 @@ public final class ScanResultsStore {
 
     public func entry(for item: SidebarItem) -> Entry? { entries[item] }
 
-    public func save(results: [ScanResult], selection: Set<URL>, scanComplete: Bool, for item: SidebarItem) {
-        entries[item] = Entry(results: results, selection: selection, scanComplete: scanComplete)
+    public func save(results: [ScanResult], selection: Set<URL>, scanComplete: Bool, for item: SidebarItem, permissionDeniedPaths: [URL] = []) {
+        entries[item] = Entry(results: results, selection: selection, scanComplete: scanComplete, permissionDeniedPaths: permissionDeniedPaths)
     }
 
     public func clear(_ item: SidebarItem) {

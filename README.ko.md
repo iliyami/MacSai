@@ -141,7 +141,7 @@ brew install --cask mac-sai
 | 모듈 | 기능 |
 |--------|------------|
 | **Smart Scan** | 클릭 한 번으로 정리, 보호, 성능 모듈을 함께 실행하고 진행 상황을 실시간으로 보여 주며, 완료 후 모듈별로 확보한 공간을 정확히 표시합니다 |
-| **System Junk** | 16개 이상의 스캔 카테고리: 사용자 및 시스템 캐시, 로그, 언어 파일, 손상된 환경설정, 손상된 로그인 항목, 문서 버전, iOS 백업, Xcode 불필요한 파일, 패키지 관리자 / IDE / AI 도구 캐시, 삭제된 사용자의 잔여 파일, 그리고 **Universal Binary 축소** (arm64와 x86_64를 모두 포함한 fat Mach-O 바이너리를 찾아 `lipo`로 사용자의 네이티브 아키텍처용으로 다시 작성하며, 취소를 지원합니다) |
+| **System Junk** | 16개 이상의 스캔 카테고리: 사용자 및 시스템 캐시, 로그, 언어 파일, 손상된 환경설정, 손상된 로그인 항목, 문서 버전, iOS 백업, Xcode 불필요한 파일, 패키지 관리자 / IDE / AI 도구 캐시, 삭제된 사용자의 잔여 파일, 범용 클립보드 보관 파일(검토용, 미리 선택되지 않음), 그리고 **Universal Binary 축소** (arm64와 x86_64를 모두 포함한 fat Mach-O 바이너리를 찾아 `lipo`로 사용자의 네이티브 아키텍처용으로 다시 작성하며, 취소를 지원합니다) |
 | **Mail Attachments** | Apple Mail, Outlook, Spark에 캐시된 첨부 파일을 찾습니다 |
 | **Trash Bins** | 외장 드라이브를 포함한 모든 위치의 휴지통을 비웁니다 |
 | **Project Junk** | 프로젝트 전반에서 다시 생성할 수 있는 빌드 폴더를 찾습니다: `node_modules`, `.next`, `dist`, Rust 및 Maven `target`, Gradle `build`, Python virtualenv, CocoaPods `Pods`. 옆에 있는 파일로 프로젝트 유형이 확인될 때만 대상으로 간주하며, `dist`와 `Pods`는 `.gitignore`에 명시된 경우에만 해당합니다. 모든 항목은 휴지통으로 이동합니다 |

@@ -45,4 +45,12 @@ final class SystemJunkRestoreTests: XCTestCase {
         XCTAssertEqual(vm.selectedItems, [cache.url])
         XCTAssertEqual(vm.totalSelectedSize, 10)
     }
+    func testRestoreKeepsUnreadablePathsAndResetClearsThem() {
+        let vm = SystemJunkViewModel()
+        let path = URL(filePath: "/fixture/shared-pasteboard/archives")
+        vm.restore(results: [], selection: [], scanComplete: true, permissionDeniedPaths: [path])
+        XCTAssertEqual(vm.permissionDeniedPaths, [path])
+        vm.reset()
+        XCTAssertTrue(vm.permissionDeniedPaths.isEmpty)
+    }
 }
