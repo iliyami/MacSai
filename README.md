@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Play the tour: See Mac Sai in 44 seconds" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/#showcase-title"><strong>See Mac Sai in 44 seconds</strong></a>. A short tour of the tools, with real screens from the app.</sub>
+</p>
+
+<p align="center">
   <strong>Install in one command:</strong>
 </p>
 

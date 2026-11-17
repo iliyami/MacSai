@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/pt-br/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Ver o tour: Mac Sai em 44 segundos" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/pt-br/#showcase-title"><strong>Mac Sai em 44 segundos</strong></a>. Um tour rápido pelas ferramentas, com telas reais do app. Vídeo em inglês.</sub>
+</p>
+
+<p align="center">
   <strong>Instale com um único comando:</strong>
 </p>
 

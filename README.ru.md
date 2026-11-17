@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/ru/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Смотреть обзор: Mac Sai за 44 секунды" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/ru/#showcase-title"><strong>Mac Sai за 44 секунды</strong></a>. Короткий обзор инструментов с настоящими экранами приложения. Видео на английском.</sub>
+</p>
+
+<p align="center">
   <strong>Установка одной командой:</strong>
 </p>
 

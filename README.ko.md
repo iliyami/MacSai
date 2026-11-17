@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/ko/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="투어 재생: 44초 만에 보는 Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/ko/#showcase-title"><strong>44초 만에 보는 Mac Sai</strong></a>. 실제 앱 화면으로 도구를 짧게 둘러봅니다. 영상은 영어입니다.</sub>
+</p>
+
+<p align="center">
   <strong>명령어 한 줄로 설치하기:</strong>
 </p>
 
