@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/de/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Tour abspielen: Mac Sai in 44 Sekunden" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/de/#showcase-title"><strong>Mac Sai in 44 Sekunden</strong></a>. Eine kurze Tour durch die Werkzeuge, mit echten Bildschirmen aus der App. Video auf Englisch.</sub>
+</p>
+
+<p align="center">
   <strong>In einem Befehl installieren:</strong>
 </p>
 

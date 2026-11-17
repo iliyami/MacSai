@@ -35,6 +35,11 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/ja/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="ツアーを再生: 44 秒でわかる Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/ja/#showcase-title"><strong>44 秒でわかる Mac Sai</strong></a>。実際のアプリ画面で、各ツールを手短に紹介します。 動画は英語です。</sub>
+</p>
+
+<p align="center">
   <strong>コマンド1つでインストール：</strong>
 </p>
 
