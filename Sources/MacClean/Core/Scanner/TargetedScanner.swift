@@ -85,7 +85,6 @@ public actor TargetedScanner {
             return ([], nil)
         }
 
-
         var results: [FileItem] = []
 
         if target.recursive {
