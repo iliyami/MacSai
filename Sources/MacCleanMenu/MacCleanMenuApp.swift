@@ -136,6 +136,7 @@ struct MenuContentView: View {
                 if let stats {
                     statGrid(stats)
                     networkCard(stats)
+                    if !stats.fans.isEmpty { fansCard(stats.fans) }
                     if !tips.isEmpty { recommendationsCard }
                     if let p = protection { protectionCard(p) }
                     if let d = devices, d.hasAny { devicesCard(d) }
@@ -274,6 +275,48 @@ struct MenuContentView: View {
 
     private var divider: some View {
         Rectangle().fill(Color.white.opacity(0.10)).frame(width: 1, height: 18)
+    }
+
+    // MARK: Fans
+
+    /// Live fan speeds within each fan's rated range. Shown only on Macs that
+    /// report fans.
+    private func fansCard(_ fans: [FanSpeed]) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader(icon: "fan", title: L10n.tr("风扇", "Fans", "Вентиляторы"), tint: MenuPalette.teal)
+            ForEach(fans, id: \.index) { fan in
+                HStack(spacing: 8) {
+                    Text("\(fan.index + 1)")
+                        .font(.system(size: 10, weight: .semibold, design: .monospaced))
+                        .foregroundStyle(MenuPalette.textSecondary)
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color.white.opacity(0.10))
+                            Capsule().fill(MenuPalette.barColor(fan.fraction))
+                                .frame(width: geo.size.width * fan.fraction)
+                        }
+                    }
+                    .frame(height: 5)
+                    Text("\(Int(fan.current.rounded())) \(L10n.tr("转/分", "rpm", "об/мин"))")
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.85))
+                        .frame(minWidth: 78, alignment: .trailing)
+                }
+                if let range = rangeText(fan) {
+                    Text(range)
+                        .font(.system(size: 9, design: .monospaced))
+                        .foregroundStyle(MenuPalette.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                }
+            }
+        }
+        .padding(11)
+        .glassCard()
+    }
+
+    private func rangeText(_ fan: FanSpeed) -> String? {
+        guard let minimum = fan.minimum, let maximum = fan.maximum else { return nil }
+        return "\(Int(minimum.rounded())) - \(Int(maximum.rounded()))"
     }
 
     // MARK: Recommendations
