@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/fa/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="تصویر صفحهٔ Mac Sai" />
+</p>
+
+<p align="center" dir="rtl">
+  <a href="https://iliyami.github.io/MacSai/fa/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="پخش ویدیو: Mac Sai در ۴۴ ثانیه" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/fa/#showcase-title"><strong>Mac Sai در ۴۴ ثانیه</strong></a>. گشتی کوتاه در ابزارها، با صفحه‌های واقعی برنامه. ویدیو به زبان انگلیسی است.</sub>
 </p>
 
 <p align="center" dir="rtl">
@@ -135,7 +141,7 @@ brew install --cask mac-sai
 | ماژول | کاری که انجام می‌دهد |
 |--------|------------|
 | **اسکن هوشمند** | با یک کلیک ماژول‌های پاک‌سازی، محافظت و کارایی را با هم و با نمایش زندهٔ پیشرفت اجرا می‌کند و سپس دقیقاً نشان می‌دهد هر ماژول چه مقدار فضا آزاد کرده است |
-| **فایل‌های اضافی سیستم** | بیش از ۱۶ دستهٔ اسکن: حافظه‌های نهان کاربر و سیستم، گزارش‌ها، فایل‌های زبان، تنظیمات برگزیدهٔ خراب، موارد ورود خراب، نسخه‌های اسناد، پشتیبان‌های iOS، فایل‌های اضافی Xcode، حافظه‌های نهان مدیران بسته / IDEها / ابزارهای هوش مصنوعی، باقی‌مانده‌های کاربران حذف‌شده، و **کوچک‌سازی باینری‌های Universal** (باینری‌های fat از نوع Mach-O را که هم arm64 و هم x86_64 را در خود دارند پیدا می‌کند و با `lipo` آن‌ها را فقط برای معماری بومی Mac شما بازنویسی می‌کند، و دکمهٔ لغو را هم رعایت می‌کند) |
+| **فایل‌های اضافی سیستم** | بیش از ۱۶ دستهٔ اسکن: حافظه‌های نهان کاربر و سیستم، گزارش‌ها، فایل‌های زبان، تنظیمات برگزیدهٔ خراب، موارد ورود خراب، نسخه‌های اسناد، پشتیبان‌های iOS، فایل‌های اضافی Xcode، حافظه‌های نهان مدیران بسته / IDEها / ابزارهای هوش مصنوعی، باقی‌مانده‌های کاربران حذف‌شده، بایگانی‌های کلیپ‌بورد جهانی (فقط برای بررسی، هرگز از پیش انتخاب نمی‌شوند)، و **کوچک‌سازی باینری‌های Universal** (باینری‌های fat از نوع Mach-O را که هم arm64 و هم x86_64 را در خود دارند پیدا می‌کند و با `lipo` آن‌ها را فقط برای معماری بومی Mac شما بازنویسی می‌کند، و دکمهٔ لغو را هم رعایت می‌کند) |
 | **پیوست‌های Mail** | پیوست‌های ذخیره‌شده در حافظهٔ نهان Apple Mail، Outlook و Spark را پیدا می‌کند |
 | **سطل‌های زباله** | سطل زباله را در همهٔ مکان‌ها، از جمله درایوهای خارجی، خالی می‌کند |
 | **فایل‌های اضافی پروژه‌ها** | پوشه‌های build قابل بازسازی را در پروژه‌هایتان پیدا می‌کند: `node_modules`، `.next`، `dist`، پوشهٔ `target` در Rust و Maven، پوشهٔ `build` در Gradle، محیط‌های مجازی (virtualenv) پایتون و `Pods` در CocoaPods. یک پوشه فقط وقتی به حساب می‌آید که فایل‌های کنارش نوع پروژه را تأیید کنند، و `dist` و `Pods` فقط وقتی که نامشان در `.gitignore` شما آمده باشد. همه چیز به سطل زباله منتقل می‌شود |

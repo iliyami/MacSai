@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/fr/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Mac Sai Screenshot" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/fr/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Lancer la visite: Mac Sai en 44 secondes" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/fr/#showcase-title"><strong>Mac Sai en 44 secondes</strong></a>. Un petit tour des outils, avec de vrais écrans de l’app. Vidéo en anglais.</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 | Module | Ce que ça fait |
 |--------|------------|
 | **Smart Scan** | Un clic exécute ensemble les modules de nettoyage, de protection et de performances avec une progression en direct, puis montre exactement ce qui a été libéré par module |
-| **System Junk** | 16+ catégories de scan : caches utilisateur et système, journaux, fichiers de langue, préférences corrompues, objets d'ouverture invalides, versions de documents, sauvegardes iOS, résidus Xcode, caches des gestionnaires de paquets / IDE / outils d'IA, restes d'utilisateurs supprimés, ainsi que l'**amincissement des binaires universels** (repère les binaires Mach-O gras contenant à la fois arm64 et x86_64 et les réécrit pour votre architecture native via `lipo`, en respectant l'annulation) |
+| **System Junk** | 16+ catégories de scan : caches utilisateur et système, journaux, fichiers de langue, préférences corrompues, objets d'ouverture invalides, versions de documents, sauvegardes iOS, résidus Xcode, caches des gestionnaires de paquets / IDE / outils d'IA, restes d'utilisateurs supprimés, archives du presse-papiers universel (à vérifier, jamais présélectionnées), ainsi que l'**amincissement des binaires universels** (repère les binaires Mach-O gras contenant à la fois arm64 et x86_64 et les réécrit pour votre architecture native via `lipo`, en respectant l'annulation) |
 | **Mail Attachments** | Trouve les pièces jointes mises en cache par Apple Mail, Outlook et Spark |
 | **Trash Bins** | Vide la corbeille à chaque emplacement, y compris sur les disques externes |
 | **Project Junk** | Trouve les dossiers de build régénérables dans vos projets : `node_modules`, `.next`, `dist`, `target` de Rust et Maven, `build` de Gradle, environnements virtuels Python et `Pods` de CocoaPods. Un dossier ne compte que si les fichiers voisins confirment le type de projet, et `dist` et `Pods` seulement si votre `.gitignore` les nomme. Tout part à la corbeille |

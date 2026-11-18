@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Mac Sai Screenshot" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Play the tour: See Mac Sai in 44 seconds" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/#showcase-title"><strong>See Mac Sai in 44 seconds</strong></a>. A short tour of the tools, with real screens from the app.</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 | Module | What it does |
 |--------|------------|
 | **Smart Scan** | One click runs cleanup, protection, and performance modules together with live progress, then shows exactly what it freed per module |
-| **System Junk** | 16+ scan categories: user and system caches, logs, language files, broken preferences, broken login items, document versions, iOS backups, Xcode junk, package-manager / IDE / AI-tool caches, deleted-user leftovers, and **Universal Binary thinning** (finds fat Mach-O binaries carrying both arm64 and x86_64 and rewrites them to your native arch via `lipo`, honoring Cancel) |
+| **System Junk** | 16+ scan categories: user and system caches, logs, language files, broken preferences, broken login items, document versions, iOS backups, Xcode junk, package-manager / IDE / AI-tool caches, deleted-user leftovers, Universal Clipboard archives (listed for review, never pre-selected), and **Universal Binary thinning** (finds fat Mach-O binaries carrying both arm64 and x86_64 and rewrites them to your native arch via `lipo`, honoring Cancel) |
 | **Mail Attachments** | Finds cached attachments from Apple Mail, Outlook, and Spark |
 | **Trash Bins** | Empties the Trash across every location, including external drives |
 | **Project Junk** | Finds regenerable build folders across your projects: `node_modules`, `.next`, `dist`, Rust and Maven `target`, Gradle `build`, Python virtualenvs, and CocoaPods `Pods`. A folder only counts when the files next to it confirm the project type, and `dist` and `Pods` only when your `.gitignore` names them. Everything goes to the Trash |

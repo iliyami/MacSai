@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/zh-cn/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Mac Sai 截图" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/zh-cn/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="播放视频: 44 秒了解 Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/zh-cn/#showcase-title"><strong>44 秒了解 Mac Sai</strong></a>。快速浏览各项工具，画面均来自应用本身。 视频为英文。</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ brew install --cask mac-sai
 | 模块 | 说明 |
 |--------|------------|
 | **智能扫描** | 一键同时运行清理、防护和性能模块，实时显示进度，并按模块显示实际释放了多少空间 |
-| **系统垃圾** | 16+ 个扫描类别：用户/系统缓存、日志、语言文件、损坏的偏好设置、损坏的登录项、文稿版本、iOS 备份、Xcode 垃圾、包管理器 / IDE / AI 工具缓存、已删除用户的残留，以及 **Universal Binary 瘦身**（检测同时包含 arm64 和 x86_64 切片的胖 Mach-O 二进制文件，通过 `lipo` 重写为你的原生架构，支持取消） |
+| **系统垃圾** | 16+ 个扫描类别：用户/系统缓存、日志、语言文件、损坏的偏好设置、损坏的登录项、文稿版本、iOS 备份、Xcode 垃圾、包管理器 / IDE / AI 工具缓存、已删除用户的残留、通用剪贴板归档（仅供检查，从不预先勾选），以及 **Universal Binary 瘦身**（检测同时包含 arm64 和 x86_64 切片的胖 Mach-O 二进制文件，通过 `lipo` 重写为你的原生架构，支持取消） |
 | **邮件附件** | 查找来自 Apple Mail、Outlook 和 Spark 的缓存附件 |
 | **废纸篓** | 清空所有位置（包括外置磁盘）的废纸篓 |
 | **项目垃圾** | 在你的项目中查找可重新生成的构建文件夹：`node_modules`、`.next`、`dist`、Rust 和 Maven 的 `target`、Gradle 的 `build`、Python 虚拟环境以及 CocoaPods 的 `Pods`。只有当旁边的文件能确认项目类型时才会计入，而 `dist` 和 `Pods` 只有在你的 `.gitignore` 中列出时才会计入。所有内容都移入废纸篓 |

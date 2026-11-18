@@ -1,0 +1,128 @@
+---
+/**
+ * The 44-second video tour. The video is served from this site (no embeds),
+ * and nothing but the small poster loads until the visitor presses play.
+ */
+import { href } from '../lib/url';
+import type { HomeStrings } from '../i18n/types';
+
+interface Props { t: HomeStrings['showcase'] }
+const { t } = Astro.props;
+---
+<section class="showcase night" aria-labelledby="showcase-title">
+  <div class="wrap">
+    <div class="head">
+      <h2 id="showcase-title">{t.heading}</h2>
+      <p>{t.body}{t.note && <> <span class="note">{t.note}</span></>}</p>
+    </div>
+    <div class="player" data-player>
+      <video
+        controls
+        preload="none"
+        playsinline
+        width="1920"
+        height="1080"
+        poster={href('/video/mac-sai-tour.jpg')}
+        aria-label={t.heading}
+      >
+        <source src={href('/video/mac-sai-tour.mp4')} type="video/mp4" />
+        <track kind="captions" srclang="en" label="English" src={href('/video/mac-sai-tour.en.vtt')} />
+      </video>
+      <button class="play" type="button" hidden>
+        <span class="disc" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" /></svg>
+        </span>
+        <span class="label">{t.play}</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Without JavaScript the native controls work as usual. With it, the poster
+  // gets one large play button, and the native controls appear once it plays.
+  for (const player of document.querySelectorAll<HTMLElement>('[data-player]')) {
+    const video = player.querySelector('video')!;
+    const button = player.querySelector<HTMLButtonElement>('.play')!;
+    video.controls = false;
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      video.controls = true;
+      void video.play();
+    });
+    video.addEventListener('play', () => player.classList.add('started'));
+    video.addEventListener('ended', () => {
+      player.classList.remove('started');
+      video.controls = false;
+      video.load();
+    });
+  }
+</script>
+
+<style>
+  .showcase {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(4rem, 9vw, 7rem);
+  }
+  .showcase::before {
+    content: '';
+    position: absolute;
+    inset: 25% -15% -15% -15%;
+    background: radial-gradient(closest-side, rgb(140 100 255 / 0.28), rgb(99 219 255 / 0.07) 55%, transparent);
+    pointer-events: none;
+  }
+  .wrap { position: relative; }
+  .head { max-width: 44rem; margin: 0 auto clamp(2rem, 5vw, 3rem); text-align: center; }
+  .head p { margin-top: 1rem; color: var(--starlight-dim); font-size: var(--step-1); line-height: 1.5; }
+  .note { font-size: 0.85em; opacity: 0.8; }
+
+  .player {
+    position: relative;
+    max-width: 64rem;
+    margin-inline: auto;
+    border-radius: var(--radius-l);
+    overflow: hidden;
+    background: #07051a;
+    box-shadow:
+      0 0 0 1px rgb(196 186 255 / 0.16),
+      0 40px 100px -40px rgb(120 90 255 / 0.75);
+  }
+  video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+
+  .play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    border: 0;
+    background: linear-gradient(to top, rgb(7 5 26 / 0.55), transparent 55%);
+    color: var(--starlight);
+    font: 600 var(--step-0) / 1.2 var(--font-body);
+    cursor: pointer;
+  }
+  .play[hidden] { display: none; }
+  .started .play { display: none; }
+  .disc {
+    display: grid;
+    place-items: center;
+    width: clamp(4.5rem, 9vw, 6rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #b597ff, #6fdcff);
+    box-shadow: 0 16px 40px -12px rgb(130 110 255 / 1), inset 0 1px 0 rgb(255 255 255 / 0.5);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+  }
+  .disc svg { width: 42%; fill: #100b2e; margin-inline-start: 8%; }
+  .play:hover .disc { transform: scale(1.06); box-shadow: 0 20px 48px -12px rgb(110 200 255 / 1), inset 0 1px 0 rgb(255 255 255 / 0.5); }
+  .label {
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background: rgb(7 5 26 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+  .play:focus-visible { outline-offset: -6px; }
+</style>

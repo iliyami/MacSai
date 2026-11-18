@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/de/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Mac Sai Screenshot" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/de/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Tour abspielen: Mac Sai in 44 Sekunden" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/de/#showcase-title"><strong>Mac Sai in 44 Sekunden</strong></a>. Eine kurze Tour durch die Werkzeuge, mit echten Bildschirmen aus der App. Video auf Englisch.</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 | Modul | Was es tut |
 |--------|------------|
 | **Smart Scan** | Ein Klick führt die Module für Bereinigung, Schutz und Leistung gemeinsam aus, mit Live-Fortschritt, und zeigt danach genau, wie viel pro Modul freigegeben wurde |
-| **System Junk** | 16+ Scan-Kategorien: Benutzer- und System-Caches, Protokolle, Sprachdateien, defekte Einstellungen, defekte Anmeldeobjekte, Dokumentversionen, iOS-Backups, Xcode-Müll, Caches von Paketmanagern / IDEs / KI-Werkzeugen, Reste gelöschter Benutzer, sowie **Universal-Binary-Verschlankung** (findet fette Mach-O-Binärdateien, die sowohl arm64 als auch x86_64 enthalten, und schreibt sie per `lipo` auf deine native Architektur um, mit Abbrechen-Unterstützung) |
+| **System Junk** | 16+ Scan-Kategorien: Benutzer- und System-Caches, Protokolle, Sprachdateien, defekte Einstellungen, defekte Anmeldeobjekte, Dokumentversionen, iOS-Backups, Xcode-Müll, Caches von Paketmanagern / IDEs / KI-Werkzeugen, Reste gelöschter Benutzer, Archive der universellen Zwischenablage (nur zur Prüfung, nie vorausgewählt) sowie **Universal-Binary-Verschlankung** (findet fette Mach-O-Binärdateien, die sowohl arm64 als auch x86_64 enthalten, und schreibt sie per `lipo` auf deine native Architektur um, mit Abbrechen-Unterstützung) |
 | **Mail Attachments** | Findet zwischengespeicherte Anhänge aus Apple Mail, Outlook und Spark |
 | **Trash Bins** | Leert den Papierkorb an jedem Ort, auch auf externen Laufwerken |
 | **Project Junk** | Findet wiederherstellbare Build-Ordner in deinen Projekten: `node_modules`, `.next`, `dist`, Rust- und Maven-`target`, Gradle-`build`, Python-Virtualenvs und CocoaPods-`Pods`. Ein Ordner zählt nur, wenn die Dateien daneben den Projekttyp bestätigen, und `dist` und `Pods` nur, wenn deine `.gitignore` sie nennt. Alles geht in den Papierkorb |

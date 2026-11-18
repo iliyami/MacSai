@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/ru/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Скриншот Mac Sai" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/ru/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Смотреть обзор: Mac Sai за 44 секунды" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/ru/#showcase-title"><strong>Mac Sai за 44 секунды</strong></a>. Короткий обзор инструментов с настоящими экранами приложения. Видео на английском.</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ brew install --cask mac-sai
 | Модуль | Что делает |
 |--------|------------|
 | **Умное сканирование** | Один клик запускает модули очистки, защиты и производительности сразу, с прогрессом в реальном времени, и показывает, сколько именно освобождено по каждому модулю |
-| **Системный мусор** | 16+ категорий сканирования: пользовательские и системные кэши, журналы, языковые файлы, повреждённые настройки, повреждённые объекты входа, версии документов, резервные копии iOS, мусор Xcode, кэши менеджеров пакетов / IDE / ИИ-инструментов, остатки удалённых пользователей, а также **прореживание Universal Binary** (находит толстые Mach-O с срезами arm64 и x86_64 и переписывает их под вашу архитектуру через `lipo`, с поддержкой отмены) |
+| **Системный мусор** | 16+ категорий сканирования: пользовательские и системные кэши, журналы, языковые файлы, повреждённые настройки, повреждённые объекты входа, версии документов, резервные копии iOS, мусор Xcode, кэши менеджеров пакетов / IDE / ИИ-инструментов, остатки удалённых пользователей, архивы универсального буфера обмена (только для проверки, никогда не выбираются заранее), а также **прореживание Universal Binary** (находит толстые Mach-O с срезами arm64 и x86_64 и переписывает их под вашу архитектуру через `lipo`, с поддержкой отмены) |
 | **Вложения почты** | Находит кэшированные вложения из Apple Mail, Outlook и Spark |
 | **Корзины** | Очищает Корзину во всех местах, включая внешние диски |
 | **Мусор проектов** | Находит воссоздаваемые папки сборки в ваших проектах: `node_modules`, `.next`, `dist`, `target` для Rust и Maven, `build` для Gradle, виртуальные окружения Python и `Pods` для CocoaPods. Папка учитывается, только если соседние файлы подтверждают тип проекта, а `dist` и `Pods` только если они указаны в вашем `.gitignore`. Всё перемещается в Корзину |

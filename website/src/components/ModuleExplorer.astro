@@ -1,0 +1,180 @@
+---
+import AppWindow from './AppWindow.astro';
+
+export interface ExplorerGroup {
+  id: string;
+  name: string;
+  shot: string;
+  shotAlt: string;
+  modules: { name: string; summary: string }[];
+  href?: string;
+  linkLabel?: string;
+}
+
+interface Props { groups: ExplorerGroup[]; label: string }
+const { groups, label } = Astro.props;
+---
+<div class="explorer" data-explorer>
+  <div class="tabs" role="tablist" aria-label={label} aria-orientation="vertical">
+    {groups.map((g, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`tab-${g.id}`}
+        aria-controls={`panel-${g.id}`}
+        aria-selected={i === 0 ? 'true' : 'false'}
+        tabindex={i === 0 ? 0 : -1}
+        data-group={g.id}
+      >
+        <span class="dot" aria-hidden="true"></span>
+        <span class="name">{g.name}</span>
+        <span class="count">{g.modules.length}</span>
+      </button>
+    ))}
+  </div>
+
+  {groups.map((g, i) => (
+    <section
+      class="panel"
+      role="tabpanel"
+      id={`panel-${g.id}`}
+      aria-labelledby={`tab-${g.id}`}
+      data-group={g.id}
+      hidden={i === 0 ? undefined : true}
+      tabindex="0"
+    >
+      <h3 class="panel-title">{g.name}</h3>
+      <ul class="modules">
+        {g.modules.map((m) => (
+          <li><strong>{m.name}</strong> <span>{m.summary}</span></li>
+        ))}
+      </ul>
+      {g.href && <a class="more" href={g.href}>{g.linkLabel}</a>}
+      <AppWindow name={g.shot} alt={g.shotAlt} sizes="(min-width: 72rem) 760px, 92vw" class="shot" />
+    </section>
+  ))}
+</div>
+
+<script>
+  for (const root of document.querySelectorAll<HTMLElement>('[data-explorer]')) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[role="tabpanel"]')];
+    const select = (index: number, focus = false) => {
+      tabs.forEach((tab, i) => {
+        const on = i === index;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+        panels[i].hidden = !on;
+      });
+      if (focus) tabs[index].focus();
+    };
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => select(i));
+      tab.addEventListener('keydown', (event) => {
+        const next = (i + 1) % tabs.length;
+        const previous = (i - 1 + tabs.length) % tabs.length;
+        const rtl = getComputedStyle(root).direction === 'rtl';
+        const keys: Record<string, number> = {
+          ArrowDown: next,
+          ArrowUp: previous,
+          ArrowRight: rtl ? previous : next,
+          ArrowLeft: rtl ? next : previous,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (event.key in keys) {
+          event.preventDefault();
+          select(keys[event.key], true);
+        }
+      });
+    });
+  }
+</script>
+
+<style>
+  .explorer {
+    display: grid;
+    grid-template-columns: minmax(12rem, 15rem) 1fr;
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
+  }
+  .tabs {
+    display: grid;
+    gap: 0.25rem;
+    position: sticky;
+    top: 1.5rem;
+  }
+  [role='tab'] {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-m);
+    background: transparent;
+    color: var(--ink-2);
+    font: 500 var(--step-0) / 1.2 var(--font-body);
+    text-align: start;
+    cursor: pointer;
+  }
+  [role='tab']:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+  [role='tab'][aria-selected='true'] {
+    color: var(--ink);
+    background: var(--surface);
+    border-color: var(--line);
+    box-shadow: 0 8px 24px -16px rgb(20 10 70 / 0.5);
+  }
+  .dot {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: var(--group);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--group) 20%, transparent);
+    flex: none;
+  }
+  .name { flex: 1; }
+  .count { font-size: 0.85rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+  [data-group='cleanup'] { --group: #2fb06f; }
+  [data-group='protection'] { --group: #e2523f; }
+  [data-group='performance'] { --group: #eba53a; }
+  [data-group='applications'] { --group: #9a59e3; }
+  [data-group='files'] { --group: #2f9bd1; }
+
+  .panel { outline: none; }
+  .panel-title { font-size: var(--step-2); margin-bottom: 1.25rem; }
+  .modules {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 0.9rem 2rem;
+  }
+  .modules li {
+    padding-inline-start: 0.9rem;
+    border-inline-start: 2px solid color-mix(in srgb, var(--group) 70%, transparent);
+    color: var(--ink-2);
+    font-size: 0.97rem;
+    line-height: 1.5;
+  }
+  .modules strong { display: block; color: var(--ink); font-weight: 600; }
+  .more { display: inline-block; margin-bottom: 1.75rem; font-weight: 600; }
+  .panel :global(.shot) { margin-top: 0.5rem; }
+
+  @media (max-width: 52rem) {
+    .explorer { grid-template-columns: 1fr; }
+    .tabs {
+      position: static;
+      display: flex;
+      overflow-x: auto;
+      gap: 0.4rem;
+      padding-bottom: 0.25rem;
+      scrollbar-width: none;
+    }
+    [role='tab'] { width: auto; flex: none; min-height: 2.75rem; }
+    .count { display: none; }
+  }
+</style>

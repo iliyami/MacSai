@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/pt-br/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total de downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="Estrelas no GitHub" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Instalações via Homebrew" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Captura de tela do Mac Sai" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/pt-br/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Ver o tour: Mac Sai em 44 segundos" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/pt-br/#showcase-title"><strong>Mac Sai em 44 segundos</strong></a>. Um tour rápido pelas ferramentas, com telas reais do app. Vídeo em inglês.</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ Um limpador de Mac completo não deveria custar uma assinatura anual nem pedir q
 | Módulo | O que faz |
 |--------|------------|
 | **Smart Scan** | Um clique executa juntos os módulos de limpeza, proteção e desempenho, com progresso em tempo real, e depois mostra exatamente quanto foi liberado em cada módulo |
-| **System Junk** | 16+ categorias de verificação: caches do usuário e do sistema, logs, arquivos de idioma, preferências corrompidas, itens de início de sessão quebrados, versões de documentos, backups do iOS, lixo do Xcode, caches de gerenciadores de pacotes / IDEs / ferramentas de IA, restos de usuários excluídos e **redução de Universal Binary** (encontra binários Mach-O "fat" que trazem arm64 e x86_64 juntos e os reescreve para a arquitetura nativa do seu Mac via `lipo`, respeitando o Cancelar) |
+| **System Junk** | 16+ categorias de verificação: caches do usuário e do sistema, logs, arquivos de idioma, preferências corrompidas, itens de início de sessão quebrados, versões de documentos, backups do iOS, lixo do Xcode, caches de gerenciadores de pacotes / IDEs / ferramentas de IA, restos de usuários excluídos, arquivos da Área de Transferência Universal (para revisão, nunca pré-selecionados) e **redução de Universal Binary** (encontra binários Mach-O "fat" que trazem arm64 e x86_64 juntos e os reescreve para a arquitetura nativa do seu Mac via `lipo`, respeitando o Cancelar) |
 | **Mail Attachments** | Encontra anexos em cache do Apple Mail, Outlook e Spark |
 | **Trash Bins** | Esvazia o Lixo em todos os locais, incluindo unidades externas |
 | **Project Junk** | Encontra pastas de build regeneráveis nos seus projetos: `node_modules`, `.next`, `dist`, `target` do Rust e do Maven, `build` do Gradle, virtualenvs do Python e `Pods` do CocoaPods. Uma pasta só conta quando os arquivos ao lado dela confirmam o tipo de projeto, e `dist` e `Pods` só contam quando o seu `.gitignore` os menciona. Tudo vai para o Lixo |

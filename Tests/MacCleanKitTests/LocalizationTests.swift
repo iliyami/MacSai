@@ -129,6 +129,25 @@ final class LocalizationTests: AppLanguageTestCase {
         }
     }
 
+    func testClipboardArchiveStringsResolveInEverySupportedDictionary() {
+        let keys = [
+            "扫描未完成：部分文件夹无法读取",
+            "受保护的文件夹（包括剪贴板归档）需要完全磁盘访问权限。请为此 Mac Sai 副本授权，重新启动应用并再次扫描。",
+            "通用剪贴板归档",
+            "用于设备间复制粘贴的临时文件副本；清理前请检查。",
+            "原始文件会保留。年龄不代表未使用：请先完成复制和设备间传输。清理可能中断待执行的粘贴。",
+        ]
+        let inlineLanguages: Set<AppLanguage> = [.system, .en, .ru, .zhHans]
+        for language in AppLanguage.allCases where !inlineLanguages.contains(language) {
+            AppLanguage.current = language
+            for key in keys {
+                let translated = L10n.tr(key, "MISSING", "MISSING")
+                XCTAssertNotEqual(translated, "MISSING", "\(language): \(key)")
+                XCTAssertNotEqual(translated, key, "\(language) must not fall back to Simplified Chinese: \(key)")
+            }
+        }
+    }
+
     func testUpdaterStringsUseInlineCopyForEnglishRussianAndSimplifiedChinese() {
         for source in Self.updaterStrings {
             let expected: [AppLanguage: String] = [

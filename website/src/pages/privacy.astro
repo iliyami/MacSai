@@ -1,0 +1,87 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/PageHero.astro';
+import { REPO_URL } from '../data/release';
+import { breadcrumbs } from '../lib/schema';
+
+const title = 'Privacy: what Mac Sai sends, and how to check';
+const description = 'Mac Sai has no analytics, crash reporter or tracking. Here is every network request it can make, and three ways to verify that yourself.';
+const crumbs = [{ name: 'Home', path: '/' }, { name: 'Privacy', path: '/privacy/' }];
+
+const sourceSearch = `rg -n 'URLSession|NSURLConnection|Sparkle|SecTrustEvaluate' Sources --glob '*.swift'`;
+const liveProcess = `(
+MACSAI_APP=$(cd "/Applications/Mac Sai.app" && pwd -P) || exit 1
+MACSAI_PIDS=$(ps -ww -axo pid=,comm= | awk -v bundle="$MACSAI_APP/" '
+  { pid=$1; sub(/^[[:space:]]*[0-9]+[[:space:]]+/, "")
+    if (index($0, bundle) == 1) print pid }' | paste -sd, -)
+if [ -n "$MACSAI_PIDS" ]; then
+  ps -p "$MACSAI_PIDS" -o pid=,comm=
+  lsof -nP -a -p "$MACSAI_PIDS" -i
+else
+  echo "No running executables from this Mac Sai bundle"
+fi
+)`;
+const surfaceCheck = `bash scripts/check-network-surface.sh "/Applications/Mac Sai.app"`;
+---
+<Base title={title} description={description} path="/privacy/" jsonld={[breadcrumbs(crumbs)]}>
+  <PageHero
+    title="Privacy you can check"
+    lede="Mac Sai has no analytics, no crash reporter and no tracking code. It never uploads your files, file lists or scan results. You don’t have to take that on trust: the code is public and the app’s network activity is easy to watch."
+    crumbs={crumbs}
+  />
+
+  <div class="wrap prose page">
+    <h2>Every request Mac Sai can make</h2>
+    <p>Local scanning and cleaning never use the network. These are the only times Mac Sai goes online:</p>
+    <ul>
+      <li><strong>Checking for its own updates.</strong> Once a day, Mac Sai fetches a signed update feed from GitHub. The request carries the app and updater version numbers, nothing about you. Turn automatic checks off in Settings at any time. Automatic installing is a separate setting and starts off. Copies installed with Homebrew check Homebrew’s public catalog instead.</li>
+      <li><strong>Checking your other apps for updates.</strong> When you open the Updater, Mac Sai reads the update feeds your apps already publish. It reads version numbers only.</li>
+      <li><strong>The MalwareBazaar list, if you ask for it.</strong> This runs only after you add your own abuse.ch Auth-Key and press Update Now. Mac Sai sends your key and the query, never file hashes or paths.</li>
+      <li><strong>Certificate checks by macOS.</strong> When a downloaded malware hash matches a signed file, macOS asks Apple whether that file’s signing certificate was revoked, the same check Gatekeeper makes. The request is about the certificate, not your files.</li>
+    </ul>
+    <p>Links to the project, the support page and browser settings open only when you click them.</p>
+
+    <h2>Check it yourself</h2>
+    <h3>1. Search the source code</h3>
+    <p>From a copy of the <a href={REPO_URL} rel="noopener">source on GitHub</a>, list every place that can touch the network:</p>
+    <pre dir="ltr" tabindex="0"><code>{sourceSearch}</code></pre>
+
+    <h3>2. Watch the running app</h3>
+    <p>Run this in Terminal while Mac Sai is open. It lists every network connection held by the app you installed, and leaves out unrelated processes with similar names.</p>
+    <pre dir="ltr" tabindex="0"><code>{liveProcess}</code></pre>
+    <p>Run it during an update check to see that connection come and go. Tools like Little Snitch or LuLu show the same connections.</p>
+
+    <h3>3. Inspect the app you installed</h3>
+    <p>From a source checkout that matches your installed version, this script checks all seven programs inside the app for network code, web addresses and tracker libraries, and fails on anything unexpected:</p>
+    <pre dir="ltr" tabindex="0"><code>{surfaceCheck}</code></pre>
+    <p>The README explains <a href={`${REPO_URL}#verify-no-telemetry-yourself`} rel="noopener">each check in detail</a>, including a version that needs no source checkout.</p>
+
+    <h2>Your data stays on your Mac</h2>
+    <p>Mac Sai keeps a short history of your recent cleans, the last 30 days, so you can undo them. It lives in your Library folder and is readable only by your user account. Settings and logs stay on your Mac too.</p>
+
+    <h2>This website</h2>
+    <p>This site sets no cookies, runs no analytics and loads nothing from other servers: fonts, images and code all come from here. It is hosted on GitHub Pages, and GitHub may log visitors’ IP addresses for security, as its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy statement</a> describes.</p>
+
+    <h2>Questions</h2>
+    <p>Open an issue on <a href={`${REPO_URL}/issues`} rel="noopener">GitHub</a> or email <a href="mailto:macsai.team@gmail.com">macsai.team@gmail.com</a>. Security reports go through <a href={`${REPO_URL}/security/policy`} rel="noopener">the security policy</a>.</p>
+  </div>
+</Base>
+
+<style>
+  .page { padding-block: clamp(3rem, 7vw, 5rem); margin-inline: auto; }
+  .page h2:first-child { margin-top: 0; }
+  .page h3 { margin-top: 1.8em; }
+  pre {
+    margin: 1rem 0;
+    padding: 1.1rem 1.25rem;
+    border-radius: var(--radius-m);
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+  @media (min-width: 72rem) {
+    .page { max-width: 46rem; }
+  }
+</style>

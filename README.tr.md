@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/tr/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Mac Sai Ekran Görüntüsü" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/tr/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="Turu oynat: 44 saniyede Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/tr/#showcase-title"><strong>44 saniyede Mac Sai</strong></a>. Uygulamanın gerçek ekranlarıyla araçlara kısa bir bakış. Video İngilizcedir.</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ Tam donanımlı bir Mac temizleyicisi yıllık abonelik gerektirmemeli ya da dos
 | Modül | Ne yapar |
 |--------|------------|
 | **Akıllı Tarama** | Tek tıkla temizlik, koruma ve performans modüllerini canlı ilerleme göstergesiyle birlikte çalıştırır, ardından her modülün tam olarak ne kadar yer açtığını gösterir |
-| **Gereksiz Sistem Dosyaları** | 16+ tarama kategorisi: kullanıcı ve sistem önbellekleri, günlükler, dil dosyaları, bozuk tercihler, bozuk giriş öğeleri, belge sürümleri, iOS yedekleri, Xcode artıkları, paket yöneticisi / IDE / yapay zekâ aracı önbellekleri, silinmiş kullanıcılardan kalanlar ve **Universal Binary inceltme** (hem arm64 hem x86_64 içeren şişkin Mach-O ikili dosyalarını bulur ve `lipo` ile Mac'inizin yerel mimarisine göre yeniden yazar, İptal komutuna uyar) |
+| **Gereksiz Sistem Dosyaları** | 16+ tarama kategorisi: kullanıcı ve sistem önbellekleri, günlükler, dil dosyaları, bozuk tercihler, bozuk giriş öğeleri, belge sürümleri, iOS yedekleri, Xcode artıkları, paket yöneticisi / IDE / yapay zekâ aracı önbellekleri, silinmiş kullanıcılardan kalanlar, Evrensel Pano arşivleri (yalnızca inceleme için, asla önceden seçilmez) ve **Universal Binary inceltme** (hem arm64 hem x86_64 içeren şişkin Mach-O ikili dosyalarını bulur ve `lipo` ile Mac'inizin yerel mimarisine göre yeniden yazar, İptal komutuna uyar) |
 | **Mail Ekleri** | Apple Mail, Outlook ve Spark'ın önbelleğe aldığı ekleri bulur |
 | **Çöp Sepetleri** | Harici sürücüler dahil her konumdaki Çöp Sepeti'ni boşaltır |
 | **Gereksiz Proje Dosyaları** | Projelerinizdeki yeniden oluşturulabilir derleme klasörlerini bulur: `node_modules`, `.next`, `dist`, Rust ve Maven `target`, Gradle `build`, Python sanal ortamları (virtualenv) ve CocoaPods `Pods`. Bir klasör yalnızca yanındaki dosyalar proje türünü doğruladığında sayılır; `dist` ve `Pods` ise yalnızca `.gitignore` dosyanızda adları geçiyorsa. Her şey Çöp Sepeti'ne gider |

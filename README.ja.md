@@ -15,6 +15,7 @@
 </p>
 
 <p align="center">
+  <a href="https://iliyami.github.io/MacSai/ja/"><img src="https://img.shields.io/badge/website-iliyami.github.io%2FMacSai-7c5cff?style=flat-square" alt="Website" /></a>
   <a href="https://github.com/iliyami/MacSai/releases/latest"><img src="https://img.shields.io/github/downloads/iliyami/MacSai/total?style=flat-square&label=downloads&color=2ea44f" alt="Total downloads" /></a>
   <a href="https://github.com/iliyami/MacSai/stargazers"><img src="https://img.shields.io/github/stars/iliyami/MacSai?style=flat-square&color=gold" alt="GitHub stars" /></a>
   <a href="https://formulae.brew.sh/cask/mac-sai"><img src="https://img.shields.io/homebrew/cask/installs/dm/mac-sai?style=flat-square&label=homebrew&color=orange" alt="Homebrew installs" /></a>
@@ -31,6 +32,11 @@
 
 <p align="center">
   <img src="assets/demo.png" width="720" alt="Mac Sai のスクリーンショット" />
+</p>
+
+<p align="center">
+  <a href="https://iliyami.github.io/MacSai/ja/#showcase-title"><img src="assets/video-tour.jpg" width="720" alt="ツアーを再生: 44 秒でわかる Mac Sai" /></a><br>
+  <sub><a href="https://iliyami.github.io/MacSai/ja/#showcase-title"><strong>44 秒でわかる Mac Sai</strong></a>。実際のアプリ画面で、各ツールを手短に紹介します。 動画は英語です。</sub>
 </p>
 
 <p align="center">
@@ -135,7 +141,7 @@ brew install --cask mac-sai
 | モジュール | 機能 |
 |--------|------------|
 | **スマートスキャン** | ワンクリックでクリーンアップ、保護、パフォーマンスの各モジュールをまとめて実行し、進行状況をリアルタイムで表示したうえで、モジュールごとに解放した容量を正確に示します |
-| **システムの不要ファイル** | 16+ のスキャンカテゴリ：ユーザーとシステムのキャッシュ、ログ、言語ファイル、破損した環境設定、壊れたログイン項目、書類のバージョン、iOS バックアップ、Xcode の不要ファイル、パッケージマネージャ / IDE / AI ツールのキャッシュ、削除済みユーザーの残留ファイル、そして **ユニバーサルバイナリの軽量化**（arm64 と x86_64 の両方を含む fat Mach-O バイナリを見つけ、`lipo` でお使いの Mac のネイティブアーキテクチャ用に書き換えます。キャンセルにも対応） |
+| **システムの不要ファイル** | 16+ のスキャンカテゴリ：ユーザーとシステムのキャッシュ、ログ、言語ファイル、破損した環境設定、壊れたログイン項目、書類のバージョン、iOS バックアップ、Xcode の不要ファイル、パッケージマネージャ / IDE / AI ツールのキャッシュ、削除済みユーザーの残留ファイル、ユニバーサルクリップボードのアーカイブ（確認用、事前に選択されません）、そして **ユニバーサルバイナリの軽量化**（arm64 と x86_64 の両方を含む fat Mach-O バイナリを見つけ、`lipo` でお使いの Mac のネイティブアーキテクチャ用に書き換えます。キャンセルにも対応） |
 | **メールの添付ファイル** | Apple Mail、Outlook、Spark にキャッシュされた添付ファイルを見つけます |
 | **ゴミ箱** | 外付けドライブを含む、すべての場所のゴミ箱を空にします |
 | **プロジェクトの不要ファイル** | プロジェクト全体から再生成可能なビルドフォルダを見つけます：`node_modules`、`.next`、`dist`、Rust と Maven の `target`、Gradle の `build`、Python の仮想環境（virtualenv）、CocoaPods の `Pods`。隣にあるファイルからプロジェクトの種類を確認できた場合にのみ対象となり、`dist` と `Pods` は `.gitignore` に記載されている場合に限ります。すべてゴミ箱に移動されます |
