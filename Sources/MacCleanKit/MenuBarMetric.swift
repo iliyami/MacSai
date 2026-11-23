@@ -9,6 +9,7 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
     case gpuUsage = "gpuUsage"
     case memoryUsage = "memoryUsage"
     case batteryTemperature = "temperature"
+    case networkSpeed = "networkSpeed"
     case iconOnly = "iconOnly"
 
     public static let defaultsKey = "menuBarMetric"
@@ -30,6 +31,8 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
             L10n.tr("内存使用率", "Memory usage")
         case .batteryTemperature:
             L10n.tr("电池温度", "Battery temperature")
+        case .networkSpeed:
+            L10n.tr("网络速度", "Network speed")
         case .iconOnly:
             L10n.tr("仅显示图标", "Icon only")
         }
@@ -41,7 +44,9 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
         diskFree: UInt64,
         gpuUsage: Double?,
         memoryUsage: Double,
-        batteryTemperature: Double?
+        batteryTemperature: Double?,
+        downloadBytesPerSecond: Double? = nil,
+        uploadBytesPerSecond: Double? = nil
     ) -> String? {
         switch self {
         case .diskFree:
@@ -52,6 +57,8 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
             Self.formattedPercent(prefix: "RAM", value: memoryUsage)
         case .batteryTemperature:
             Self.formattedTemperature(batteryTemperature)
+        case .networkSpeed:
+            "↓ \(downloadBytesPerSecond.map(NetworkRate.format) ?? "--") ↑ \(uploadBytesPerSecond.map(NetworkRate.format) ?? "--")"
         case .iconOnly:
             nil
         }

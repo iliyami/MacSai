@@ -84,7 +84,9 @@ struct MacCleanMenuApp: App {
                        memoryUsage: stats.memoryTotal > 0
                            ? Double(stats.memoryUsed) / Double(stats.memoryTotal)
                            : 0,
-                       batteryTemperature: stats.batteryTemperature
+                       batteryTemperature: stats.batteryTemperature,
+                       downloadBytesPerSecond: model.networkSpeed?.bytesInPerSecond,
+                       uploadBytesPerSecond: model.networkSpeed?.bytesOutPerSecond
                    ) {
                     Text(value)
                         .font(.system(size: 11, weight: .medium, design: .monospaced))

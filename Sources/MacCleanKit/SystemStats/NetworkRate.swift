@@ -10,4 +10,17 @@ public enum NetworkRate {
         guard elapsed > 0, current >= previous else { return 0 }
         return Double(current - previous) / elapsed
     }
+
+    /// Human-readable rate, e.g. "12.5 MB/s". Shared by the popover and the
+    /// menu-bar label so both read the same. "--" when unavailable.
+    public static func format(_ bytesPerSecond: Double) -> String {
+        guard bytesPerSecond.isFinite, bytesPerSecond >= 0 else { return "--" }
+        if bytesPerSecond >= 1_000_000 {
+            return String(format: "%.1f MB/s", bytesPerSecond / 1_000_000)
+        } else if bytesPerSecond >= 1_000 {
+            return String(format: "%.0f KB/s", bytesPerSecond / 1_000)
+        } else {
+            return String(format: "%.0f B/s", bytesPerSecond)
+        }
+    }
 }
