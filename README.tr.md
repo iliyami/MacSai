@@ -188,7 +188,7 @@ Tam donanımlı bir Mac temizleyicisi yıllık abonelik gerektirmemeli ya da dos
 Mac'inizin hayati değerlerini bir tık uzağınıza getiren, buzlu cam (glassmorphism) görünümlü bir menü çubuğu widget'ı. Girişte başlayan bağımsız bir süreçtir ve uygulamanın kenar çubuğundan açılıp kapatılır; böylece yalnızca bir göz atmak için ana pencereyi açmanız gerekmez.
 
 - **Canlı istatistik halkaları**: CPU yükü, bellek baskısı, disk kullanımı ve pil, 2x2 halka ızgarasında (`host_processor_info`, `vm_statistics64`, APFS kapasitesi, IOKit güç kaynağı), yeşilden kehribar rengine ve kırmızıya kademeli renklendirmeyle
-- **Yapılandırılabilir gösterge**: boş disk alanını, GPU kullanımını, bellek kullanımını veya pil sıcaklığını gösterin; seçim kalıcıdır ve kullanılamayan sensörler `--` gösterir
+- **Yapılandırılabilir gösterge**: boş disk alanını, GPU kullanımını, bellek kullanımını, pil sıcaklığını veya indirme ve yükleme hızını gösterin; seçim kalıcıdır ve kullanılamayan sensörler `--` gösterir
 - **Ağ, çalışma süresi ve takas alanı**: gerçek zamanlı yükleme/indirme hızı, sistem çalışma süresi, takas alanı kullanımı
 - **Öneriler**: uygulanabilir, kapatılabilir ipuçları ("Kullanıcı önbellekleri 2,52 GB'a ulaştı, Gereksiz Sistem Dosyaları'nı çalıştırın"), tek dokunuşla işlem; kapatıldıktan sonra 30 gün boyunca gösterilmez
 - **Koruma durumu**: son kötü amaçlı yazılım taramasının zamanı ve tehdit sayısı, ne kadar güncel olduğuna göre renk kodlu

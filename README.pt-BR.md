@@ -188,7 +188,7 @@ Um limpador de Mac completo não deveria custar uma assinatura anual nem pedir q
 Um widget de barra de menus em estilo glassmorphism que deixa os sinais vitais do seu Mac a um clique de distância. Ele é um processo independente que abre no início de sessão e é ativado pela barra lateral do app, então você nunca precisa abrir a janela principal só para dar uma olhada.
 
 - **Anéis de estatísticas em tempo real**: carga da CPU, pressão de memória, uso do disco e bateria em uma grade de anéis 2x2 (`host_processor_info`, `vm_statistics64`, capacidade do APFS, fonte de energia do IOKit), com cores que vão do verde ao âmbar e ao vermelho
-- **Leitura configurável**: mostre o espaço livre em disco, o uso da GPU, o uso de memória ou a temperatura da bateria; a escolha é mantida, e sensores indisponíveis mostram `--`
+- **Leitura configurável**: mostre o espaço livre em disco, o uso da GPU, o uso de memória, a temperatura da bateria ou a velocidade de download e upload; a escolha é mantida, e sensores indisponíveis mostram `--`
 - **Rede, tempo de atividade e swap**: taxa de upload/download em tempo real, tempo de atividade do sistema, uso de swap
 - **Recomendações**: dicas práticas e dispensáveis ("Os caches do usuário cresceram para 2,52 GB, execute o System Junk"), um toque para agir, ocultadas por 30 dias depois de dispensadas
 - **Status de proteção**: horário da última verificação de malware e número de ameaças, com cores conforme a verificação é recente ou não

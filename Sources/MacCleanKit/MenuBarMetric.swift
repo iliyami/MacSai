@@ -58,10 +58,18 @@ public enum MenuBarMetric: String, CaseIterable, Identifiable, Sendable {
         case .batteryTemperature:
             Self.formattedTemperature(batteryTemperature)
         case .networkSpeed:
-            "↓ \(downloadBytesPerSecond.map(NetworkRate.format) ?? "--") ↑ \(uploadBytesPerSecond.map(NetworkRate.format) ?? "--")"
+            "↓ \(Self.paddedRate(downloadBytesPerSecond)) ↑ \(Self.paddedRate(uploadBytesPerSecond))"
         case .iconOnly:
             nil
         }
+    }
+
+    /// Right-aligns a rate to the width of "99.9 MB/s". The label uses a
+    /// monospaced font, so a fixed character count keeps the menu bar item
+    /// from changing width, and shifting the icons beside it, on every update.
+    private static func paddedRate(_ bytesPerSecond: Double?) -> String {
+        let text = bytesPerSecond.map(NetworkRate.format) ?? "--"
+        return String(repeating: " ", count: max(0, 9 - text.count)) + text
     }
 
     private static func formattedPercent(prefix: String, value: Double?) -> String {

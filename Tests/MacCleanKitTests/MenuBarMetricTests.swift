@@ -140,7 +140,7 @@ final class MenuBarMetricTests: XCTestCase {
                 downloadBytesPerSecond: 12_500_000,
                 uploadBytesPerSecond: 2_300_000
             ),
-            "↓ 12.5 MB/s ↑ 2.3 MB/s"
+            "↓ 12.5 MB/s ↑  2.3 MB/s"
         )
         XCTAssertEqual(
             MenuBarMetric.networkSpeed.formattedValue(
@@ -149,8 +149,28 @@ final class MenuBarMetricTests: XCTestCase {
                 memoryUsage: 0,
                 batteryTemperature: nil
             ),
-            "↓ -- ↑ --"
+            "↓        -- ↑        --"
         )
+    }
+
+    /// The label is drawn in a monospaced font, so a constant character count
+    /// keeps the menu bar item from changing width (and shifting every icon to
+    /// its left) each time the speed updates.
+    func testNetworkSpeedKeepsAConstantWidth() {
+        let samples: [(Double?, Double?)] = [
+            (nil, nil), (0, 0), (999, 5), (45_000, 1_200), (12_500_000, 99_900_000),
+        ]
+        let widths = Set(samples.map { download, upload in
+            MenuBarMetric.networkSpeed.formattedValue(
+                diskFree: 0,
+                gpuUsage: nil,
+                memoryUsage: 0,
+                batteryTemperature: nil,
+                downloadBytesPerSecond: download,
+                uploadBytesPerSecond: upload
+            )?.count
+        })
+        XCTAssertEqual(widths, [23])
     }
 
     func testDiskKeepsExistingFormatting() {
