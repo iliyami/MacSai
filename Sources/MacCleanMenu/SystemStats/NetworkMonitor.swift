@@ -9,18 +9,8 @@ public actor NetworkSpeedMonitor {
         public let bytesInPerSecond: Double
         public let bytesOutPerSecond: Double
 
-        public var formattedIn: String { formatSpeed(bytesInPerSecond) }
-        public var formattedOut: String { formatSpeed(bytesOutPerSecond) }
-
-        private func formatSpeed(_ bps: Double) -> String {
-            if bps >= 1_000_000 {
-                return String(format: "%.1f MB/s", bps / 1_000_000)
-            } else if bps >= 1_000 {
-                return String(format: "%.0f KB/s", bps / 1_000)
-            } else {
-                return String(format: "%.0f B/s", bps)
-            }
-        }
+        public var formattedIn: String { NetworkRate.format(bytesInPerSecond) }
+        public var formattedOut: String { NetworkRate.format(bytesOutPerSecond) }
     }
 
     private var previousBytesIn: UInt64 = 0

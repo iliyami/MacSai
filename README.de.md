@@ -188,7 +188,7 @@ Ein voll ausgestatteter Mac-Reiniger sollte kein Jahresabo kosten und dich nicht
 Ein Menüleisten-Widget im Glasmorphismus-Stil, das die Vitalwerte deines Macs einen Klick entfernt hält. Es ist ein eigenständiger Prozess, der beim Anmelden startet und aus der Seitenleiste der App umgeschaltet wird, du musst also nie das Hauptfenster öffnen, nur um kurz nachzusehen.
 
 - **Live-Statusringe**: CPU-Last, Speicherdruck, Speicherplatznutzung und Akku in einem 2x2-Ringraster (`host_processor_info`, `vm_statistics64`, APFS-Kapazität, IOKit-Stromquelle), farblich abgestuft von Grün über Gelb bis Rot
-- **Konfigurierbare Anzeige**: zeige freien Speicher, GPU-Auslastung, Speichernutzung oder Akkutemperatur; die Auswahl bleibt erhalten, und nicht verfügbare Sensoren zeigen `--`
+- **Konfigurierbare Anzeige**: zeige freien Speicher, GPU-Auslastung, Speichernutzung, Akkutemperatur oder Download- und Upload-Geschwindigkeit; die Auswahl bleibt erhalten, und nicht verfügbare Sensoren zeigen `--`
 - **Netzwerk, Laufzeit und Swap**: Echtzeit-Durchsatz hoch/runter, System-Laufzeit, Swap-Nutzung
 - **Empfehlungen**: umsetzbare, ausblendbare Tipps ("Benutzer-Caches sind auf 2,52 GB gewachsen, führe System Junk aus"), ein Tipp genügt zum Handeln, nach dem Ausblenden 30 Tage unterdrückt
 - **Schutzstatus**: Zeitpunkt des letzten Malware-Scans und Anzahl der Bedrohungen, farbcodiert nach Aktualität

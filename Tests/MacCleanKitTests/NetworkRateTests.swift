@@ -17,4 +17,16 @@ final class NetworkRateTests: XCTestCase {
         XCTAssertEqual(NetworkRate.bytesPerSecond(current: 500, previous: 100, elapsed: 0), 0)
         XCTAssertEqual(NetworkRate.bytesPerSecond(current: 500, previous: 100, elapsed: -1), 0)
     }
+
+    func testFormatScalesUnits() {
+        XCTAssertEqual(NetworkRate.format(0), "0 B/s")
+        XCTAssertEqual(NetworkRate.format(999), "999 B/s")
+        XCTAssertEqual(NetworkRate.format(45_000), "45 KB/s")
+        XCTAssertEqual(NetworkRate.format(12_500_000), "12.5 MB/s")
+    }
+
+    func testFormatTreatsNonFiniteOrNegativeAsUnavailable() {
+        XCTAssertEqual(NetworkRate.format(.nan), "--")
+        XCTAssertEqual(NetworkRate.format(-5), "--")
+    }
 }

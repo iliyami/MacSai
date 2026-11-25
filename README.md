@@ -188,7 +188,7 @@ A full-featured Mac cleaner should not cost a yearly subscription or ask you to 
 A glassmorphism menu-bar widget that puts your Mac's vitals one click away. It is an independent process that launches at login and is toggled from the app's sidebar, so you never have to open the main window just to check in.
 
 - **Live stat rings**: CPU load, memory pressure, disk usage, and battery in a 2x2 ring grid (`host_processor_info`, `vm_statistics64`, APFS capacity, IOKit power source), color-graded green to amber to red
-- **Configurable readout**: show free disk, GPU usage, memory usage, or battery temperature; the choice persists, and unavailable sensors show `--`
+- **Configurable readout**: show free disk, GPU usage, memory usage, battery temperature, or download and upload speed; the choice persists, and unavailable sensors show `--`
 - **Network, uptime, and swap**: real-time up/down throughput, system uptime, swap usage
 - **Recommendations**: actionable, dismissible tips ("User caches grew to 2.52 GB, run System Junk"), one tap to act, suppressed for 30 days once dismissed
 - **Protection status**: last malware-scan time and threat count, color-coded by freshness

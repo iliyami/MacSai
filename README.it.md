@@ -188,7 +188,7 @@ Un pulitore per Mac completo non dovrebbe costare un abbonamento annuale né chi
 Un widget in stile glassmorphism nella barra dei menu che mette i parametri vitali del tuo Mac a un clic di distanza. È un processo indipendente che si avvia al login e si attiva o disattiva dalla barra laterale dell'app, così non devi mai aprire la finestra principale solo per dare un'occhiata.
 
 - **Anelli statistici in tempo reale**: carico della CPU, pressione della memoria, uso del disco e batteria in una griglia di anelli 2x2 (`host_processor_info`, `vm_statistics64`, capacità APFS, fonte di alimentazione IOKit), con colori che sfumano dal verde all'ambra al rosso
-- **Indicatore configurabile**: mostra lo spazio libero su disco, l'uso della GPU, l'uso della memoria o la temperatura della batteria; la scelta viene ricordata, e i sensori non disponibili mostrano `--`
+- **Indicatore configurabile**: mostra lo spazio libero su disco, l'uso della GPU, l'uso della memoria, la temperatura della batteria o la velocità di download e upload; la scelta viene ricordata, e i sensori non disponibili mostrano `--`
 - **Rete, tempo di attività e swap**: velocità di upload/download in tempo reale, tempo di attività del sistema, uso dello swap
 - **Consigli**: suggerimenti pratici e ignorabili ("Le cache utente sono cresciute a 2,52 GB, esegui System Junk"), un tocco per agire, nascosti per 30 giorni dopo averli ignorati
 - **Stato della protezione**: ora dell'ultima scansione anti-malware e numero di minacce, con un colore che indica quanto è recente

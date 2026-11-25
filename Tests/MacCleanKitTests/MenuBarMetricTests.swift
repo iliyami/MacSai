@@ -7,7 +7,7 @@ final class MenuBarMetricTests: XCTestCase {
     func testCasesAndRawValuesStayStable() {
         XCTAssertEqual(
             MenuBarMetric.allCases.map(\.rawValue),
-            ["diskFree", "gpuUsage", "memoryUsage", "temperature", "iconOnly"]
+            ["diskFree", "gpuUsage", "memoryUsage", "temperature", "networkSpeed", "iconOnly"]
         )
     }
 
@@ -16,6 +16,7 @@ final class MenuBarMetricTests: XCTestCase {
         XCTAssertEqual(MenuBarMetric.resolve("futureMetric"), .diskFree)
         XCTAssertEqual(MenuBarMetric.resolve("temperature"), .batteryTemperature)
         XCTAssertEqual(MenuBarMetric.resolve("iconOnly"), .iconOnly)
+        XCTAssertEqual(MenuBarMetric.resolve("networkSpeed"), .networkSpeed)
     }
 
     /// #182: a cleaner menu bar with just the app's sparkles icon, no value.
@@ -93,6 +94,83 @@ final class MenuBarMetricTests: XCTestCase {
         AppLanguage.current = .zhHans
         XCTAssertEqual(MenuBarMetric.diskFree.localizedName, "可用磁盘空间")
         XCTAssertEqual(MenuBarMetric.batteryTemperature.localizedName, "电池温度")
+    }
+
+    /// #262: the network option is named in every shipped language.
+    func testNetworkSpeedNameIsTranslatedInEveryLanguage() {
+        let sharedDefaults = SharedAppState.defaults
+        let sharedValue = sharedDefaults.object(forKey: AppLanguage.defaultsKey)
+        defer {
+            if let sharedValue {
+                sharedDefaults.set(sharedValue, forKey: AppLanguage.defaultsKey)
+            } else {
+                sharedDefaults.removeObject(forKey: AppLanguage.defaultsKey)
+            }
+        }
+
+        let expected: [AppLanguage: String] = [
+            .en: "Network speed",
+            .zhHans: "网络速度",
+            .zhHant: "網路速度",
+            .ru: "Скорость сети",
+            .de: "Netzwerkgeschwindigkeit",
+            .fr: "Vitesse du réseau",
+            .es: "Velocidad de red",
+            .it: "Velocità di rete",
+            .ptBR: "Velocidade da rede",
+            .ja: "ネットワーク速度",
+            .ko: "네트워크 속도",
+            .tr: "Ağ hızı",
+            .fa: "سرعت شبکه",
+        ]
+        for (language, name) in expected {
+            AppLanguage.current = language
+            XCTAssertEqual(MenuBarMetric.networkSpeed.localizedName, name, language.rawValue)
+        }
+    }
+
+    /// #262: download and upload side by side, e.g. "↓ 12.5 MB/s ↑ 2.3 MB/s".
+    func testNetworkSpeedShowsDownloadAndUpload() {
+        XCTAssertEqual(
+            MenuBarMetric.networkSpeed.formattedValue(
+                diskFree: 0,
+                gpuUsage: nil,
+                memoryUsage: 0,
+                batteryTemperature: nil,
+                downloadBytesPerSecond: 12_500_000,
+                uploadBytesPerSecond: 2_300_000
+            ),
+            "↓ 12.5 MB/s ↑  2.3 MB/s"
+        )
+        XCTAssertEqual(
+            MenuBarMetric.networkSpeed.formattedValue(
+                diskFree: 0,
+                gpuUsage: nil,
+                memoryUsage: 0,
+                batteryTemperature: nil
+            ),
+            "↓        -- ↑        --"
+        )
+    }
+
+    /// The label is drawn in a monospaced font, so a constant character count
+    /// keeps the menu bar item from changing width (and shifting every icon to
+    /// its left) each time the speed updates.
+    func testNetworkSpeedKeepsAConstantWidth() {
+        let samples: [(Double?, Double?)] = [
+            (nil, nil), (0, 0), (999, 5), (45_000, 1_200), (12_500_000, 99_900_000),
+        ]
+        let widths = Set(samples.map { download, upload in
+            MenuBarMetric.networkSpeed.formattedValue(
+                diskFree: 0,
+                gpuUsage: nil,
+                memoryUsage: 0,
+                batteryTemperature: nil,
+                downloadBytesPerSecond: download,
+                uploadBytesPerSecond: upload
+            )?.count
+        })
+        XCTAssertEqual(widths, [23])
     }
 
     func testDiskKeepsExistingFormatting() {

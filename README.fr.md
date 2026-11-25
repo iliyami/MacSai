@@ -188,7 +188,7 @@ Un nettoyeur Mac complet ne devrait pas coûter un abonnement annuel ni vous dem
 Un widget de barre des menus au style glassmorphisme qui met les constantes vitales de votre Mac à un clic. C'est un processus indépendant qui se lance à l'ouverture de session et se bascule depuis la barre latérale de l'app, vous n'avez donc jamais à ouvrir la fenêtre principale juste pour jeter un œil.
 
 - **Anneaux de statistiques en direct** : charge CPU, pression mémoire, utilisation du disque et batterie dans une grille d'anneaux 2x2 (`host_processor_info`, `vm_statistics64`, capacité APFS, source d'alimentation IOKit), graduée en couleur du vert à l'ambre au rouge
-- **Affichage configurable** : montrez l'espace disque libre, l'utilisation du GPU, l'utilisation de la mémoire ou la température de la batterie ; le choix persiste, et les capteurs indisponibles affichent `--`
+- **Affichage configurable** : montrez l'espace disque libre, l'utilisation du GPU, l'utilisation de la mémoire, la température de la batterie ou le débit de téléchargement et d'envoi ; le choix persiste, et les capteurs indisponibles affichent `--`
 - **Réseau, temps de fonctionnement et swap** : débit montant/descendant en temps réel, temps de fonctionnement du système, utilisation du swap
 - **Recommandations** : conseils actionnables et masquables (« Les caches utilisateur ont atteint 2,52 Go, lancez System Junk »), une touche pour agir, supprimés pendant 30 jours une fois masqués
 - **Statut de protection** : heure du dernier scan de logiciels malveillants et nombre de menaces, codé en couleur selon la fraîcheur
